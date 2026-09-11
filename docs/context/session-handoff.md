@@ -16,6 +16,9 @@ DOM inspection verified on live Chromium instance (`http://127.0.0.1:3000/`) wit
 - Student: `dylanmaxter1810@gmail.com` (Search, Results, Profile, Requests).
 - Teacher: `balckyfureu@gmail.com` (Dashboard metrics, Section 4 document uploader & legal disclaimer, Solicitudes recibidas).
 - Automated tests: 61/61 tests passing (`node --import tsx --test tests/*.test.ts`). TypeScript check clean (`npm run lint`), bundle builds cleanly (`npm run build`).
+- Google OAuth: Provider configured and enabled on Supabase (`googleEnabled: true`). Verified with `npm run verify:accounts`.
+- GitHub & Vercel: Repository pushed to `https://github.com/JaredBautist/TUTOR-CUCUTA.git` (`main` branch) with `vercel.json` SPA rewrite rules.
+
 
 
 User confirmed one role per account. Implemented Google OAuth and email/password
