@@ -1,0 +1,31 @@
+# Preserve these files on disk; exclude them from the knowledge corpus.
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+*.keystore
+*credentials*
+*secret*
+node_modules/
+dist/
+build/
+coverage/
+.git/
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.log
+*.dump
+*.sqlite*
+*.db
+supabase/.temp/
+.agents/
+.codex/
+graphify-out/
+.graphify/
+package-lock.json
+# Third-party scaffold metadata is not application behavior.
+public/assets/aistudio/

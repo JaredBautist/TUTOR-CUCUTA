@@ -1,0 +1,6 @@
+{
+  "name": "TutorCúcuta",
+  "description": "Plataforma de tutorías académicas georreferenciadas para el Área Metropolitana de Cúcuta, conectando estudiantes y docentes con mapas PostGIS y emparejamiento inteligente.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
