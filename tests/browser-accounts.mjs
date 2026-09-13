@@ -68,7 +68,7 @@ try {
   await cdp('Runtime.enable');
   await cdp('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false });
   await cdp('Page.addScriptToEvaluateOnNewDocument', { source: `(${installAccountFixture.toString()})({signedIn:false});
-    const originalFetch=window.fetch.bind(window); window.fetch=(input,init)=>String(input).includes('/rest/v1/tutors')||String(input).includes('/rest/v1/tutor_map_locations') ? Promise.resolve(new Response('[]',{headers:{'Content-Type':'application/json'}})) : originalFetch(input,init);
+    const originalFetch=window.fetch.bind(window); window.fetch=(input,init)=>String(input).includes('/rest/v1/tutor_offers')||String(input).includes('/rest/v1/tutor_offer_locations') ? Promise.resolve(new Response('[]',{headers:{'Content-Type':'application/json'}})) : originalFetch(input,init);
     localStorage.setItem('tutorcucuta_student_profile_v2',JSON.stringify({name:'Legacy private draft'}));` });
   const fill = async (selector, value) => evaluate(`(() => { const input=document.querySelector(${JSON.stringify(selector)}); const setter=Object.getOwnPropertyDescriptor(input.tagName==='TEXTAREA'?HTMLTextAreaElement.prototype:HTMLInputElement.prototype,'value').set; setter.call(input,${JSON.stringify(value)}); input.dispatchEvent(new Event('input',{bubbles:true})); })()`);
   const login = async (role='student',password='test-password') => { await fill('input[type=email]',`${role}@example.invalid`); await fill('input[type=password]',password); await click('Entrar'); };

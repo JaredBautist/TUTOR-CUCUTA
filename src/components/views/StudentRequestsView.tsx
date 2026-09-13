@@ -1,3 +1,4 @@
+import {getContactNumber} from '../../utils/contact';
 import React, { useState } from 'react';
 import { ArrowLeft, Clock, CheckCircle2, XCircle, Calendar, Search, UserPen } from 'lucide-react';
 import { StudentRequest } from '../../types';
@@ -129,7 +130,7 @@ export const StudentRequestsView: React.FC<StudentRequestsViewProps> = ({
         <div className="space-y-4">
           {filteredRequests.map((req) => {
             const isAccepted = req.status === 'accepted';
-            const isRejected = req.status === 'rejected';
+            const isRejected = req.status === 'rejected' || req.status === 'cancelled';
 
             return (
               <div
@@ -164,7 +165,7 @@ export const StudentRequestsView: React.FC<StudentRequestsViewProps> = ({
                     ) : isRejected ? (
                       <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-medium flex items-center gap-1.5 border border-slate-300">
                         <XCircle className="w-3.5 h-3.5 text-slate-400" />
-                        <span>No disponible</span>
+                        <span>{req.status==='cancelled'?'Cancelada':'No disponible'}</span>
                       </span>
                     ) : (
                       <span className="px-3 py-1 rounded-full bg-amber-50 text-amber-800 text-xs font-semibold flex items-center gap-1.5 border border-amber-200 animate-pulse">
@@ -223,6 +224,10 @@ export const StudentRequestsView: React.FC<StudentRequestsViewProps> = ({
                   </div>
                 )}
 
+                {isAccepted && getContactNumber(req.tutorPhone) && <div className="flex flex-wrap gap-3 text-xs mb-3">
+                  <a href={`tel:+${getContactNumber(req.tutorPhone)}`} className="text-teal-800 underline">Llamar al tutor: {req.tutorPhone}</a>
+                  <a href={`https://wa.me/${getContactNumber(req.tutorPhone)}`} target="_blank" rel="noopener noreferrer" className="text-teal-800 underline">WhatsApp del tutor</a>
+                </div>}
                 {/* Pending: contact locked notice */}
                 {req.status === 'pending' && (
                   <div className="p-3 bg-amber-50 border border-amber-200/80 rounded-xl text-xs text-amber-900 mb-3 space-y-1">
@@ -237,7 +242,7 @@ export const StudentRequestsView: React.FC<StudentRequestsViewProps> = ({
                 )}
 
                 {/* Actions when pending */}
-                {req.status === 'pending' && (
+                {(req.status === 'pending' || req.status === 'accepted') && (
                   <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs text-slate-500">
                     <span>{actionsEnabled ? 'Solicitud pendiente de respuesta.' : 'La gestión de solicitudes estará disponible al conectar tu cuenta.'}</span>
                     <button

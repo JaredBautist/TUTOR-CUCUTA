@@ -66,7 +66,7 @@ export function createTutorLocationRepository(client: SupabaseClient | null): Tu
         const rows: unknown[] = [];
         const signal = AbortSignal.timeout(READ_TIMEOUT_MS);
         for (let offset = 0; offset <= MAX_LOCATION_ROWS; offset += PAGE_SIZE) {
-          const response = await client.from('tutor_map_locations')
+          const response = await client.from('tutor_offer_locations')
             .select('tutor_id,latitude,longitude,precision,updated_at')
             .order('tutor_id').range(offset, offset + PAGE_SIZE - 1).abortSignal(signal);
           if (response.error) throw response.error;
@@ -93,7 +93,7 @@ export function createTutorLocationRepository(client: SupabaseClient | null): Tu
       let active = true;
       onStatus('connecting');
       const channel = client.channel(`tutor-map-locations:${++subscriptionSequence}`)
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'tutor_map_locations' }, () => {
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'tutor_offer_locations' }, () => {
           if (active) onInvalidation();
         })
         .subscribe((status) => {

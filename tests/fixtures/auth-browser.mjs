@@ -18,7 +18,7 @@ export function installAccountFixture({ signedIn = true } = {}) {
   window.fetch = async (input,init={}) => {
     const url = new URL(typeof input === 'string' ? input : input.url || String(input));
     if(url.origin !== 'https://catalog.invalid') return nativeFetch(input,init);
-    const method = init.method || 'GET'; const request = init.body ? JSON.parse(init.body) : {};
+    const method = init.method || 'GET'; const request = typeof init.body==='string' ? JSON.parse(init.body) : {};
     const harness = window.__authFixture;
     if(url.pathname.startsWith('/auth/v1/')) {
       harness.calls.push({path:url.pathname,method});
@@ -31,6 +31,9 @@ export function installAccountFixture({ signedIn = true } = {}) {
       if(url.pathname.endsWith('/recover') || url.pathname.endsWith('/logout')) return response({});
       if(url.pathname.endsWith('/user')) return response(JSON.parse(localStorage.getItem(key) || '{}').user || user('student'));
     }
+    if(url.pathname === '/rest/v1/rpc/list_tutoring_requests_v1') return response([]);
+    if(url.pathname === '/rest/v1/rpc/own_tutor_offer_v1') return response(null);
+    if(url.pathname === '/rest/v1/tutor_documents') return response([]);
     if(url.pathname === '/rest/v1/user_accounts') {
       harness.calls.push({path:url.pathname,method});
       if(harness.failRead && method==='GET') return response({code:'PGRST205',message:'Missing table'},404);

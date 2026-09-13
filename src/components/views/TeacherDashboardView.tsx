@@ -209,7 +209,7 @@ export const TeacherDashboardView: React.FC<TeacherDashboardViewProps> = ({
             ) : (
               filteredRequests.map((req) => {
                 const isAccepted = req.status === 'accepted';
-                const isRejected = req.status === 'rejected';
+                const isRejected = req.status === 'rejected' || req.status === 'cancelled';
                 const guardianContact = isAccepted && req.guardianLinked ? getContactNumber(req.guardianPhone) : undefined;
 
                 return (
@@ -261,7 +261,7 @@ export const TeacherDashboardView: React.FC<TeacherDashboardViewProps> = ({
                           </span>
                         ) : isRejected ? (
                           <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[11px]">
-                            Descartada
+                            {req.status==='cancelled'?'Cancelada':'Descartada'}
                           </span>
                         ) : (
                           <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[11px] sm:text-xs font-bold">

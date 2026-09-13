@@ -78,20 +78,22 @@ function installBrowserFakes({ mockLocation = true } = {}) {
     watcherStarts: 0, watcherStops: 0, sockets: [],
     get activeWatchers() { return watchers.size; },
     emitPosition(latitude, longitude, accuracy = 18) {
-      for (const { success } of watchers.values()) success({
+      const pending=[...watchers.values()];watchers.clear();
+      for (const { success } of pending) success({
         coords: { latitude, longitude, accuracy, altitude: null, altitudeAccuracy: null, heading: null, speed: null },
         timestamp: Date.now(),
       });
     },
     emitError(code = 1) {
-      for (const { error } of [...watchers.values()]) error({ code, message: 'Controlled positioning failure' });
+      const pending=[...watchers.values()];watchers.clear();
+      for (const { error } of pending) error({ code, message: 'Controlled positioning failure' });
     },
     invalidateLocations() {
       for (const socket of this.sockets) {
         for (const channel of socket.channels.values()) socket.deliver([
           channel.joinRef, null, channel.topic, 'postgres_changes', {
             ids: channel.filters.map((filter) => filter.id),
-            data: { schema: 'public', table: 'tutor_map_locations', type: 'UPDATE',
+            data: { schema: 'public', table: 'tutor_offer_locations', type: 'UPDATE',
               commit_timestamp: new Date().toISOString(), columns: [], record: {}, old_record: {} },
           },
         ]);
@@ -99,14 +101,9 @@ function installBrowserFakes({ mockLocation = true } = {}) {
     },
   };
   if (mockLocation) Object.defineProperty(navigator, 'geolocation', { configurable: true, value: {
-    watchPosition(success, error) {
-      const id = ++watcherSequence;
-      watchers.set(id, { success, error });
-      harness.watcherStarts++;
-      return id;
-    },
-    clearWatch(id) { if (watchers.delete(id)) harness.watcherStops++; },
-    getCurrentPosition(success, error) { return this.watchPosition(success, error); },
+    watchPosition() { throw new Error('Continuous GPS is outside the project scope'); },
+    clearWatch() { throw new Error('Single observations have no native watch to clear'); },
+    getCurrentPosition(success,error) {const id=++watcherSequence;watchers.set(id,{success,error});harness.watcherStarts++;},
   } });
 
   const NativeWebSocket = window.WebSocket;
@@ -218,8 +215,8 @@ try {
           contentType = 'application/json';
         } else {
           assert.equal(request.method, 'GET', 'Browser map checks must perform no remote writes');
-          assert.ok(['/rest/v1/tutors', '/rest/v1/tutor_map_locations'].includes(url.pathname), `Unexpected catalog endpoint ${url.pathname}`);
-          content = JSON.stringify(url.pathname.endsWith('/tutor_map_locations') ? locations : tutors);
+          assert.ok(['/rest/v1/tutor_offers', '/rest/v1/tutor_offer_locations'].includes(url.pathname), `Unexpected catalog endpoint ${url.pathname}`);
+          content = JSON.stringify(url.pathname.endsWith('/tutor_offer_locations') ? locations : tutors.map(row=>({listing:{id:row.id,name:row.profiles.full_name,avatar:'',title:row.title,institution:row.institution,experienceYears:row.experience_years,ratePerHour:row.rate_per_hour,sector:row.sector,nextAvailable:'',modalities:row.modalities,subjects:row.subjects,levels:row.levels,specialties:[],bio:'',methodologySteps:[],matchReasons:[],verified:false,availability:[],coverageRadiusKm:15}})));
           contentType = 'application/json';
         }
         await cdp('Fetch.fulfillRequest', {
@@ -280,7 +277,7 @@ try {
     screen: (await body()).slice(0, 1800),
     map: await mapState(),
     activeWatchers: await evaluate('window.__mapBrowserHarness?.activeWatchers'),
-    locationReads: requestLog.filter((request) => request.pathname === '/rest/v1/tutor_map_locations').length,
+    locationReads: requestLog.filter((request) => request.pathname === '/rest/v1/tutor_offer_locations').length,
     tiles: mapResponses.slice(-8),
     rendering: await evaluate('window.__mapLibreTestMaps?.filter(map => !map.__testRemoved).map(map => ({ removed: map.__testRemoved, loaded: map.loaded(), style: map.isStyleLoaded(), tiles: map.areTilesLoaded(), dirty: map._sourcesDirty, canvas: [map.getCanvas().width, map.getCanvas().height], bounds: map.getBounds(), sources: Object.fromEntries(Object.entries(map.style.tileManagers).map(([id, cache]) => [id, {loaded:cache.loaded(), tiles: Object.values(cache._tiles ?? {}).map(tile => ({state:tile.state, id:tile.tileID.key}))}])) }))'),
   });
@@ -351,7 +348,7 @@ try {
   assert.doesNotMatch(await body(), new RegExp(tutorNames[2]), 'Applied radius must exclude the distant in-person tutor card');
   const appliedCircle = (await mapState()).circles.find((circle) => circle.radius === 2500);
   assert.deepEqual(appliedCircle.center, { lat: firstPosition.latitude, lng: firstPosition.longitude }, 'Results must preserve the applied device search origin');
-  assert.equal(await activeWatchers(), 1, 'Results must replace Search tracking with one visible watcher');
+  assert.equal(await activeWatchers(), 1, 'Results requests one new observation after the completed Search observation');
   await click(`Ver tutor ${tutorNames[1]}`, true);
   assert.ok(await evaluate(`(() => { const heading = [...document.querySelectorAll('h2')].find(element => element.innerText === ${JSON.stringify(tutorNames[1])}); return heading?.closest('[class*="cursor-pointer"]')?.classList.contains('border-teal-600'); })()`), 'Marker selection must select the matching tutor card');
   await until(async () => (await activeWatchers()) === 1, 'Results device watcher did not start');
@@ -360,11 +357,11 @@ try {
   assert.deepEqual((await mapState()).circles.find((circle) => circle.radius === 2500).center, appliedCircle.center, 'Later observations must not shift the applied search circle');
   assert.ok(await evaluate(`!Object.values(localStorage).some(value => value.includes('7.896234') || value.includes('-72.509876') || value.includes('7.920345'))`), 'Exact observations must not enter browser persistence');
 
-  const initialLocationReads = requestLog.filter((request) => request.pathname === '/rest/v1/tutor_map_locations').length;
+  const initialLocationReads = requestLog.filter((request) => request.pathname === '/rest/v1/tutor_offer_locations').length;
   locations = locations.map((location) => location.tutor_id === tutorIds[1] ? { ...location, latitude: 7.890, updated_at: '2026-09-10T12:01:00.000Z' } : location);
   await evaluate('window.__mapBrowserHarness.invalidateLocations()');
   await until(async () => (await mapState()).markers.some((marker) => marker.title === tutorNames[1] && marker.position.lat === 7.890), 'Published-location change did not update its marker');
-  assert.ok(requestLog.filter((request) => request.pathname === '/rest/v1/tutor_map_locations').length > initialLocationReads, 'Feed invalidation must refresh its authorized snapshot');
+  assert.ok(requestLog.filter((request) => request.pathname === '/rest/v1/tutor_offer_locations').length > initialLocationReads, 'Feed invalidation must refresh its authorized snapshot');
   const resultsMapCount = (await mapState()).mapCount;
   const addedTutor = { ...tutors[0], id: '19a1b2c3-0000-4000-8000-000000000004', profiles: { full_name: 'Nueva docente publicada', avatar_url: null } };
   tutors.push(addedTutor);

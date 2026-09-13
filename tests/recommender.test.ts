@@ -32,6 +32,7 @@ const createTutor = (overrides: Partial<Tutor>): Tutor => ({
   methodologySteps: [],
   matchReasons: [],
   location: mockOrigin,
+  coverageRadiusKm: 5,
   ...overrides,
 });
 
@@ -137,9 +138,26 @@ test('Recommender: produces deterministic scores and structured template-based r
 
   const { score, reasons } = scoreAndExplainCandidate(tutor, filters, 2.5);
 
-  assert.ok(score >= 60 && score <= 100, `Score ${score} should be high`);
+  assert.equal(score, 40, 'Price contributes 10, neutral schedule 15 and proximity 15');
   assert.ok(reasons.length >= 3, 'Should generate multiple clear template reasons');
   assert.ok(reasons.some((r) => r.includes('Enseña la materia solicitada: Física')));
   assert.ok(reasons.some((r) => r.includes('presupuesto')));
   assert.ok(reasons.some((r) => r.includes('2.5 km')));
+});
+
+test('Recommender: missing location and tutor coverage reject in-person candidates', () => {
+  const filters = {...defaultFilters, modality: 'presencial' as const};
+  assert.equal(isCandidateEligible(createTutor({location: undefined}), filters, mockOrigin).eligible, false);
+  assert.equal(isCandidateEligible(createTutor({location: {latitude: mockOrigin.latitude + 0.02, longitude: mockOrigin.longitude}, coverageRadiusKm: 0.5}), filters, mockOrigin).eligible, false);
+});
+
+test('Recommender: experience and supplied documents do not change ranking scores', () => {
+  const a = scoreAndExplainCandidate(createTutor({experienceYears:0}), defaultFilters).score;
+  const b = scoreAndExplainCandidate(createTutor({experienceYears:20}), defaultFilters).score;
+  assert.equal(a, b);
+});
+
+test('Recommender: incompatible weekly availability is mandatory', () => {
+  const candidate = createTutor({availability:[{day:1,start:'08:00',end:'10:00'}]});
+  assert.equal(isCandidateEligible(candidate,{...defaultFilters,availableDays:['Domingo']},mockOrigin).eligible,false);
 });

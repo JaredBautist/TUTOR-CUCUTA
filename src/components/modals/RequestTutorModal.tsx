@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { X, MapPin, DollarSign } from 'lucide-react';
+import { requestProfileError } from '../../features/marketplace/domain/contracts';
 import { Tutor, StudentRequest, StudentProfile } from '../../types';
 
 interface RequestTutorModalProps {
   tutor: Tutor;
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (newRequest?: Partial<StudentRequest>) => void;
+  onConfirm: (newRequest?: Partial<StudentRequest>) => Promise<void> | void;
   defaultSubject?: string;
   studentProfile?: StudentProfile;
   submissionEnabled?: boolean;
@@ -21,58 +22,34 @@ export const RequestTutorModal: React.FC<RequestTutorModalProps> = ({
   studentProfile,
   submissionEnabled = false,
 }) => {
-  const [studentName, setStudentName] = useState(studentProfile?.name || '');
-  const [subject, setSubject] = useState(defaultSubject);
+  const [studentName] = useState(studentProfile?.name || '');
+  const [subject, setSubject] = useState(tutor.subjects.includes(defaultSubject)?defaultSubject:'');
   const [modality, setModality] = useState<'presencial' | 'virtual' | ''>(tutor.modalities[0] || '');
   const [selectedDay, setSelectedDay] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
   const [duration, setDuration] = useState(1);
   const [note, setNote] = useState('');
+  const [submitting,setSubmitting]=useState(false);const [submitError,setSubmitError]=useState('');
+  const inFlight=useRef(false);const submission=useRef<{signature:string;id:string} | undefined>(undefined);
   if (!isOpen) return null;
 
   const totalCost = tutor.ratePerHour * duration;
-  const canSubmit = submissionEnabled && Boolean(studentProfile?.id) && Boolean(studentName.trim());
+  const profileError=requestProfileError(studentProfile);
+  const canSubmit = submissionEnabled && Boolean(studentProfile?.id) && !profileError && !submitting;
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!canSubmit || !selectedDay || !selectedTime || !subject || !modality) return;
-
-    const cleanInitials = studentName.trim()
-      .split(' ')
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((n) => n[0].toUpperCase())
-      .join('');
-
-    const newRequest: Partial<StudentRequest> = {
-      studentName: studentName.trim(),
-      age: studentProfile?.age,
-      grade: studentProfile?.grade || '',
-      guardianLinked: studentProfile?.guardianAuthorized ?? false,
-      guardianName: studentProfile?.guardianName || undefined,
-      guardianPhone: studentProfile?.guardianPhone || undefined,
-      avatarInitials: cleanInitials || 'ES',
-      studentAvatarUrl: studentProfile?.avatarUrl,
-      sector: studentProfile?.sector || '',
-      subject,
-      focalTopic: note.slice(0, 50),
-      goal: studentProfile?.academicGoal || '',
-      studentNote: note,
-      learningPreferences: studentProfile?.learningStyles || [],
-      learningStyles: studentProfile?.learningStyles || [],
-      scheduledTime: `${selectedDay} ${selectedTime}`,
-      durationHours: duration,
-      ratePerHour: tutor.ratePerHour,
-      totalEstimated: totalCost,
-      modality: modality,
-      status: 'pending',
-      targetTutorId: tutor.id,
-      targetTutorName: tutor.name,
-      createdAt: new Date().toISOString(),
-      matchCriteriaChecklist: [],
-    };
-
-    onConfirm(newRequest);
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!canSubmit || inFlight.current || !selectedDay || !selectedTime || !subject || !modality) return;
+    const startsAt=`${selectedDay}T${selectedTime}:00-05:00`;
+    const signature=JSON.stringify([tutor.id,subject,modality,startsAt,duration,note]);
+    if(submission.current && submission.current.signature!==signature) {
+      setSubmitError('Si el envío anterior falló, consulta Mis Solicitudes antes de cambiarlo y crear otro. Cierra y abre el formulario para un nuevo envío.');return;
+    }
+    submission.current ??= {signature,id:crypto.randomUUID()};
+    inFlight.current=true;setSubmitting(true);setSubmitError('');
+    try {await onConfirm({id:submission.current.id,subject,modality,startsAt,durationHours:duration,studentNote:note});}
+    catch(error){setSubmitError(error instanceof Error?error.message:'No se pudo confirmar el envío.');}
+    finally{inFlight.current=false;setSubmitting(false);}
   };
 
   return (
@@ -80,7 +57,7 @@ export const RequestTutorModal: React.FC<RequestTutorModalProps> = ({
       <div role="dialog" aria-modal="true" aria-labelledby="request-tutor-title" className="bg-white rounded-t-3xl sm:rounded-2xl max-w-lg w-full p-5 sm:p-6 shadow-2xl border border-slate-200 relative max-h-[92vh] overflow-y-auto animate-in slide-in-from-bottom sm:slide-in-from-bottom-2 duration-200">
         <button
           type="button"
-          onClick={onClose}
+          onClick={onClose} disabled={submitting}
           aria-label="Cerrar solicitud"
           className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 rounded-full transition-colors cursor-pointer"
         >
@@ -102,10 +79,11 @@ export const RequestTutorModal: React.FC<RequestTutorModalProps> = ({
 
           {!canSubmit && (
             <p role="status" className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900">
-              El envío de solicitudes aún no está disponible. Se habilitará cuando puedas acceder con tu cuenta.
+              {profileError || (submitting ? 'Guardando solicitud…' : 'Inicia sesión para enviar una solicitud.')}
             </p>
           )}
 
+          {submitError && <p role="alert" className="p-3 text-xs text-red-700 bg-red-50 rounded-xl">{submitError}</p>}
           {/* Quick Details Pill Box */}
           <div className="grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs">
             <div className="flex items-center gap-2 text-slate-700 truncate">
@@ -127,7 +105,7 @@ export const RequestTutorModal: React.FC<RequestTutorModalProps> = ({
               <input
                 type="text"
                 value={studentName}
-                onChange={(e) => setStudentName(e.target.value)}
+                readOnly
                 required
                 placeholder="Nombre del estudiante"
                 className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs sm:text-sm text-slate-800 focus:ring-2 focus:ring-teal-500 focus:outline-hidden min-h-[42px]"
@@ -178,41 +156,10 @@ export const RequestTutorModal: React.FC<RequestTutorModalProps> = ({
             </select>
           </div>
 
-          {/* Proposed schedule; no availability is inferred. */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Día propuesto</label>
-              <select
-                required
-                value={selectedDay}
-                onChange={(e) => setSelectedDay(e.target.value)}
-                className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2.5 text-xs sm:text-sm text-slate-800 focus:ring-2 focus:ring-teal-500 focus:outline-hidden min-h-[44px]"
-              >
-                <option value="">Selecciona un día</option>
-                {['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'].map(day => (
-                  <option key={day} value={day}>{day}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Hora de inicio</label>
-              <select
-                required
-                value={selectedTime}
-                onChange={(e) => setSelectedTime(e.target.value)}
-                className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2.5 text-xs sm:text-sm text-slate-800 focus:ring-2 focus:ring-teal-500 focus:outline-hidden min-h-[44px]"
-              >
-                <option value="">Selecciona una hora</option>
-                <option value="3:30 p.m.">3:30 p.m.</option>
-                <option value="4:00 p.m.">4:00 p.m.</option>
-                <option value="4:30 p.m.">4:30 p.m.</option>
-                <option value="5:00 p.m.">5:00 p.m.</option>
-                <option value="6:00 p.m.">6:00 p.m.</option>
-              </select>
-            </div>
+            <label className="text-xs font-semibold">Fecha propuesta · Colombia<input type="date" required value={selectedDay} onChange={event=>setSelectedDay(event.target.value)} className="block w-full border border-slate-300 rounded-lg p-2.5 mt-1" /></label>
+            <label className="text-xs font-semibold">Hora de inicio · Colombia<input type="time" required value={selectedTime} onChange={event=>setSelectedTime(event.target.value)} className="block w-full border border-slate-300 rounded-lg p-2.5 mt-1" /></label>
           </div>
-
           {/* Duration */}
           <div>
             <div className="flex items-center justify-between mb-1">
@@ -237,7 +184,7 @@ export const RequestTutorModal: React.FC<RequestTutorModalProps> = ({
             </label>
             <textarea
               rows={2}
-              value={note}
+              maxLength={2000} value={note}
               onChange={(e) => setNote(e.target.value)}
               className="w-full bg-white border border-slate-300 rounded-lg p-2.5 text-xs text-slate-800 focus:ring-2 focus:ring-teal-500 focus:outline-hidden"
             />
@@ -257,7 +204,7 @@ export const RequestTutorModal: React.FC<RequestTutorModalProps> = ({
           <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 pt-2">
             <button
               type="button"
-              onClick={onClose}
+              onClick={onClose} disabled={submitting}
               className="w-full sm:w-auto px-4 py-2.5 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-colors min-h-[44px]"
             >
               Cancelar

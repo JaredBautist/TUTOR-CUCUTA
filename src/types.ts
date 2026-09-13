@@ -1,3 +1,4 @@
+import type { WeeklySlot } from './features/marketplace/domain/contracts';
 export type Role = 'student' | 'tutor';
 
 export type ScreenId = 
@@ -64,7 +65,7 @@ export interface Tutor {
   title: string;
   institution: string;
   avatar: string;
-  experienceYears: number;
+  experienceYears: number | null;
   ratePerHour: number;
   matchScore?: number;
   verified: boolean;
@@ -83,6 +84,8 @@ export interface Tutor {
   locationPrecision?: 'approximate';
   locationUpdatedAt?: string;
   documents?: TutorDocument[];
+  availability?: WeeklySlot[];
+  coverageRadiusKm?: number;
 }
 
 export interface StudentRequest {
@@ -109,7 +112,10 @@ export interface StudentRequest {
   ratePerHour: number;
   totalEstimated: number;
   modality: string;
-  status: 'pending' | 'accepted' | 'rejected';
+  status: 'pending' | 'accepted' | 'rejected' | 'cancelled';
+  startsAt?: string;
+  tutorPhone?: string;
+  studentPhone?: string;
   matchCriteriaChecklist: { label: string; checked: boolean }[];
   coordinates?: { x: number; y: number };
   studentId?: string;

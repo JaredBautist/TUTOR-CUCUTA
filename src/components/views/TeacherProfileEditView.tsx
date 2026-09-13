@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ArrowLeft, Save, Upload, Plus, X, Map, User, Camera, RotateCcw, Link as LinkIcon, FileText, Trash2, Eye, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Save, Upload, Plus, X, Map, User, Camera, RotateCcw, Link as LinkIcon } from 'lucide-react';
 import type { TeacherDraft } from '../../features/accounts/application/profileMapping';
 import { UnifiedCucutaMap } from '../common/UnifiedCucutaMap';
 import type { SearchOrigin } from '../../features/maps/domain/contracts';
 import { CUCUTA_REFERENCE_ORIGIN } from '../../features/maps/domain/geography';
-import { storage } from '../../utils/storage';
-import type { TutorDocument } from '../../types';
+import { DocumentsPanel } from '../marketplace/DocumentsPanel';
+import { OfferPanel } from '../marketplace/OfferPanel';
 
 interface TeacherProfileEditViewProps {
   teacher?: TeacherDraft;
@@ -24,11 +24,6 @@ export const TeacherProfileEditView: React.FC<TeacherProfileEditViewProps> = ({
 }) => {
   const [fullName, setFullName] = useState(teacher?.name || '');
   const [avatar, setAvatar] = useState(teacher?.avatar || '');
-  const [documents, setDocuments] = useState<TutorDocument[]>(() => {
-    return teacherId ? storage.getTutorDocuments(teacherId) : [];
-  });
-  const docInputRef = useRef<HTMLInputElement>(null);
-  const [docUploadError, setDocUploadError] = useState('');
   const previousPhoto = useRef(teacher?.avatar || '');
   useEffect(() => {
     const before = previousPhoto.current;
@@ -112,76 +107,19 @@ export const TeacherProfileEditView: React.FC<TeacherProfileEditViewProps> = ({
     setSpecialties(specialties.filter((item) => item !== sp));
   };
 
-  const handleDocumentFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setDocUploadError('');
-
-    const ext = file.name.split('.').pop()?.toLowerCase();
-    const isPdf = file.type === 'application/pdf' || ext === 'pdf';
-    const isJpg = file.type === 'image/jpeg' || file.type === 'image/jpg' || ext === 'jpg' || ext === 'jpeg';
-    const isPng = file.type === 'image/png' || ext === 'png';
-
-    if (!isPdf && !isJpg && !isPng) {
-      setDocUploadError('Solo se permiten formatos PDF, JPG o PNG.');
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      setDocUploadError('El archivo no debe superar los 5MB.');
-      return;
-    }
-
-    const fileType: 'pdf' | 'jpg' | 'png' = isPdf ? 'pdf' : isPng ? 'png' : 'jpg';
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      if (typeof event.target?.result === 'string') {
-        const newDoc: TutorDocument = {
-          id: 'doc-' + Date.now(),
-          name: file.name,
-          fileType,
-          dataUrl: event.target.result,
-          uploadedAt: new Date().toISOString(),
-        };
-        const updated = [...documents, newDoc];
-        setDocuments(updated);
-        if (teacherId) {
-          storage.setTutorDocuments(teacherId, updated);
-        }
-      }
-    };
-    reader.readAsDataURL(file);
-    if (docInputRef.current) {
-      docInputRef.current.value = '';
-    }
-  };
-
-  const handleRemoveDocument = (id: string) => {
-    const updated = documents.filter((d) => d.id !== id);
-    setDocuments(updated);
-    if (teacherId) {
-      storage.setTutorDocuments(teacherId, updated);
-    }
-  };
-
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!teacher || !onSaveProfile || saving) return;
+  const persistProfile = async () => {
+    if (!teacher || !onSaveProfile || saving) throw new Error('Espera a que termine el guardado del perfil.');
     setSaving(true); setSaved(false); setSaveError('');
     try {
-      const savedAvatar = await onSaveProfile({ name: fullName, title, institution, avatar,
-        experienceYears: experienceYears === '' ? null : experienceYears,
-        ratePerHour: ratePerHour === '' ? null : ratePerHour,
-        coverageRadiusKm: coverageRadius, bio, subjects, specialties });
-      if (teacherId) {
-        storage.setTutorDocuments(teacherId, documents);
-      }
-      setAvatar(current => current === avatar ? savedAvatar : current);
-      setSaved(true); onSaved?.();
-    } catch (error) {
-      setSaveError(error instanceof Error ? error.message : 'No se pudo guardar. Tus cambios siguen en el formulario.');
-    } finally { setSaving(false); }
+      const savedAvatar = await onSaveProfile({name:fullName,title,institution,avatar,
+        experienceYears:experienceYears === '' ? null : experienceYears,
+        ratePerHour:ratePerHour === '' ? null : ratePerHour,coverageRadiusKm:coverageRadius,bio,subjects,specialties});
+      setAvatar(current=>current===avatar?savedAvatar:current);setSaved(true);onSaved?.();
+    } finally {setSaving(false);}
+  };
+  const handleSave = async (event: React.FormEvent) => {
+    event.preventDefault();
+    try {await persistProfile();} catch(error) {setSaveError(error instanceof Error?error.message:'No se pudo guardar.');}
   };
 
   return (
@@ -524,97 +462,9 @@ export const TeacherProfileEditView: React.FC<TeacherProfileEditViewProps> = ({
             </div>
           </div>
 
-          {/* 4. Soportes Académicos y Certificados */}
-          <div className="bg-white rounded-xl p-4 sm:p-6 border border-slate-200/90 shadow-xs space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-2">
-              <div>
-                <h2 className="text-sm font-bold text-slate-900">
-                  4. Soportes y Diplomas Complementarios
-                </h2>
-                <p className="text-[11px] text-slate-500">
-                  Adjunta certificados, diplomas o soportes académicos en formato PDF, JPG o PNG (máx. 5MB).
-                </p>
-              </div>
-              <input
-                ref={docInputRef}
-                type="file"
-                accept=".pdf,.png,.jpg,.jpeg,application/pdf,image/png,image/jpeg"
-                onChange={handleDocumentFileChange}
-                className="hidden"
-                id="tutor-doc-upload"
-              />
-              <label
-                htmlFor="tutor-doc-upload"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 hover:bg-teal-100 text-teal-800 text-xs font-semibold rounded-lg border border-teal-200 cursor-pointer transition-colors"
-              >
-                <Upload className="w-3.5 h-3.5" />
-                <span>Subir soporte</span>
-              </label>
-            </div>
+          {teacherId && <DocumentsPanel key={teacherId} tutorId={teacherId} editable />}
+          <OfferPanel origin={mapOrigin} onOriginLoaded={setMapOrigin} onPrepare={persistProfile} />
 
-            {/* Disclaimer legal obligatorio */}
-            <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 flex items-start gap-2">
-              <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
-              <div>
-                <p className="font-semibold">Leyenda informativa:</p>
-                <p className="text-[11px] text-amber-800 mt-0.5">
-                  Los documentos que cargues se mostrarán a los estudiantes con la indicación obligatoria: <span className="font-semibold italic">«Documento aportado por el tutor. Autenticidad no verificada»</span>. No suman puntos en el algoritmo de recomendación.
-                </p>
-              </div>
-            </div>
-
-            {docUploadError && (
-              <p role="alert" className="text-xs text-red-600 font-medium">{docUploadError}</p>
-            )}
-
-            {/* Document list */}
-            <div className="space-y-2">
-              {documents.length === 0 ? (
-                <p className="text-xs text-slate-400 py-3 text-center bg-slate-50 rounded-lg border border-dashed border-slate-200">
-                  No has adjuntado soportes todavía.
-                </p>
-              ) : (
-                documents.map((doc) => (
-                  <div
-                    key={doc.id}
-                    className="flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100/80 rounded-xl border border-slate-200 transition-colors"
-                  >
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="w-8 h-8 rounded-lg bg-teal-100 text-teal-800 flex items-center justify-center shrink-0">
-                        <FileText className="w-4 h-4" />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-xs font-bold text-slate-800 truncate">{doc.name}</p>
-                        <p className="text-[10px] text-slate-500 uppercase">{doc.fileType} · {doc.uploadedAt ? new Date(doc.uploadedAt).toLocaleDateString('es-CO') : 'Reciente'}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-1">
-                      {doc.dataUrl && (
-                        <a
-                          href={doc.dataUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-white rounded-lg transition-colors"
-                          title="Ver documento"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </a>
-                      )}
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveDocument(doc.id)}
-                        className="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
-                        title="Eliminar documento"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
         </div>
 
         {/* Right Column: Spatial / Geolocation Map */}
@@ -668,7 +518,7 @@ export const TeacherProfileEditView: React.FC<TeacherProfileEditViewProps> = ({
             <div className="p-3 bg-teal-50/60 rounded-xl border border-teal-200/60 text-xs text-teal-950 space-y-1">
               <span className="font-bold block">Referencia del área metropolitana</span>
               <p className="text-[11px] text-slate-600 leading-tight">
-                Guarda el radio que prefieres para tus clases. Tu ubicación permanece privada.
+                Selecciona una zona de atención y publica tu oferta. Solo se comparte el punto aproximado que confirmes, sin domicilio ni seguimiento GPS.
               </p>
             </div>
           </div>

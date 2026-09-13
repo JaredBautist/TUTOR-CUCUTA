@@ -88,7 +88,7 @@ export const StudentResultsView: React.FC<StudentResultsViewProps> = ({
           return (a.distanceKm ?? Infinity) - (b.distanceKm ?? Infinity);
         }
         if (sortBy === 'experience-desc') {
-          return b.experienceYears - a.experienceYears;
+          return (b.experienceYears ?? -1) - (a.experienceYears ?? -1);
         }
         return 0;
       });
@@ -124,7 +124,7 @@ export const StudentResultsView: React.FC<StudentResultsViewProps> = ({
         </div>
 
         <p className="text-xs text-slate-500">{searchArea
-          ? 'Modalidad y radio aplicados. Distancias en línea recta; los demás criterios de recomendación aún no se aplican.'
+          ? 'Materia, nivel, presupuesto, modalidad y horario seleccionado aplicados. Distancias aproximadas en línea recta; la puntuación no certifica calidad docente.'
           : 'Aplica una búsqueda para filtrar por modalidad y radio.'}</p>
 
         {/* Filter Badges Carousel */}
@@ -206,7 +206,7 @@ export const StudentResultsView: React.FC<StudentResultsViewProps> = ({
               className="w-full text-xs font-semibold text-slate-700 bg-transparent focus:outline-hidden cursor-pointer"
             >
               <option value="name">Nombre (A–Z)</option>
-              {tutors.some((tutor) => tutor.matchScore !== undefined) && <option value="match">Mayor coincidencia (%)</option>}
+              {recommendedBase.some((tutor) => tutor.matchScore !== undefined) && <option value="match">Mayor coincidencia (%)</option>}
               <option value="price-asc">Menor tarifa ($ COP)</option>
               {tutors.some((tutor) => tutor.distanceKm !== undefined) && <option value="distance-asc">Más cercanos (km)</option>}
               <option value="experience-desc">Mayor experiencia (años)</option>
@@ -343,7 +343,7 @@ export const StudentResultsView: React.FC<StudentResultsViewProps> = ({
                           Información declarada
                         </span>
                         <span className="text-[10px] sm:text-[11px] text-slate-500 font-medium">
-                          • {tutor.experienceYears} años exp.
+                          {tutor.experienceYears === null ? 'Experiencia sin registrar' : `• ${tutor.experienceYears} años exp.`}
                         </span>
                       </div>
                     </div>

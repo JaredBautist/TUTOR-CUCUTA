@@ -16,7 +16,10 @@
     "verify:location-feed": "node --import tsx scripts/verify-location-feed.ts",
     "test:accounts:browser": "node tests/browser-accounts.mjs",
     "test:accounts:db": "node tests/database-accounts.mjs",
-    "verify:accounts": "node --import tsx scripts/verify-account-setup.ts"
+    "verify:accounts": "node --import tsx scripts/verify-account-setup.ts",
+    "test:marketplace:db": "node tests/database-marketplace.mjs",
+    "test:marketplace:browser": "node tests/browser-marketplace.mjs",
+    "verify:marketplace": "node --import tsx scripts/verify-marketplace.ts"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",

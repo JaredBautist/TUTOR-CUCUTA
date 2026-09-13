@@ -7,8 +7,9 @@ import type { OwnAccount } from './features/accounts/domain/profile';
 import type { SessionController } from './features/accounts/application/sessionController';
 import { AccountAccessForm } from './components/common/AccountAccessForm';
 import { cleanTutors, cleanRequests } from './utils/demoRecords';
-import { storage } from './utils/storage';
-import { supabaseService, isSupabaseConfigured } from './utils/supabase';
+import { marketplace } from './features/marketplace/application/marketplace';
+import { useRequests } from './features/marketplace/application/useRequests';
+import { isSupabaseConfigured } from './utils/supabase';
 import { Header } from './components/common/Header';
 import { LandingLoginView } from './components/views/LandingLoginView';
 import { StudentSearchView } from './components/views/StudentSearchView';
@@ -42,7 +43,8 @@ function AuthenticatedApp({ account, controller, onLogout }: { account: OwnAccou
   const [currentScreen, setCurrentScreen] = useState<ScreenId>(role === 'student' ? 'student-search' : 'teacher-dashboard');
   const [filters, setFilters] = useState<SearchFilters>(() => structuredClone(initialSearchFilters));
   const [tutors, setTutors] = useState<Tutor[]>([]);
-  const [requests, setRequests] = useState<StudentRequest[]>(() => storage.getRequests());
+  const requestState = useRequests(marketplace);
+  const requests = requestState.requests;
   const [savedTutors, setSavedTutors] = useState<string[]>([]);
   const studentProfile = studentView(account);
   const [selectedTutorId, setSelectedTutorId] = useState<string>();
@@ -67,7 +69,7 @@ function AuthenticatedApp({ account, controller, onLogout }: { account: OwnAccou
     studentProfile.id ? request.studentId === studentProfile.id : true,
   );
   const teacherRequests = cleanRequests(requests).filter((request) =>
-    !request.targetTutorId || request.targetTutorId === account.id,
+    request.targetTutorId === account.id,
   );
   const selectedTutor = visibleTutors.find((tutor) => tutor.id === selectedTutorId);
   const bookingTutor = visibleTutors.find((tutor) => tutor.id === bookingTutorId);
@@ -81,7 +83,7 @@ function AuthenticatedApp({ account, controller, onLogout }: { account: OwnAccou
     // Refresh catalog metadata after an authoritative publication snapshot so a
     // newly registered tutor can appear without remounting the existing map.
     setCatalogError('');
-    supabaseService.getTutors().then((remoteTutors) => {
+    marketplace.catalog().then((remoteTutors) => {
       if (active) setTutors(remoteTutors);
     }).catch((error: unknown) => {
       if (!active) return;
@@ -92,6 +94,12 @@ function AuthenticatedApp({ account, controller, onLogout }: { account: OwnAccou
     });
     return () => { active = false; };
   }, [reloadCount, publishedSnapshot]);
+
+  useEffect(() => {
+    const refresh=()=>{if(document.visibilityState==='visible')setReloadCount(value=>value+1);};
+    const timer=window.setInterval(refresh,60000);window.addEventListener('focus',refresh);
+    return()=>{clearInterval(timer);window.removeEventListener('focus',refresh);};
+  },[]);
 
   const navigate = (screen: ScreenId) => {
     if (role === 'student' ? screen.startsWith('teacher-') : !screen.startsWith('teacher-')) return;
@@ -124,66 +132,21 @@ function AuthenticatedApp({ account, controller, onLogout }: { account: OwnAccou
     return saved.displayAvatarUrl;
   };
 
-  const handleCreateRequest = (newRequestData?: Partial<StudentRequest>) => {
-    if (!newRequestData || !bookingTutor) return;
-    const cleanInitials = (newRequestData.studentName || studentProfile.name || 'Estudiante')
-      .trim()
-      .split(' ')
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((n) => n[0].toUpperCase())
-      .join('');
-
-    const newRequest: StudentRequest = {
-      id: 'req-' + Date.now(),
-      studentId: studentProfile.id || account.id,
-      studentName: newRequestData.studentName || studentProfile.name || 'Estudiante',
-      age: newRequestData.age ?? studentProfile.age,
-      grade: newRequestData.grade || studentProfile.grade || '',
-      guardianLinked: newRequestData.guardianLinked ?? studentProfile.guardianAuthorized ?? false,
-      guardianName: newRequestData.guardianName || studentProfile.guardianName || undefined,
-      guardianPhone: newRequestData.guardianPhone || studentProfile.guardianPhone || undefined,
-      avatarInitials: cleanInitials || 'ES',
-      studentAvatarUrl: newRequestData.studentAvatarUrl || studentProfile.avatarUrl,
-      sector: newRequestData.sector || studentProfile.sector || '',
-      subject: newRequestData.subject || filters.subject || 'Tutoría',
-      focalTopic: newRequestData.focalTopic || '',
-      goal: newRequestData.goal || studentProfile.academicGoal || '',
-      studentNote: newRequestData.studentNote || '',
-      learningPreferences: studentProfile.learningStyles || [],
-      learningStyles: studentProfile.learningStyles || [],
-      scheduledTime: newRequestData.scheduledTime || '',
-      durationHours: newRequestData.durationHours || 1,
-      ratePerHour: newRequestData.ratePerHour || bookingTutor.ratePerHour,
-      totalEstimated: newRequestData.totalEstimated || (bookingTutor.ratePerHour * (newRequestData.durationHours || 1)),
-      modality: newRequestData.modality || 'presencial',
-      status: 'pending',
-      targetTutorId: bookingTutor.id,
-      targetTutorName: bookingTutor.name,
-      createdAt: new Date().toISOString(),
-      matchCriteriaChecklist: [],
-    };
-
-    const updated = [...requests, newRequest];
-    setRequests(updated);
-    storage.setRequests(updated);
+  const handleCreateRequest = async (input?: Partial<StudentRequest>) => {
+    if (!input?.id || !input.startsAt || !bookingTutor) throw new Error('Completa la solicitud.');
+    await requestState.mutate(()=>marketplace.request({id:input.id!,tutorId:bookingTutor.id,
+      subject:input.subject || '',modality:input.modality==='virtual'?'virtual':'presencial',
+      startsAt:input.startsAt!,durationHours:input.durationHours || 1,note:input.studentNote || ''}));
     setBookingTutorId(undefined);
-    setActionMessage('Solicitud enviada al tutor. Los datos de contacto se habilitarán cuando acepte tu solicitud.');
+    setActionMessage('Solicitud guardada en Supabase y disponible para el tutor.');
   };
-
-  const handleCancelRequest = (requestId: string) => {
-    const updated = requests.filter((r) => r.id !== requestId);
-    setRequests(updated);
-    storage.setRequests(updated);
-    setActionMessage('Solicitud cancelada.');
+  const transitionRequest = async (id:string,status:'accepted'|'rejected'|'cancelled') => {
+    setActionMessage('');
+    try {await requestState.mutate(()=>marketplace.transition(id,status));setActionMessage('Estado de la solicitud guardado en Supabase.');}
+    catch { /* useRequests exposes the acknowledged operation error. */ }
   };
-
-  const handleUpdateRequestStatus = (requestId: string, newStatus: 'accepted' | 'rejected') => {
-    const updated = requests.map((r) => r.id === requestId ? { ...r, status: newStatus } : r);
-    setRequests(updated);
-    storage.setRequests(updated);
-    setActionMessage(newStatus === 'accepted' ? 'Solicitud aceptada. Canales de contacto directo habilitados.' : 'Solicitud no aceptada.');
-  };
+  const handleCancelRequest = (id:string) => {void transitionRequest(id,'cancelled');};
+  const handleUpdateRequestStatus = (id:string,status:'accepted'|'rejected') => {void transitionRequest(id,status);};
 
   const emptySelection = (screen: ScreenId, label: string) => (
     <div className="max-w-3xl mx-auto p-8 text-center">
@@ -205,6 +168,7 @@ function AuthenticatedApp({ account, controller, onLogout }: { account: OwnAccou
         />
       )}
       <main className="flex-1 w-full">
+        {requestState.error && <div role="alert" className="mx-auto max-w-5xl p-4 text-red-800 bg-red-50">{requestState.error} <button type="button" className="underline" onClick={()=>void requestState.refresh()}>Actualizar solicitudes</button></div>}
         {account.notice && <p role="status" className="mx-auto max-w-5xl p-4 text-amber-900 bg-amber-50">{account.notice}</p>}
         {actionMessage && <p role="status" className="mx-auto max-w-5xl p-4 text-amber-900 bg-amber-50">{actionMessage}</p>}
         {currentScreen === 'student-search' && (
@@ -231,7 +195,7 @@ function AuthenticatedApp({ account, controller, onLogout }: { account: OwnAccou
             isSaved={savedTutors.includes(selectedTutor.id)} onToggleSave={() => handleToggleSaveTutor(selectedTutor.id)} />
         ) : emptySelection('student-results', 'tutor'))}
         {currentScreen === 'student-requests' && (
-          <StudentRequestsView requests={localStudentRequests} actionsEnabled={true}
+          <StudentRequestsView requests={localStudentRequests} actionsEnabled={!requestState.busy && !requestState.loading && !requestState.error}
             onBackToSearch={() => navigate('student-search')} onCancelRequest={handleCancelRequest}
             onEditProfile={() => navigate('student-profile-edit')} />
         )}
@@ -241,13 +205,13 @@ function AuthenticatedApp({ account, controller, onLogout }: { account: OwnAccou
             onNavigateToRequests={() => navigate('student-requests')} />
         )}
         {currentScreen === 'teacher-dashboard' && (
-          <TeacherDashboardView requests={teacherRequests} actionsEnabled={true}
+          <TeacherDashboardView requests={teacherRequests} actionsEnabled={!requestState.busy && !requestState.loading && !requestState.error}
             onSelectRequest={(request: StudentRequest) => { setSelectedRequestId(request.id); navigate('teacher-request-detail'); }}
             onAcceptRequest={(id) => handleUpdateRequestStatus(id, 'accepted')} onRejectRequest={(id) => handleUpdateRequestStatus(id, 'rejected')}
             onEditProfile={() => navigate('teacher-profile-edit')} teacherName={String(account.profile.name || '')} />
         )}
         {currentScreen === 'teacher-request-detail' && (selectedRequest ? (
-          <TeacherRequestDetailView request={selectedRequest} actionsEnabled={true}
+          <TeacherRequestDetailView request={selectedRequest} actionsEnabled={!requestState.busy && !requestState.loading && !requestState.error}
             onBack={() => navigate('teacher-dashboard')} onAccept={(id) => handleUpdateRequestStatus(id, 'accepted')} onReject={(id) => handleUpdateRequestStatus(id, 'rejected')} />
         ) : emptySelection('teacher-dashboard', 'solicitud'))}
         {currentScreen === 'teacher-profile-edit' && (

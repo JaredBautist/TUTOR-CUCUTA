@@ -190,7 +190,7 @@ test('GM-10: adapter returns explicit public DTOs and rejects a database read er
   let error: unknown = null;
   const client = {
     from(collection: string) {
-      assert.equal(collection, 'tutor_map_locations', 'Only the deliberate public projection is readable');
+      assert.equal(collection, 'tutor_offer_locations', 'Only the deliberate public projection is readable');
       const query = {
         select(columns: string) {
           assert.doesNotMatch(columns, /geom|phone|address/, 'Private legacy fields are outside this adapter');
@@ -221,7 +221,7 @@ test('GM-10: adapter invalidates on all public row events and reports actual cha
   const channel = {
     on(event: string, filter: { event: string; table: string }, callback: () => void) {
       assert.equal(event, 'postgres_changes');
-      assert.deepEqual(filter, { event: '*', schema: 'public', table: 'tutor_map_locations' });
+      assert.deepEqual(filter, { event: '*', schema: 'public', table: 'tutor_offer_locations' });
       invalidation = callback;
       return channel;
     },

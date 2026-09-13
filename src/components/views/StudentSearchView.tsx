@@ -33,6 +33,7 @@ export const StudentSearchView: React.FC<StudentSearchViewProps> = ({
   const [educationLevel, setEducationLevel] = useState(filters.educationLevel || '');
   const [modality, setModality] = useState(filters.modality || 'presencial');
   const [availableDays, setAvailableDays] = useState<string[]>(filters.availableDays || []);
+  const [timeSlot,setTimeSlot]=useState(filters.timeSlot || '');
   const [budget, setBudget] = useState(filters.maxBudget || 40000);
   const [radius, setRadius] = useState(filters.radiusKm || 5.0);
   const [searchOrigin, setSearchOrigin] = useState<SearchOrigin>(initialArea?.origin || CUCUTA_REFERENCE_ORIGIN);
@@ -65,7 +66,7 @@ export const StudentSearchView: React.FC<StudentSearchViewProps> = ({
     setLearningStyles([]);
     setEducationLevel('');
     setModality('presencial');
-    setAvailableDays([]);
+    setAvailableDays([]);setTimeSlot('');
     setBudget(40000);
     setRadius(5.0);
     setSearchOrigin(CUCUTA_REFERENCE_ORIGIN);
@@ -80,6 +81,7 @@ export const StudentSearchView: React.FC<StudentSearchViewProps> = ({
       educationLevel,
       modality,
       availableDays,
+      timeSlot,
       maxBudget: budget,
       radiusKm: radius,
     });
@@ -429,9 +431,7 @@ export const StudentSearchView: React.FC<StudentSearchViewProps> = ({
               <div className="p-3 bg-slate-50 rounded-lg border border-slate-200/70 flex items-center justify-between text-xs">
                 <div>
                   <span className="text-slate-500 block">Franja seleccionada:</span>
-                  <span className="font-semibold text-slate-900">
-                    {filters.timeSlot || 'Sin horario registrado'}
-                  </span>
+                  <select aria-label="Franja horaria" value={timeSlot} onChange={event=>setTimeSlot(event.target.value)} className="bg-white border border-slate-300 rounded-lg p-2 mt-1 text-xs"><option value="">Cualquier franja</option><option value="Mañana">Mañana · 06:00–12:00</option><option value="Tarde">Tarde · 12:00–18:00</option><option value="Noche">Noche · 18:00–23:00</option></select>
                 </div>
 
               </div>

@@ -4,7 +4,12 @@ A tutoring platform for students and tutors in the Cúcuta metropolitan area.
 The academic scope is a geospatial, multicriteria, explainable recommendation
 system. Prototype records have been removed. MapLibre GL JS + OpenFreeMap, animated search
 radii, local device positioning and a published teaching-location feed are now
-implemented. Google/email authentication, session restoration and private profile persistence are implemented. The private-account migration is applied and public permission probes passed; Google activation and real-account validation remain pending. The full recommendation workflow remains pending.
+implemented. Google/email authentication and private profiles are active. Tutor offer
+publication, private documents, participant requests and deterministic recommendations
+are implemented. The user applied the marketplace migration; all five new tables
+passed remote anonymous-denial checks. Real-account end-to-end validation remains.
+See [current handoff](docs/context/session-handoff.md) and
+[marketplace contract/setup](docs/cloud-marketplace.md).
 
 ## Stack
 
@@ -58,11 +63,11 @@ npm run test:maps:db
 npm run test:accounts:browser
 npm run test:accounts:db
 npm run verify:accounts # read-only account/provider activation check
-npm run verify:location-feed # read-only check of the configured hosted feed
+npm run verify:marketplace # read-only new-table availability and anonymous-denial checks
 ```
 
 The browser check requires an existing `chromium` executable and an available
-ports 4173/4174/4175. The map test renders the real MapLibre SDK and public OpenFreeMap
+ports 4173/4174/4175/4176. The map test renders the real MapLibre SDK and public OpenFreeMap
 cartography; device/catalog/feed/Auth responses are controlled. It needs network
 access and WebGL2 support. The database test uses an existing `postgres:15-alpine`
 Docker image in a disposable isolated container and verifies the new migration's
@@ -72,10 +77,32 @@ actual permissions and constraints. No test modifies hosted records.
 
 `npm run build` creates `dist/`; `npm run preview` serves the static build locally.
 Configure the Vite environment variables before building a hosted preview.
-Production rollout still requires Google provider activation, real-account validation, request participant authorization and recommendation validation.
+Google is enabled and the marketplace migration is applied. Real hosted account/Storage/request delivery and recommendation-quality evaluation remain required before a production readiness claim.
 
-Accounts have one immutable role. Both profile forms save private database records after authentication. Legacy device drafts are preserved but never claimed by a new account. Search/favorites remain within the active session. Request submission and teacher publication remain unavailable.
+Accounts have one immutable role. Both profile forms save private database records after authentication. Legacy device drafts are preserved but never claimed by a new account. Search/favorites remain within the active session. Request submission and explicit teacher publication now use the protected marketplace RPCs.
 
 Both SQL initialization paths seed reference sectors only. The cleanup migration
 removes the artificial default match score without deleting existing rows. These
 files have not been executed against a hosted database as part of the UI cleanup.
+
+## Connected marketplace setup
+
+On an existing project with the account migration already applied, execute only
+`supabase/migrations/20260912000000_cloud_marketplace.sql` through SQL Editor.
+It preserves legacy records and adds protected offers, request RPCs and documents.
+Do not run the combined seed initializer against an existing database.
+
+```sh
+npm run verify:marketplace
+npm run test:marketplace:db
+npm run test:marketplace:browser
+```
+
+The DB test requires an already installed Docker `postgres:15-alpine` image and
+uses an isolated disposable container. Browser tests use controlled accounts/data.
+Actual cross-device delivery and private Storage need a hosted account check.
+
+Tutors save their profile, choose offer levels/modalities/weekly hours, enter a
+contact with country code, select a teaching zone for in-person classes and press
+“Guardar perfil y publicar oferta”. Students see published offers only. Document
+access requires a session; withdrawing an offer revokes new document reads.

@@ -81,7 +81,8 @@ try {
       if (url.includes('/rest/v1/')) {
         if (url.includes('student_requests')) window.testRequestReads++;
         if (localStorage.getItem('testReadError')) return new Response(JSON.stringify({ message: 'Controlled read error' }), { status: 400 });
-        return new Response(localStorage.getItem('testRemoteRows'), { headers: { 'Content-Type': 'application/json' } });
+        const rows=url.includes('/tutor_offers') ? JSON.parse(localStorage.getItem('testRemoteRows') || '[]').map(row=>({listing:{id:row.id,name:row.profiles.full_name,avatar:'',title:row.title,institution:row.institution,experienceYears:row.experience_years,ratePerHour:row.rate_per_hour,sector:row.sector,nextAvailable:'',modalities:['virtual'],subjects:row.subjects,levels:[],specialties:[],bio:'',methodologySteps:[],matchReasons:[],verified:false,availability:[],coverageRadiusKm:5}})) : [];
+        return new Response(JSON.stringify(rows), { headers: { 'Content-Type': 'application/json' } });
       }
       return nativeFetch(input, init);
     };
@@ -120,12 +121,13 @@ try {
   await until(async () => (await body()).includes('Buscar Tutores'), 'Student login failed');
 
   // A real same-name tutor must be retained without invented match/geo/verification values.
-  const row = { id: 'real-carlos', profiles: { full_name: 'Carlos Ramírez', avatar_url: null }, title: 'Docente', institution: '', experience_years: 2, rate_per_hour: 22000, verified: false, sector: 'Sector registrado', next_available: null, modalities: ['presencial'], subjects: ['Álgebra'], levels: [], specialties: [], bio: '', methodology_steps: [] };
+  const row = { id: 'real-carlos', profiles: { full_name: 'Carlos Ramírez', avatar_url: null }, title: 'Docente', institution: '', experience_years: 2, rate_per_hour: 22000, verified: false, sector: 'Sector registrado', next_available: null, modalities: ['virtual'], subjects: ['Álgebra'], levels: [], specialties: [], bio: '', methodology_steps: [] };
   await evaluate(`localStorage.setItem('testRemoteRows', ${JSON.stringify(JSON.stringify([row]))})`);
   await cdp('Page.reload');
   await pause(400);
   await until(async () => (await body()).includes('Buscar Tutores'), 'Reload failed');
-  await click('Resultados');
+  await evaluate(`(() => { const button=[...document.querySelectorAll('button')].find(b=>b.innerText.includes('Virtual'));button.click(); })()`);
+  await click('Ver tutores');
   await until(async () => (await body()).includes('Carlos Ramírez'), 'Real tutor missing');
   assert.match(await body(), /1 tutor disponible/);
   assert.doesNotMatch(await body(), /90%|92%|Verificado|2\.4 km|Miércoles|Horario flexible/);

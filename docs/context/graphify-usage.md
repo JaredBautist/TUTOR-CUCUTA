@@ -109,4 +109,4 @@ source or the approved cleanup specification.
 
 The generated graph and work memory are local ignored files. Version-control or
 back up `docs/context/` and the project instructions for portable session context.
-No Git repository was initialized by this installation.
+The repository now uses Git; that was added separately after the initial Graphify installation.

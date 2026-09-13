@@ -20,8 +20,8 @@ export const TeacherRequestDetailView: React.FC<TeacherRequestDetailViewProps> =
   actionsEnabled = false,
 }) => {
   const actionDone = request.status === 'pending' ? null : request.status;
-  const guardianContact = request.status === 'accepted' && request.guardianLinked
-    ? getContactNumber(request.guardianPhone)
+  const guardianContact = request.status === 'accepted'
+    ? getContactNumber(request.studentPhone || (request.guardianLinked ? request.guardianPhone : undefined))
     : undefined;
 
   const handleAccept = () => {
@@ -95,6 +95,7 @@ export const TeacherRequestDetailView: React.FC<TeacherRequestDetailViewProps> =
         </div>
 
         {/* Action Status Banner if decided */}
+        {actionDone === 'cancelled' && <p role="status" className="text-sm text-slate-600">El estudiante canceló esta solicitud.</p>}
         {actionDone === 'accepted' && (
           <div className="p-3 sm:p-4 bg-emerald-50 border border-emerald-300 text-emerald-900 rounded-xl text-xs space-y-1">
             <div className="flex items-center gap-2 font-bold">
@@ -102,7 +103,8 @@ export const TeacherRequestDetailView: React.FC<TeacherRequestDetailViewProps> =
               <span>Solicitud aceptada.</span>
             </div>
             <p className="text-slate-600">
-              {guardianContact ? `Contacto autorizado: ${request.guardianPhone}.` : 'No hay un contacto autorizado registrado.'}
+              {guardianContact ? `Contacto autorizado: ${request.studentPhone || request.guardianPhone}.` : 'No hay un contacto autorizado registrado.'}
+              {guardianContact && <a className="block underline mt-2" href={`tel:+${guardianContact}`}>Llamar al contacto autorizado</a>}
               {request.scheduledTime && ` Horario solicitado: ${request.scheduledTime}.`}
             </p>
           </div>
@@ -221,7 +223,7 @@ export const TeacherRequestDetailView: React.FC<TeacherRequestDetailViewProps> =
               <div className="flex items-center gap-2 p-2.5 rounded-lg bg-slate-50 border border-slate-100">
                 <Phone className="w-4 h-4 text-slate-500 shrink-0" />
                 <span className="text-slate-700">
-                  <strong>Contacto autorizado:</strong> {guardianContact ? <a className="text-teal-700 underline" href={`tel:+${guardianContact}`}>{request.guardianPhone}</a> : 'No disponible'}
+                  <strong>Contacto autorizado:</strong> {guardianContact ? <a className="text-teal-700 underline" href={`tel:+${guardianContact}`}>{request.studentPhone || request.guardianPhone}</a> : 'No disponible'}
                 </span>
               </div>
             </div>

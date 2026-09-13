@@ -1,8 +1,8 @@
 import React from 'react';
-import { ArrowLeft, Bookmark, FileText, MapPin, AlertTriangle, Eye } from 'lucide-react';
+import { ArrowLeft, Bookmark, FileText, MapPin } from 'lucide-react';
 import { Tutor } from '../../types';
 import { UnifiedCucutaMap } from '../common/UnifiedCucutaMap';
-import { storage } from '../../utils/storage';
+import { DocumentsPanel } from '../marketplace/DocumentsPanel';
 
 interface TutorProfileViewProps {
   tutor: Tutor;
@@ -19,7 +19,6 @@ export const TutorProfileView: React.FC<TutorProfileViewProps> = ({
   onBack,
   onRequestTutor,
 }) => {
-  const documents = (tutor.documents && tutor.documents.length > 0) ? tutor.documents : storage.getTutorDocuments(tutor.id);
 
   return (
     <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-5 pb-32 sm:pb-12">
@@ -101,7 +100,7 @@ export const TutorProfileView: React.FC<TutorProfileViewProps> = ({
               </span>
 
               <span className="bg-slate-100 text-slate-700 px-2.5 py-1 rounded-md font-medium">
-                {tutor.experienceYears} años de experiencia
+                {tutor.experienceYears === null ? 'Experiencia sin registrar' : `${tutor.experienceYears} años de experiencia`}
               </span>
 
               <span className="bg-slate-100 text-slate-700 px-2.5 py-1 rounded-md font-medium">
@@ -211,74 +210,8 @@ export const TutorProfileView: React.FC<TutorProfileViewProps> = ({
             </div>
           </div>
 
-          {/* 4. Documentos y soportes aportados */}
-          <div className="bg-white rounded-xl p-4 sm:p-6 border border-slate-200/90 shadow-xs space-y-4">
-            <h2 className="text-sm sm:text-base font-bold text-slate-900 border-b border-slate-100 pb-2">
-              Formación y soportes aportados
-            </h2>
+          <DocumentsPanel key={tutor.id} tutorId={tutor.id} />
 
-            {/* Disclaimer legal obligatorio */}
-            <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 flex items-start gap-2">
-              <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
-              <div>
-                <p className="font-semibold">Aviso sobre soportes:</p>
-                <p className="text-[11px] text-amber-800 mt-0.5">
-                  «Documento aportado por el tutor. Autenticidad no verificada». La plataforma no valida ni certifica títulos académicos de forma manual o automática.
-                </p>
-              </div>
-            </div>
-
-            {documents.length === 0 ? (
-              <p className="text-xs text-slate-500 py-3 text-center bg-slate-50 rounded-lg border border-dashed border-slate-200">
-                El tutor aún no ha aportado documentos o certificados adjuntos.
-              </p>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {documents.map((doc) => (
-                  <div
-                    key={doc.id}
-                    className="p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100/70 transition-colors flex flex-col justify-between gap-2"
-                  >
-                    <div className="flex items-start gap-2.5">
-                      <div className="w-8 h-8 rounded-lg bg-teal-100 text-teal-800 flex items-center justify-center shrink-0">
-                        <FileText className="w-4 h-4" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-xs font-bold text-slate-800 truncate" title={doc.name}>
-                          {doc.name}
-                        </p>
-                        <p className="text-[10px] text-slate-500 uppercase tracking-wide">
-                          {doc.fileType} {doc.uploadedAt && `· ${new Date(doc.uploadedAt).toLocaleDateString('es-CO')}`}
-                        </p>
-                      </div>
-                    </div>
-
-                    {doc.dataUrl && (doc.fileType === 'jpg' || doc.fileType === 'png') && (
-                      <div className="w-full h-24 rounded-lg overflow-hidden border border-slate-200 bg-slate-200">
-                        <img
-                          src={doc.dataUrl}
-                          alt={doc.name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    )}
-
-                    {doc.dataUrl && (
-                      <a
-                        href={doc.dataUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center gap-1.5 w-full py-1.5 px-3 text-xs font-semibold text-teal-800 bg-teal-50 hover:bg-teal-100 rounded-lg border border-teal-200 transition-colors"
-                      >
-                        <Eye className="w-3.5 h-3.5" />
-                        <span>Ver soporte</span>
-                      </a>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
         </div>
 
         {/* Right Column: Spatial Geolocation & Action Cards */}
