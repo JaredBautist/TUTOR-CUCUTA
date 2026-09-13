@@ -23,17 +23,17 @@ export function DocumentsPanel({tutorId,editable=false}:{tutorId:string;editable
   finally{pending.current=false;if(active.current)setBusy(false);}
  }
  return <section className="bg-white rounded-xl p-4 sm:p-6 border border-slate-200/90 shadow-xs space-y-4">
-  <h2 className="text-sm font-bold text-slate-900">Formación y documentos aportados</h2>
+  <h2 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2">{editable ? '4. Formación y documentos aportados' : 'Formación y documentos aportados'}</h2>
   <p className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900">Documento aportado por el tutor. Autenticidad no verificada. Los documentos no suman puntos en las recomendaciones.</p>
   {editable && <div className="space-y-3">
    <p className="text-xs text-slate-600">PDF, JPG o PNG; máximo 5 MB y 10 documentos. Al publicar tu oferta los compartes con estudiantes que hayan iniciado sesión. Retirarlos bloquea nuevos accesos; los enlaces abiertos caducan en un minuto.</p>
-   <label className="block text-xs font-semibold">Archivo<input ref={fileInput} type="file" accept="application/pdf,image/jpeg,image/png" disabled={busy} onChange={event=>{const selected=event.target.files?.[0];setFile(selected);setTitle(selected?.name || '');}} className="block w-full mt-1 text-sm" /></label>
-   <label className="block text-xs font-semibold">Título<input value={title} maxLength={200} onChange={event=>setTitle(event.target.value)} className="mt-1 block w-full rounded-lg border border-slate-300 p-2" /></label>
-   <label className="block text-xs font-semibold">Descripción opcional<textarea value={description} maxLength={1000} onChange={event=>setDescription(event.target.value)} className="mt-1 block w-full rounded-lg border border-slate-300 p-2" /></label>
+   <label className="block text-xs font-semibold text-slate-700">Archivo<input ref={fileInput} type="file" accept="application/pdf,image/jpeg,image/png" disabled={busy} onChange={event=>{const selected=event.target.files?.[0];setFile(selected);setTitle(selected?.name || '');}} className="block w-full mt-1 rounded-lg border border-slate-300 bg-white text-xs text-slate-500 file:mr-3 file:border-0 file:border-r file:border-slate-200 file:bg-slate-100 file:px-3 file:py-3 file:text-xs file:font-semibold file:text-slate-700 file:cursor-pointer focus-visible:outline-2 focus-visible:outline-teal-500 disabled:opacity-50" /></label>
+   <label className="block text-xs font-semibold text-slate-700">Título<input value={title} maxLength={200} onChange={event=>setTitle(event.target.value)} className="mt-1 block w-full min-w-0 text-xs font-medium text-slate-900 bg-white border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:outline-hidden min-h-[42px]" /></label>
+   <label className="block text-xs font-semibold text-slate-700">Descripción opcional<textarea value={description} maxLength={1000} onChange={event=>setDescription(event.target.value)} className="mt-1 block w-full min-w-0 text-xs font-medium text-slate-900 bg-white border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:outline-hidden min-h-[42px]" /></label>
    <button type="button" disabled={busy || !file || !title.trim() || documents.length>=10} onClick={()=>void run(async()=>{
     if(!file)return;await marketplace.uploadDocument(tutorId,file,title,description);
     if(active.current){setFile(undefined);setTitle('');setDescription('');if(fileInput.current)fileInput.current.value='';setNotice('Documento guardado en Supabase.');setAttempt(value=>value+1);}
-   })} className="inline-flex items-center gap-2 rounded-lg bg-teal-700 text-white px-3 py-2 text-xs font-semibold disabled:opacity-50"><Upload size={16}/>{busy?'Procesando…':'Guardar documento'}</button>
+   })} className="inline-flex items-center gap-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white px-4 py-2.5 text-xs font-bold shadow-xs min-h-[44px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"><Upload size={16}/>{busy?'Procesando…':'Guardar documento'}</button>
   </div>}
   {error && <div role="alert" className="text-xs text-red-700">{error} <button type="button" onClick={()=>setAttempt(value=>value+1)} className="underline">Reintentar lectura</button></div>}
   {notice && <p role="status" className="text-xs text-teal-800">{notice}</p>}

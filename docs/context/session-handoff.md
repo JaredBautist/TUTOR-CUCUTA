@@ -95,3 +95,17 @@ Use Graphify as a local derived index, not an automatic transcript or external
 network service. Query it first, then verify source. Preserve `graphify-out/memory/`.
 Current Markdown and the user-approved contract outrank older Graphify work notes.
 No credentials, user contact data or raw environment contents belong in memory.
+
+## Visual consistency correction — offer and document panels
+
+The user identified that the new marketplace controls did not match the existing
+teacher profile. Updated OfferPanel and DocumentsPanel presentation using the
+established profile classes: numbered section headings/dividers, slate borders,
+white fields, the same text sizes, teal selected subject-style choices, dark save
+buttons, matching secondary actions and a compact schedule layout. Checkbox inputs
+remain semantic and keyboard-focusable; mobile time fields use a bounded grid.
+The existing Supabase operations, validation, map and profile layout are preserved.
+TypeScript and production build passed (existing chunk warning remains). The
+marketplace browser flow passed with the controlled backend, including publication,
+documents, request/guardian handling, cancellation and mobile overflow. Desktop
+empty/filled offer and mobile screenshots were inspected. No hosted writes occurred.
