@@ -215,8 +215,8 @@ try {
           contentType = 'application/json';
         } else {
           assert.equal(request.method, 'GET', 'Browser map checks must perform no remote writes');
-          assert.ok(['/rest/v1/tutor_offers', '/rest/v1/tutor_offer_locations'].includes(url.pathname), `Unexpected catalog endpoint ${url.pathname}`);
-          content = JSON.stringify(url.pathname.endsWith('/tutor_offer_locations') ? locations : tutors.map(row=>({listing:{id:row.id,name:row.profiles.full_name,avatar:'',title:row.title,institution:row.institution,experienceYears:row.experience_years,ratePerHour:row.rate_per_hour,sector:row.sector,nextAvailable:'',modalities:row.modalities,subjects:row.subjects,levels:row.levels,specialties:[],bio:'',methodologySteps:[],matchReasons:[],verified:false,availability:[],coverageRadiusKm:15}})));
+          assert.ok(['/rest/v1/tutor_offers', '/rest/v1/tutor_offer_locations', '/rest/v1/student_favorites'].includes(url.pathname), `Unexpected catalog endpoint ${url.pathname}`);
+          content = JSON.stringify(url.pathname.endsWith('/student_favorites') ? [] : url.pathname.endsWith('/tutor_offer_locations') ? locations : tutors.map(row=>({listing:{id:row.id,name:row.profiles.full_name,avatar:'',title:row.title,institution:row.institution,experienceYears:row.experience_years,ratePerHour:row.rate_per_hour,sector:row.sector,nextAvailable:'',modalities:row.modalities,subjects:row.subjects,levels:row.levels,specialties:[],bio:'',methodologySteps:[],matchReasons:[],verified:false,availability:[],coverageRadiusKm:15}})));
           contentType = 'application/json';
         }
         await cdp('Fetch.fulfillRequest', {
@@ -245,10 +245,12 @@ try {
     })()`);
     assert.ok(clicked, `Visible ${byAria ? 'named ' : ''}button missing: ${label}`);
     await pause(80);
+    await until(async () => !(await body()).includes('Cargando vista…'), 'Screen module did not load');
   };
   const clickContaining = async (label) => {
     assert.ok(await evaluate(`(() => { const button = [...document.querySelectorAll('button')].find(element => element.getBoundingClientRect().width && element.innerText.includes(${JSON.stringify(label)})); if (!button) return false; button.click(); return true; })()`), `Visible button containing '${label}' missing`);
     await pause(80);
+    await until(async () => !(await body()).includes('Cargando vista…'), 'Screen module did not load');
   };
   const rangeSelector = 'input[type="range"][step="0.5"]';
   const setRadius = async (radius) => evaluate(`(() => {

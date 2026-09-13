@@ -31,6 +31,15 @@ export function installAccountFixture({ signedIn = true } = {}) {
       if(url.pathname.endsWith('/recover') || url.pathname.endsWith('/logout')) return response({});
       if(url.pathname.endsWith('/user')) return response(JSON.parse(localStorage.getItem(key) || '{}').user || user('student'));
     }
+    if(url.pathname === '/rest/v1/student_favorites' || url.pathname === '/rest/v1/rpc/set_student_favorite_v1') {
+      const account=JSON.parse(localStorage.getItem(key) || '{}').user;
+      const favoritesKey='test-favorites-'+account?.id;
+      let favorites=JSON.parse(localStorage.getItem(favoritesKey) || '[]');
+      if(method==='GET')return response(favorites.map(tutor_id=>({tutor_id})));
+      favorites=favorites.filter(id=>id!==request.p_tutor_id);
+      if(request.p_saved)favorites.push(request.p_tutor_id);
+      localStorage.setItem(favoritesKey,JSON.stringify(favorites));return response(request.p_saved);
+    }
     if(url.pathname === '/rest/v1/rpc/list_tutoring_requests_v1') return response([]);
     if(url.pathname === '/rest/v1/rpc/own_tutor_offer_v1') return response(null);
     if(url.pathname === '/rest/v1/tutor_documents') return response([]);

@@ -44,7 +44,7 @@ Contract and design: [cloud marketplace](../cloud-marketplace.md).
 
 ## Validation completed
 
-- `npm test`: 67 tests passed (including new eligibility/guardian/file regressions).
+- `npm test`: 76 tests passed (including new eligibility/guardian/file regressions).
 - `npm run lint` and `npm run build`: passed. Existing large-chunk warning remains.
 - `npm run test:marketplace:db`: passed against disposable PostgreSQL 15, migration
   applied twice. Verified roles/RLS, publication, private contact, rounded zones,
@@ -96,6 +96,30 @@ network service. Query it first, then verify source. Preserve `graphify-out/memo
 Current Markdown and the user-approved contract outrank older Graphify work notes.
 No credentials, user contact data or raw environment contents belong in memory.
 
+## Historical continuity check before favorites — 2026-09-12
+
+The user reaffirmed that every meaningful project outcome and pending decision must
+be saved in Markdown and Graphify. Consult the local graph at session start and
+verify the referenced source before edits. Graphify does not disable chat compaction
+or automatically record conversations; its CLI and installed project skill provide
+explicit retrieval. Do not claim a persistent external connection or guaranteed token savings.
+
+Verified Graphify 0.9.57 is on PATH, the project skill link resolves, and graph queries
+return the current marketplace handoff. The initial graph had 670 nodes, 1,425 edges
+and no dangling endpoints. Incremental detection found no changed source code;
+two recent work-memory records still needed semantic indexing. Preserve older notes
+as history; current source and this handoff supersede stale Google Maps/auth claims.
+
+At that earlier memory-only turn, the recommended order was:
+1. Validate Google/email login, publication, documents and request transitions with
+   real hosted student/tutor accounts; controlled browser checks are already complete.
+2. Persist student favorites in Supabase. At that point `src/App.tsx` used component
+   state (`savedTutors`); favorites were lost on reload.
+3. Evaluate ranking weights using representative academic cases.
+4. Check Vercel configuration, authentication redirects and initial bundle loading.
+
+That earlier turn only recorded continuity. The implementation below supersedes its local-only favorites statement.
+
 ## Visual consistency correction — offer and document panels
 
 The user identified that the new marketplace controls did not match the existing
@@ -109,3 +133,46 @@ TypeScript and production build passed (existing chunk warning remains). The
 marketplace browser flow passed with the controlled backend, including publication,
 documents, request/guardian handling, cancellation and mobile overflow. Desktop
 empty/filled offer and mobile screenshots were inspected. No hosted writes occurred.
+
+## Persistent favorites, ranking evaluation and Vercel preparation — 2026-09-12
+
+Authorized follow-up contract: `docs/persistent-favorites.md`. The user accepted
+performing the real two-account browser flow; results are not yet reported.
+
+- Implemented `src/features/favorites/` with a domain Repository port, Supabase
+  adapter and application hook. Existing result/profile bookmarks now load private
+  account favorites, acknowledge desired-state writes, expose failure/retry and
+  disable toggles during loading/writes/errors. Refresh on focus/every 30 visible
+  seconds; stale reads cannot overwrite writes. No browser storage fallback.
+- `20260912010000_student_favorites.sql` adds owner/student SELECT RLS and a
+  security-definer desired-state RPC. Account identity comes from auth.uid(),
+  duplicate saves/removals are idempotent, account locks enforce a 500-item limit,
+  and only published offers can be newly saved. Withdrawal retains private IDs
+  but existing catalog visibility hides withdrawn offers. Legacy rows untouched.
+- User applied this migration in SQL Editor and reported “Success. No rows returned”.
+  The follow-up remote probe confirmed table presence and anonymous denial 401/42501.
+  This supersedes the pre-activation PGRST205 probe. Real favorite saves/recovery
+  across hosted accounts/devices remain part of the user's pending browser check.
+- Extended real isolated PostgreSQL tests with favorites ownership/role isolation,
+  repeat application, idempotency, withdrawal/removal and the 500-item limit.
+  Browser checks cover read/write failure, reload, focus sync, logout/login,
+  removal and original document/request/contact flows with a controlled backend.
+- 76 unit tests, TypeScript, production build and browser suites (accounts, clean
+  views, marketplace, maps) pass. Map suite uses real MapLibre/OpenFreeMap with
+  controlled native permission and data; screenshots retain the original light UI.
+- `docs/recommender-evaluation.md` records six additional scenario tests, including
+  24 price/schedule combinations. Hard filters, ordering, neutral missing inputs,
+  bounded scores and deterministic ties pass. Weights unchanged; educational
+  effectiveness and real relevance judgments remain unvalidated.
+- `docs/vercel-readiness.md` records Vite build/routing and exact root/recovery
+  redirect requirements. Existing `.env` untouched; `.env.example` repaired to only
+  required public variables. Local TOML now allows HTTP localhost/127.0.0.1.
+  Hosted URL configuration and production domain remain pending; no deployment.
+- Five map/profile screens now load via React lazy/Suspense. Production entry fell
+  from 677,835 to approximately 565,570 bytes (minified, not transfer size); MapLibre
+  remains deferred. Existing >500 KB warnings remain; no claimed latency benchmark.
+
+Next: collect the user's real two-account flow outcome (including favorite reload,
+logout/login and another device), then finalize redirects for the actual production
+origin. Do not repeat implemented favorites work or claim hosted end-to-end success
+from local tests. No publishing or messages to third parties were performed.

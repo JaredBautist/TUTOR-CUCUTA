@@ -58,6 +58,7 @@ try {
     const clicked = await evaluate(`(() => { const button = [...document.querySelectorAll('button')].find(b => b.getBoundingClientRect().width && b.innerText.trim() === ${JSON.stringify(label)}); if (!button) return false; button.click(); return true; })()`);
     assert.ok(clicked, `Visible button missing: ${label}`);
     await pause(120);
+    await until(async () => !(await body()).includes('Cargando vista…'), 'Screen module did not load');
   };
   const screenshot = async (path) => {
     const { data } = await cdp('Page.captureScreenshot', { format: 'png' });
@@ -121,7 +122,7 @@ try {
   await until(async () => (await body()).includes('Buscar Tutores'), 'Student login failed');
 
   // A real same-name tutor must be retained without invented match/geo/verification values.
-  const row = { id: 'real-carlos', profiles: { full_name: 'Carlos Ramírez', avatar_url: null }, title: 'Docente', institution: '', experience_years: 2, rate_per_hour: 22000, verified: false, sector: 'Sector registrado', next_available: null, modalities: ['virtual'], subjects: ['Álgebra'], levels: [], specialties: [], bio: '', methodology_steps: [] };
+  const row = { id: '20000000-0000-4000-8000-000000000001', profiles: { full_name: 'Carlos Ramírez', avatar_url: null }, title: 'Docente', institution: '', experience_years: 2, rate_per_hour: 22000, verified: false, sector: 'Sector registrado', next_available: null, modalities: ['virtual'], subjects: ['Álgebra'], levels: [], specialties: [], bio: '', methodology_steps: [] };
   await evaluate(`localStorage.setItem('testRemoteRows', ${JSON.stringify(JSON.stringify([row]))})`);
   await cdp('Page.reload');
   await pause(400);
@@ -134,6 +135,7 @@ try {
   await click('Ver perfil completo');
   const bookmark = await evaluate(`(() => { const b = document.querySelector('button[aria-label="Guardar en favoritos"]'); if (b) b.click(); return !!b; })()`);
   assert.ok(bookmark, 'Profile favorite button missing');
+  await until(async()=>await evaluate(`Boolean(document.querySelector('button[aria-label="Quitar de favoritos"]'))`),'Favorite was not acknowledged');
   await evaluate(`(() => { const b = [...document.querySelectorAll('button')].find(b => /Volver/.test(b.innerText)); b.click(); })()`);
   await click('Favoritos (1)');
   assert.match(await body(), /Carlos Ramírez/);

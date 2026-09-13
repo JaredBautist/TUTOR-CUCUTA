@@ -7,6 +7,7 @@ import { DocumentsPanel } from '../marketplace/DocumentsPanel';
 interface TutorProfileViewProps {
   tutor: Tutor;
   isSaved?: boolean;
+  favoritesDisabled?: boolean;
   onToggleSave?: () => void;
   onBack: () => void;
   onRequestTutor: (tutor: Tutor) => void;
@@ -15,6 +16,7 @@ interface TutorProfileViewProps {
 export const TutorProfileView: React.FC<TutorProfileViewProps> = ({
   tutor,
   isSaved = false,
+  favoritesDisabled = false,
   onToggleSave,
   onBack,
   onRequestTutor,
@@ -35,10 +37,11 @@ export const TutorProfileView: React.FC<TutorProfileViewProps> = ({
 
         {onToggleSave && <button
           type="button"
+          disabled={favoritesDisabled}
           onClick={onToggleSave}
           aria-pressed={isSaved}
           aria-label={isSaved ? 'Quitar de favoritos' : 'Guardar en favoritos'}
-          className={`p-2.5 rounded-xl border transition-colors ${isSaved ? 'bg-amber-50 border-amber-300 text-amber-600' : 'border-slate-200 text-slate-500 hover:bg-slate-50'}`}
+          className={`p-2.5 rounded-xl border transition-colors disabled:opacity-50 disabled:cursor-wait ${isSaved ? 'bg-amber-50 border-amber-300 text-amber-600' : 'border-slate-200 text-slate-500 hover:bg-slate-50'}`}
         >
           <Bookmark className={`w-5 h-5 ${isSaved ? 'fill-current' : ''}`} />
         </button>}

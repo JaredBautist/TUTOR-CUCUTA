@@ -19,7 +19,8 @@
     "verify:accounts": "node --import tsx scripts/verify-account-setup.ts",
     "test:marketplace:db": "node tests/database-marketplace.mjs",
     "test:marketplace:browser": "node tests/browser-marketplace.mjs",
-    "verify:marketplace": "node --import tsx scripts/verify-marketplace.ts"
+    "verify:marketplace": "node --import tsx scripts/verify-marketplace.ts",
+    "verify:favorites": "node --import tsx scripts/verify-favorites.ts"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",

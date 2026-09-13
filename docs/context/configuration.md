@@ -1,6 +1,6 @@
 # Configuration context
 
-Snapshot: 2026-09-09. This is a reviewed summary, not a copy of environment secrets.
+Snapshot: 2026-09-12. This is a reviewed summary, not a copy of environment secrets.
 
 ## Supabase local configuration
 
@@ -30,7 +30,7 @@ turn on strict mode. `src/index.css` imports Tailwind. No separate custom styles
 or replacement framework was introduced during cleanup or memory installation.
 
 `src/vite-env.d.ts` declares VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY,
-VITE_GOOGLE_MAPS_API_KEY and VITE_GOOGLE_MAPS_MAP_ID. Their
+legacy GEMINI_API_KEY and APP_URL type declarations (unused). Environment
 values and all `.env*` files are deliberately excluded from saved context.
 A declaration for a provider key is not evidence that an AI feature is implemented.
 
@@ -56,3 +56,18 @@ uses an existing PostgreSQL 15 Docker image in a disposable offline container;
 this is distinct from the configured Supabase PostgreSQL 17 stack. No hosted
 migration was applied. Actual markers require validated geographic coordinates;
 arbitrary legacy SVG offsets are not treated as real locations.
+
+
+## Current favorites / release preparation
+
+The initializer also includes private accounts, cloud marketplace and
+`20260912010000_student_favorites.sql` before the reference seed. User-applied
+hosted account/marketplace/favorites migrations and anonymous protection checks
+supersede the historical no-hosted-migration statement above; see session handoff.
+
+Vercel explicitly uses Vite, build command `npm run build`, output `dist` and the
+existing `/index.html` SPA fallback. Map/profile screens load on demand. The actual
+production domain and hosted redirect configuration still need verification.
+Local TOML permits HTTP localhost and 127.0.0.1 root/recovery URLs on port 3000.
+The repaired environment example lists only public Supabase configuration;
+real environment contents are excluded. See `docs/vercel-readiness.md`.

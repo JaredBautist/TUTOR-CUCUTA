@@ -1,4 +1,7 @@
-import { useState, useEffect, useMemo } from 'react';
+import { createFavoritesRepository } from './features/favorites/infrastructure/supabaseFavorites';
+import { useFavorites } from './features/favorites/application/useFavorites';
+import { supabase } from './utils/supabase';
+import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
 import { Role, ScreenId, SearchFilters, Tutor, StudentRequest, StudentProfile } from './types';
 import { initialSearchFilters } from './data/searchDefaults';
 import { useAccountSession } from './features/accounts/application/useAccountSession';
@@ -12,20 +15,23 @@ import { useRequests } from './features/marketplace/application/useRequests';
 import { isSupabaseConfigured } from './utils/supabase';
 import { Header } from './components/common/Header';
 import { LandingLoginView } from './components/views/LandingLoginView';
-import { StudentSearchView } from './components/views/StudentSearchView';
-import { StudentResultsView } from './components/views/StudentResultsView';
-import { TutorProfileView } from './components/views/TutorProfileView';
 import { StudentRequestsView } from './components/views/StudentRequestsView';
-import { StudentProfileEditView } from './components/views/StudentProfileEditView';
 import { TeacherDashboardView } from './components/views/TeacherDashboardView';
 import { TeacherRequestDetailView } from './components/views/TeacherRequestDetailView';
-import { TeacherProfileEditView } from './components/views/TeacherProfileEditView';
 import { RequestTutorModal } from './components/modals/RequestTutorModal';
 import { MobileBottomNav } from './components/common/MobileBottomNav';
 import type { SearchArea } from './features/maps/domain/contracts';
 import { selectTutorsInArea } from './features/maps/domain/geography';
 import { attachPublishedTutorLocations } from './features/maps/application/tutorMapCatalog';
 import { useTutorLocations } from './features/maps/application/useTutorLocations';
+
+const StudentSearchView = lazy(() => import('./components/views/StudentSearchView').then(module => ({ default: module.StudentSearchView })));
+const StudentResultsView = lazy(() => import('./components/views/StudentResultsView').then(module => ({ default: module.StudentResultsView })));
+const TutorProfileView = lazy(() => import('./components/views/TutorProfileView').then(module => ({ default: module.TutorProfileView })));
+const StudentProfileEditView = lazy(() => import('./components/views/StudentProfileEditView').then(module => ({ default: module.StudentProfileEditView })));
+const TeacherProfileEditView = lazy(() => import('./components/views/TeacherProfileEditView').then(module => ({ default: module.TeacherProfileEditView })));
+
+const favoritesRepository = createFavoritesRepository(supabase);
 
 export default function App() {
   const { state, controller } = useAccountSession();
@@ -45,7 +51,8 @@ function AuthenticatedApp({ account, controller, onLogout }: { account: OwnAccou
   const [tutors, setTutors] = useState<Tutor[]>([]);
   const requestState = useRequests(marketplace);
   const requests = requestState.requests;
-  const [savedTutors, setSavedTutors] = useState<string[]>([]);
+  const favorites = useFavorites(favoritesRepository, role === 'student');
+  const savedTutors = favorites.ids;
   const studentProfile = studentView(account);
   const [selectedTutorId, setSelectedTutorId] = useState<string>();
   const [selectedRequestId, setSelectedRequestId] = useState<string>();
@@ -115,12 +122,7 @@ function AuthenticatedApp({ account, controller, onLogout }: { account: OwnAccou
     });
   };
 
-  const handleToggleSaveTutor = (tutorId: string) => {
-    setSavedTutors((previous) => {
-      const next = previous.includes(tutorId) ? previous.filter((id) => id !== tutorId) : [...previous, tutorId];
-      return next;
-    });
-  };
+  const handleToggleSaveTutor = (tutorId: string) => { void favorites.toggle(tutorId); };
 
   const handleSelectTutor = (tutor: Tutor) => {
     setSelectedTutorId(tutor.id);
@@ -168,6 +170,9 @@ function AuthenticatedApp({ account, controller, onLogout }: { account: OwnAccou
         />
       )}
       <main className="flex-1 w-full">
+        <Suspense fallback={<p role="status" className="p-12 text-center text-slate-600">Cargando vista…</p>}>
+        {favorites.error && <div role="alert" className="mx-auto max-w-5xl p-4 text-red-800 bg-red-50">{favorites.error} <button type="button" className="underline" onClick={() => void favorites.refresh()}>Actualizar favoritos</button></div>}
+        {favorites.busy && <p role="status" className="sr-only">Guardando favorito…</p>}
         {requestState.error && <div role="alert" className="mx-auto max-w-5xl p-4 text-red-800 bg-red-50">{requestState.error} <button type="button" className="underline" onClick={()=>void requestState.refresh()}>Actualizar solicitudes</button></div>}
         {account.notice && <p role="status" className="mx-auto max-w-5xl p-4 text-amber-900 bg-amber-50">{account.notice}</p>}
         {actionMessage && <p role="status" className="mx-auto max-w-5xl p-4 text-amber-900 bg-amber-50">{actionMessage}</p>}
@@ -185,14 +190,14 @@ function AuthenticatedApp({ account, controller, onLogout }: { account: OwnAccou
           </div> :
           <StudentResultsView tutors={searchTutors} filters={filters} savedTutors={savedTutors}
             searchArea={searchArea} locationFeedStatus={locationFeed.status} onRetryLocations={locationFeed.retry}
-            onToggleSaveTutor={handleToggleSaveTutor} onSelectTutor={handleSelectTutor}
+            favoritesDisabled={favorites.disabled} onToggleSaveTutor={handleToggleSaveTutor} onSelectTutor={handleSelectTutor}
             onRequestTutor={(tutor: Tutor) => setBookingTutorId(tutor.id)}
             onModifySearch={() => navigate('student-search')} />
         )}
         {currentScreen === 'tutor-profile' && (selectedTutor ? (
           <TutorProfileView tutor={selectedTutor} onBack={() => navigate('student-results')}
             onRequestTutor={(tutor: Tutor) => setBookingTutorId(tutor.id)}
-            isSaved={savedTutors.includes(selectedTutor.id)} onToggleSave={() => handleToggleSaveTutor(selectedTutor.id)} />
+            favoritesDisabled={favorites.disabled} isSaved={savedTutors.includes(selectedTutor.id)} onToggleSave={() => handleToggleSaveTutor(selectedTutor.id)} />
         ) : emptySelection('student-results', 'tutor'))}
         {currentScreen === 'student-requests' && (
           <StudentRequestsView requests={localStudentRequests} actionsEnabled={!requestState.busy && !requestState.loading && !requestState.error}
@@ -217,6 +222,7 @@ function AuthenticatedApp({ account, controller, onLogout }: { account: OwnAccou
         {currentScreen === 'teacher-profile-edit' && (
           <TeacherProfileEditView teacher={teacherView(account)} teacherId={account.id} onSaveProfile={async (profile) => { const saved = await controller.save(teacherFields(profile), profile.avatar); return saved.displayAvatarUrl; }} onBack={() => navigate('teacher-dashboard')} />
         )}
+        </Suspense>
       </main>
       {bookingTutor && (
         <RequestTutorModal tutor={bookingTutor} isOpen submissionEnabled={Boolean(studentProfile.id && studentProfile.name.trim())}

@@ -5,7 +5,7 @@ export function installMarketplaceFixture() {
  const read=(key,fallback)=>JSON.parse(localStorage.getItem(`marketplace-test-${key}`) || JSON.stringify(fallback));
  const save=(key,value)=>localStorage.setItem(`marketplace-test-${key}`,JSON.stringify(value));
  const current=()=>JSON.parse(localStorage.getItem('sb-catalog-auth-token') || '{}').user;
- window.__marketplaceFixture={failRequest:false,failDocument:false,calls:[]};
+ window.__marketplaceFixture={failFavorite:false,failFavoriteRead:false,failRequest:false,failDocument:false,calls:[]};
  window.fetch=async(input,init={})=>{
   const url=new URL(typeof input==='string'?input:input.url || String(input));
   if(url.origin!=='https://catalog.invalid')return original(input,init);
@@ -14,6 +14,16 @@ export function installMarketplaceFixture() {
   if(!path.includes('/auth/') && !path.endsWith('/user_accounts'))harness.calls.push(path);
   const own=()=>JSON.parse(localStorage.getItem(`test-account-${user.id}`));
   const offer=read('offer',null);
+  if(path==='/rest/v1/student_favorites') {
+   if(harness.failFavoriteRead)return reply({code:'XX000'},503);
+   return reply(read('favorites-'+user?.id,[]).map(tutor_id=>({tutor_id})));
+  }
+  if(path.endsWith('/set_student_favorite_v1')) {
+   if(harness.failFavorite)return reply({code:'XX000'},503);
+   const rows=read('favorites-'+user.id,[]).filter(id=>id!==args.p_tutor_id);
+   if(args.p_saved)rows.push(args.p_tutor_id);
+   save('favorites-'+user.id,rows);return reply(args.p_saved);
+  }
   if(path==='/rest/v1/tutor_offer_locations')return reply([]);
   if(path==='/rest/v1/tutor_offers')return reply(offer?.published?[{listing:offer.listing}]:[]);
   if(path.endsWith('/own_tutor_offer_v1'))return reply(offer?offer.draft:null);

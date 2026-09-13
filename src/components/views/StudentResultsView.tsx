@@ -10,6 +10,7 @@ interface StudentResultsViewProps {
   tutors: Tutor[];
   filters: SearchFilters;
   savedTutors?: string[];
+  favoritesDisabled?: boolean;
   onToggleSaveTutor?: (id: string) => void;
   onSelectTutor: (tutor: Tutor) => void;
   onRequestTutor: (tutor: Tutor) => void;
@@ -23,6 +24,7 @@ export const StudentResultsView: React.FC<StudentResultsViewProps> = ({
   tutors,
   filters,
   savedTutors = [],
+  favoritesDisabled = false,
   onToggleSaveTutor,
   onSelectTutor,
   onRequestTutor,
@@ -322,8 +324,9 @@ export const StudentResultsView: React.FC<StudentResultsViewProps> = ({
 
                           <button
                             type="button"
+                            disabled={favoritesDisabled}
                             onClick={(e) => handleToggleSave(tutor.id, e)}
-                            className={`p-1.5 rounded-lg border transition-colors cursor-pointer ${
+                            className={`p-1.5 rounded-lg border transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-wait ${
                               isSaved
                                 ? 'bg-amber-50 border-amber-300 text-amber-600'
                                 : 'border-slate-200 text-slate-400 hover:text-slate-600 hover:bg-slate-50'

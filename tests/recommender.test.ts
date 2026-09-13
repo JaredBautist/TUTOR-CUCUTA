@@ -153,11 +153,78 @@ test('Recommender: missing location and tutor coverage reject in-person candidat
 
 test('Recommender: experience and supplied documents do not change ranking scores', () => {
   const a = scoreAndExplainCandidate(createTutor({experienceYears:0}), defaultFilters).score;
-  const b = scoreAndExplainCandidate(createTutor({experienceYears:20}), defaultFilters).score;
+  const b = scoreAndExplainCandidate(createTutor({experienceYears:20,documents:[{id:'declared-doc',name:'Declared qualification',fileType:'pdf',uploadedAt:'2026-09-12'}]}), defaultFilters).score;
   assert.equal(a, b);
 });
 
 test('Recommender: incompatible weekly availability is mandatory', () => {
   const candidate = createTutor({availability:[{day:1,start:'08:00',end:'10:00'}]});
   assert.equal(isCandidateEligible(candidate,{...defaultFilters,availableDays:['Domingo']},mockOrigin).eligible,false);
+});
+
+test('Academic evaluation: equal schedules and zones prefer an affordable algebra tutor', () => {
+  const filters = {...defaultFilters, subject:'Álgebra', educationLevel:'Universidad', modality:'virtual' as const, maxBudget:40000, availableDays:['L'], timeSlot:'Tarde'};
+  const base = createTutor({subjects:['Álgebra'], modalities:['virtual'], availability:[{day:1,start:'14:00',end:'16:00'}]});
+  const ranked = recommendTutors([{...base,id:'expensive',ratePerHour:35000},{...base,id:'affordable',ratePerHour:20000}],filters);
+  assert.deepEqual(ranked.map(t=>t.id),['affordable','expensive']);
+  assert.ok(ranked[0].matchReasons.some(reason=>reason.includes('120 minutos')));
+});
+
+test('Academic evaluation: equal prices and zones prefer greater selected weekly overlap', () => {
+  const filters={...defaultFilters,modality:'virtual' as const,maxBudget:40000,availableDays:['L','MIÉ'],timeSlot:'Tarde'};
+  const base=createTutor({modalities:['virtual']});
+  const ranked=recommendTutors([
+    {...base,id:'short',availability:[{day:1,start:'14:00',end:'15:00'}]},
+    {...base,id:'extended',availability:[{day:1,start:'14:00',end:'16:00'},{day:3,start:'14:00',end:'16:00'}]},
+    {...base,id:'incompatible',ratePerHour:1000,availability:[{day:2,start:'14:00',end:'18:00'}]},
+  ],filters);
+  assert.deepEqual(ranked.map(t=>t.id),['extended','short']);
+  assert.ok(ranked[0].matchReasons.some(reason=>reason.includes('240 minutos')));
+});
+
+test('Academic evaluation: in-person proximity wins equal price/schedule and both radii apply', () => {
+  const filters={...defaultFilters,modality:'presencial' as const,maxBudget:40000};
+  const base=createTutor({modalities:['presencial']});
+  const ranked=recommendTutors([
+    {...base,id:'farther',location:{...mockOrigin,latitude:mockOrigin.latitude+0.03}},
+    {...base,id:'nearby',location:{...mockOrigin,latitude:mockOrigin.latitude+0.005}},
+    {...base,id:'outside-tutor-radius',coverageRadiusKm:0.1,location:{...mockOrigin,latitude:mockOrigin.latitude+0.005}},
+  ],filters,mockOrigin);
+  assert.deepEqual(ranked.map(t=>t.id),['nearby','farther']);
+  assert.ok(ranked[0].matchReasons.some(reason=>reason.includes('Zona aproximada')));
+});
+
+test('Academic evaluation: virtual rankings ignore GPS and radius, ties ignore input order', () => {
+  const filters={...defaultFilters,modality:'virtual' as const,maxBudget:40000};
+  const a=createTutor({id:'a',modalities:['virtual'],location:undefined});
+  const b=createTutor({id:'b',modalities:['virtual'],location:{latitude:0,longitude:0},coverageRadiusKm:0.01});
+  const first=recommendTutors([b,a],filters,mockOrigin);
+  const second=recommendTutors([a,b],{...filters,radiusKm:0.1});
+  assert.deepEqual(first.map(t=>[t.id,t.matchScore]),second.map(t=>[t.id,t.matchScore]));
+  assert.deepEqual(first.map(t=>t.id),['a','b']);
+  assert.ok(first.every(t=>t.distanceKm===undefined));
+});
+
+test('Academic evaluation: hard constraints beat price and missing criteria are explicitly neutral', () => {
+  const filters={...defaultFilters,subject:'Cálculo I',educationLevel:'Universidad',modality:'virtual' as const,maxBudget:40000};
+  const base=createTutor({id:'eligible',subjects:['Cálculo I'],modalities:['virtual']});
+  const ranked=recommendTutors([base,{...base,id:'wrong-subject',subjects:['Cálculo II'],ratePerHour:1000},{...base,id:'wrong-level',levels:['Básica primaria'],ratePerHour:1000},{...base,id:'over-budget',ratePerHour:40001}],filters);
+  assert.deepEqual(ranked.map(t=>t.id),['eligible']);
+  const neutral=recommendTutors([base],defaultFilters)[0];
+  assert.equal(neutral.matchScore,50);
+  assert.ok(neutral.matchReasons.some(reason=>reason.includes('sin presupuesto seleccionado')));
+  assert.ok(neutral.matchReasons.some(reason=>reason.includes('Sin horario')));
+});
+
+test('Academic evaluation: every price/schedule tradeoff remains bounded and deterministic', () => {
+  const filters={...defaultFilters,modality:'virtual' as const,maxBudget:40000,availableDays:['L'],timeSlot:'Tarde'};
+  const cases=[10000,20000,30000,40000].flatMap(ratePerHour=>[1,2,3,4,5,6].map(hours=>createTutor({id:`${ratePerHour}-${hours}`,ratePerHour,modalities:['virtual'],availability:[{day:1,start:'12:00',end:`${12+hours}:00`}]})));
+  const ranked=recommendTutors(cases,filters);
+  assert.equal(ranked.length,24);
+  assert.ok(ranked.every(t=>Number.isFinite(t.matchScore) && t.matchScore!>=0 && t.matchScore!<=100));
+  assert.deepEqual(recommendTutors([...cases].reverse(),filters),ranked);
+  for(const candidate of ranked) {
+    const dominated=ranked.filter(other=>other.ratePerHour>=candidate.ratePerHour && Number(other.id.split('-')[1])<=Number(candidate.id.split('-')[1]));
+    assert.ok(dominated.every(other=>other.matchScore!<=candidate.matchScore!));
+  }
 });

@@ -59,6 +59,8 @@ try {
   sql(migration); sql(migration);
   const cloud = await readFile(new URL('../supabase/migrations/20260912000000_cloud_marketplace.sql', import.meta.url),'utf8');
   sql(cloud); sql(cloud);
+  const favorites = await readFile(new URL('../supabase/migrations/20260912010000_student_favorites.sql', import.meta.url),'utf8');
+  sql(favorites); sql(favorites);
   const tutor='10000000-0000-4000-8000-000000000001';
   const student='10000000-0000-4000-8000-000000000002';
   const outsider='10000000-0000-4000-8000-000000000003';
@@ -77,6 +79,22 @@ try {
   sql(`${owner(student)} SELECT publish_tutor_offer_v1('${q(offer)}');`,'42501');
   const published=JSON.parse(last(sql(`${owner(tutor)} SELECT publish_tutor_offer_v1('${q(offer)}');`)));
   assert.equal(published.version,1);
+  const favoriteRows=id=>last(sql(`${owner(id)} SELECT coalesce(json_agg(tutor_id),'[]') FROM student_favorites;`));
+  sql(`SET ROLE anon; SELECT * FROM student_favorites;`,'42501');
+  sql(`SET ROLE anon; SELECT set_student_favorite_v1('${tutor}',true);`,'42501');
+  sql(`${owner(tutor)} SELECT set_student_favorite_v1('${tutor}',true);`,'42501');
+  sql(`${owner(student)} INSERT INTO student_favorites(student_id,tutor_id) VALUES('${outsider}','${tutor}');`,'42501');
+  for(let attempt=0;attempt<2;attempt++) assert.equal(last(sql(`${owner(student)} SELECT set_student_favorite_v1('${tutor}',true);`)),'t');
+  assert.deepEqual(JSON.parse(favoriteRows(student)),[tutor]);
+  assert.equal(favoriteRows(outsider),'[]');
+  assert.equal(favoriteRows(tutor),'[]');
+  sql(`${owner(outsider)} DELETE FROM student_favorites;`,'42501');
+  for(let attempt=0;attempt<2;attempt++) assert.equal(last(sql(`${owner(student)} SELECT set_student_favorite_v1('${tutor}',false);`)),'f');
+  assert.equal(favoriteRows(student),'[]');
+  sql(`${owner(student)} SELECT set_student_favorite_v1('${otherTutor}',true);`,'P0001');
+  sql(`${owner(student)} SELECT set_student_favorite_v1('${tutor}',NULL);`,'22023');
+  sql(`${owner(student)} SELECT set_student_favorite_v1('${tutor}',true);`);
+
   assert.equal(published.position.latitude,7.89);
   assert.equal(last(sql(`${owner(student)} SELECT count(*) FROM storage.objects WHERE bucket_id='profile-avatars';`)),'1');
   assert.match(sql(`${owner(tutor)} DELETE FROM storage.objects WHERE bucket_id='profile-avatars';`),/DELETE 0/);
@@ -117,6 +135,10 @@ try {
   assert.equal(last(sql(`${owner(otherTutor)} SELECT count(*) FROM tutor_documents;`)),'0');
   sql(`${owner(student)} INSERT INTO storage.objects(bucket_id,name) VALUES('tutor-documents','${student}/${randomUUID()}.pdf');`,'42501');
   sql(`${owner(tutor)} SELECT withdraw_tutor_offer_v1();`);
+  assert.deepEqual(JSON.parse(favoriteRows(student)),[tutor], 'Withdrawal must not erase private favorites');
+  sql(`${owner(outsider)} SELECT set_student_favorite_v1('${tutor}',true);`,'P0001');
+  assert.equal(last(sql(`${owner(student)} SELECT set_student_favorite_v1('${tutor}',false);`)),'f');
+
   assert.equal(last(sql(`${owner(student)} SELECT count(*) FROM tutor_offers;`)),'0');
   assert.equal(last(sql(`${owner(student)} SELECT count(*) FROM tutor_offer_locations;`)),'0');
   assert.equal(last(sql(`${owner(student)} SELECT count(*) FROM tutor_documents;`)),'0');
@@ -125,7 +147,17 @@ try {
   assert.equal(last(sql(`${owner(student)} SELECT count(*) FROM storage.objects WHERE bucket_id='profile-avatars';`)),'0');
   sql(`${owner(tutor)} SELECT remove_tutor_document_v1('${docId}');`);
   assert.equal(last(sql(`${owner(tutor)} SELECT count(*) FROM tutor_documents;`)),'0');
-  console.log('PASS marketplace PostgreSQL: repeatable migration, publication, private contacts, approximate zones, guardian enforcement, server price/identity, idempotency, participant isolation, transitions, schedule conflicts, document access and withdrawal.');
+  // Enforce the documented bound under database authority, not just the UI.
+  sql(`INSERT INTO auth.users SELECT md5('favorite-limit-' || n)::uuid FROM generate_series(1,500) n;
+    INSERT INTO user_accounts(id,role,profile) SELECT md5('favorite-limit-' || n)::uuid,'tutor','${q(teacherProfile)}'::jsonb FROM generate_series(1,500) n;
+    INSERT INTO tutor_offers(tutor_id,listing,published) SELECT md5('favorite-limit-' || n)::uuid,'{}'::jsonb,true FROM generate_series(1,500) n;
+    INSERT INTO student_favorites(student_id,tutor_id) SELECT '${outsider}',md5('favorite-limit-' || n)::uuid FROM generate_series(1,500) n;`);
+  sql(`${owner(tutor)} SELECT publish_tutor_offer_v1('${q({...offer,version:2})}');`);
+  sql(`${owner(outsider)} SELECT set_student_favorite_v1('${tutor}',true);`,'P0001');
+  assert.equal(last(sql(`${owner(outsider)} SELECT set_student_favorite_v1(md5('favorite-limit-1')::uuid,true);`)),'t');
+  sql(`${owner(outsider)} SELECT set_student_favorite_v1(md5('favorite-limit-1')::uuid,false);`);
+  assert.equal(last(sql(`${owner(outsider)} SELECT set_student_favorite_v1('${tutor}',true);`)),'t');
+  console.log('PASS marketplace PostgreSQL: repeatable migration, private favorites/isolation/idempotency/500 limit, publication, private contacts, approximate zones, guardian enforcement, server price/identity, idempotency, participant isolation, transitions, schedule conflicts, document access and withdrawal.');
 } finally {
  if(started) assert.equal(docker(['rm','-f',container]).status,0);
 }

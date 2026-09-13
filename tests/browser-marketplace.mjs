@@ -59,6 +59,7 @@ try {
     const clicked = await evaluate(`(() => { const button = [...document.querySelectorAll('button')].find(b => b.getBoundingClientRect().width && b.innerText.trim() === ${JSON.stringify(label)}); if (!button) return false; button.click(); return true; })()`);
     assert.ok(clicked, `Visible button missing: ${label}`);
     await pause(120);
+    await until(async () => !(await body()).includes('Cargando vista…'), 'Screen module did not load');
   };
   const screenshot = async (path) => {
     const { data } = await cdp('Page.captureScreenshot', { format: 'png' });
@@ -103,9 +104,30 @@ try {
   await cdp('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
   await click('Salir');await until(async()=>(await body()).includes('Continuar con Google'),'Logout missing');
   await login('student');await until(async()=>(await body()).includes('Buscar Tutores'),'Student session missing');
+  await until(async()=>await evaluate(`Boolean([...document.querySelectorAll('button')].find(node=>node.innerText==='Ver tutores'))`),'Search screen not ready');
   await evaluate(`(()=>{const button=[...document.querySelectorAll('button')].find(node=>node.innerText.includes('Virtual'));button.click();})()`);
   await click('Ver tutores');await until(async()=>(await body()).includes('Tutor conectado'),'Published offer missing');
   assert.ok(await evaluate(`Boolean(document.querySelector('option[value="match"]'))`),'Match sorting missing');
+  const favoriteButton=()=>evaluate(`document.querySelector('button[aria-label="Guardar a Tutor conectado en favoritos"],button[aria-label="Quitar a Tutor conectado de favoritos"]')?.getAttribute('aria-pressed')`);
+  const toggleFavorite=()=>evaluate(`document.querySelector('button[aria-label="Guardar a Tutor conectado en favoritos"],button[aria-label="Quitar a Tutor conectado de favoritos"]').click()`);
+  await until(async()=>await evaluate(`!document.querySelector('button[aria-label="Guardar a Tutor conectado en favoritos"]')?.disabled`),'Favorites not ready');
+  await evaluate('window.__marketplaceFixture.failFavorite=true');await toggleFavorite();
+  await until(async()=>(await body()).includes('No se pudo confirmar el favorito'),'Favorite write failure missing');
+  assert.equal(await favoriteButton(),'false','Failed favorite must not appear saved');
+  await evaluate('window.__marketplaceFixture.failFavorite=false');await click('Actualizar favoritos');
+  await toggleFavorite();await until(async()=>await favoriteButton()==='true','Favorite not saved');
+  await cdp('Page.reload');await pause(500);await until(async()=>(await body()).includes('Buscar Tutores'),'Favorite session restore missing');
+  await until(async()=>await evaluate(`Boolean([...document.querySelectorAll('button')].find(node=>node.innerText==='Ver tutores'))`),'Search screen not ready');
+  await evaluate(`(()=>{const button=[...document.querySelectorAll('button')].find(node=>node.innerText.includes('Virtual'));button.click();})()`);
+  await click('Ver tutores');await until(async()=>await favoriteButton()==='true','Favorite lost on reload');
+  await evaluate('window.__marketplaceFixture.failFavoriteRead=true;window.dispatchEvent(new Event("focus"))');
+  await until(async()=>(await body()).includes('Actualizar favoritos'),'Favorite read failure missing');
+  assert.equal(await favoriteButton(),'true','Failed read erased confirmed favorite');
+  await evaluate('window.__marketplaceFixture.failFavoriteRead=false');await click('Actualizar favoritos');
+  // Simulate a separate device changing the fake server, then refocus this client.
+  await evaluate(`localStorage.setItem('marketplace-test-favorites-'+window.__authFixture.session('student').user.id,'[]');window.dispatchEvent(new Event('focus'));`);
+  await until(async()=>await favoriteButton()==='false','Other-device change not recovered on focus');
+  await toggleFavorite();await until(async()=>await favoriteButton()==='true','Favorite retry missing');
   await click('Ver perfil completo');await until(async()=>(await body()).includes('tutorcucuta-review-document.pdf'),'Shared document missing');
   await click('Ver soporte');await until(async()=>await evaluate('Boolean(document.querySelector("dialog[open] iframe"))'),'Private PDF viewer missing');
   await evaluate(`document.querySelector('button[aria-label="Cerrar documento"]').click()`);
@@ -116,6 +138,7 @@ try {
   // server record, then restore a fresh session to verify that authorization is consumed.
   await evaluate(`(()=>{const id=window.__authFixture.session('student').user.id;const key='test-account-'+id;const row=JSON.parse(localStorage.getItem(key));row.profile.guardianAuthorized=true;localStorage.setItem(key,JSON.stringify(row));})()`);
   await cdp('Page.reload');await pause(500);await until(async()=>(await body()).includes('Buscar Tutores'),'Restore missing');
+  await until(async()=>await evaluate(`Boolean([...document.querySelectorAll('button')].find(node=>node.innerText==='Ver tutores'))`),'Search screen not ready');
   await evaluate(`(()=>{const button=[...document.querySelectorAll('button')].find(node=>node.innerText.includes('Virtual'));button.click();})()`);
   await click('Ver tutores');await until(async()=>(await body()).includes('Tutor conectado'),'Restored offer missing');
   await click('Solicitar tutoría');
@@ -134,12 +157,17 @@ try {
   await click('Aceptar');await until(async()=>(await body()).includes('Estado de la solicitud guardado'),'Acceptance missing');
   await click('Salir');await until(async()=>(await body()).includes('Continuar con Google'),'Tutor logout missing');
   await login('student');await until(async()=>(await body()).includes('Buscar Tutores'),'Student restore missing');
+  await until(async()=>await evaluate(`Boolean([...document.querySelectorAll('button')].find(node=>node.innerText==='Ver tutores'))`),'Restored search screen missing');
+  await evaluate(`(()=>{const button=[...document.querySelectorAll('button')].find(node=>node.innerText.includes('Virtual'));button.click();})()`);
+  await click('Ver tutores');await until(async()=>await favoriteButton()==='true','Favorite lost across logout and login');
+  await toggleFavorite();await until(async()=>await favoriteButton()==='false','Favorite removal not acknowledged');
+
   await click('Mis Solicitudes');await until(async()=>await evaluate(`Boolean(document.querySelector('a[href="tel:+573009999999"]'))`),'Accepted tutor contact missing');
   await screenshot('/tmp/tutorcucuta-marketplace-request.png');
   await click('Cancelar solicitud');await until(async()=>(await body()).includes('Cancelada'),'Cancellation missing');
   assert.equal(await evaluate(`document.querySelectorAll('a[href^="tel:"]').length`),0);
   assert.deepEqual(runtimeErrors,[]);
-  console.log('PASS marketplace browser: tutor publication, document failure/retry/private viewer, guardian block, request failure/retry, persisted participant flow and accepted contact. Controlled backend, not hosted delivery.');
+  console.log('PASS marketplace browser: favorite write/read failure, reload, focus sync, logout/login and removal; tutor publication, document failure/retry/private viewer, guardian block, request failure/retry, persisted participant flow and accepted contact. Controlled backend, not hosted delivery.');
 } finally {
  socket?.close();chromium.kill('SIGTERM');vite.kill('SIGTERM');await pause(250);await rm(profile,{recursive:true,force:true});
 }

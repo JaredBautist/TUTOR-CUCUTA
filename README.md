@@ -79,7 +79,7 @@ actual permissions and constraints. No test modifies hosted records.
 Configure the Vite environment variables before building a hosted preview.
 Google is enabled and the marketplace migration is applied. Real hosted account/Storage/request delivery and recommendation-quality evaluation remain required before a production readiness claim.
 
-Accounts have one immutable role. Both profile forms save private database records after authentication. Legacy device drafts are preserved but never claimed by a new account. Search/favorites remain within the active session. Request submission and explicit teacher publication now use the protected marketplace RPCs.
+Accounts have one immutable role. Both profile forms save private database records after authentication. Legacy device drafts are preserved but never claimed by a new account. Search filters remain within the active session. Favorites use private Supabase persistence after the favorites migration. Request submission and explicit teacher publication now use the protected marketplace RPCs.
 
 Both SQL initialization paths seed reference sectors only. The cleanup migration
 removes the artificial default match score without deleting existing rows. These
@@ -106,3 +106,12 @@ Tutors save their profile, choose offer levels/modalities/weekly hours, enter a
 contact with country code, select a teaching zone for in-person classes and press
 “Guardar perfil y publicar oferta”. Students see published offers only. Document
 access requires a session; withdrawing an offer revokes new document reads.
+
+
+## Persistent favorites and release preparation
+
+Favorites use `supabase/migrations/20260912010000_student_favorites.sql`, applied
+separately after marketplace. Run `npm run verify:favorites` to check remote table
+presence and anonymous protection; it does not test real cross-device saves.
+See [favorites contract](docs/persistent-favorites.md), [ranking evaluation](docs/recommender-evaluation.md)
+and [Vercel readiness](docs/vercel-readiness.md) for validation and remaining hosted checks.

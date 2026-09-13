@@ -58,6 +58,7 @@ try {
     const clicked = await evaluate(`(() => { const button = [...document.querySelectorAll('button')].find(b => b.getBoundingClientRect().width && b.innerText.trim() === ${JSON.stringify(label)}); if (!button) return false; button.click(); return true; })()`);
     assert.ok(clicked, `Visible button missing: ${label}`);
     await pause(120);
+    await until(async () => !(await body()).includes('Cargando vista…'), 'Screen module did not load');
   };
   const screenshot = async (path) => {
     const { data } = await cdp('Page.captureScreenshot', { format: 'png' });

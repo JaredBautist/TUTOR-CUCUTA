@@ -49,6 +49,9 @@ MapLibre GL JS + OpenFreeMap. No new backend framework was introduced.
   Supabase Auth adapter, owner-only profile/photo Repository.
 - `src/features/marketplace/`: domain DTOs and validation, request-refresh hook and
   Supabase Repository. Versioned RPCs own publication/request/document mutations.
+- `src/features/favorites/`: private owner favorites Repository/Adapter and refresh hook;
+  acknowledged saves/removals, no local fallback. Hosted migration applied and
+  anonymous reads denied; real cross-device recovery awaits user validation.
 - `src/features/recommender/domain/recommender.ts`: deterministic eligibility and
   ranking; explicit initial weights documented in `docs/cloud-marketplace.md`.
 - `src/features/maps/`: geographic calculations, feed/device sessions and adapters.
@@ -75,3 +78,8 @@ No hosted resets, seeds, messages, credential changes or Git publication are imp
 in normal code work. The current user-approved migration workflow is SQL Editor when
 administrative access is unavailable. Record verified outcomes without secrets or
 personal contact data in Markdown and local Graphify memory.
+
+Favorites and release preparation: see [persistent favorites](../persistent-favorites.md),
+[ranking evaluation](../recommender-evaluation.md) and [Vercel readiness](../vercel-readiness.md).
+Technical scenario tests passed with unchanged ranking weights; no claim of academic
+effectiveness or completed deployment. Existing visual identity is preserved.
