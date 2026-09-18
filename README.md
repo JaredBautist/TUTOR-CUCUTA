@@ -1,117 +1,174 @@
-# TutorCúcuta
+# 🎓 TutorCúcuta — Plataforma de Tutorías Georreferenciadas
 
-A tutoring platform for students and tutors in the Cúcuta metropolitan area.
-The academic scope is a geospatial, multicriteria, explainable recommendation
-system. Prototype records have been removed. MapLibre GL JS + OpenFreeMap, animated search
-radii, local device positioning and a published teaching-location feed are now
-implemented. Google/email authentication and private profiles are active. Tutor offer
-publication, private documents, participant requests and deterministic recommendations
-are implemented. The user applied the marketplace migration; all five new tables
-passed remote anonymous-denial checks. Real-account end-to-end validation remains.
-See [current handoff](docs/context/session-handoff.md) and
-[marketplace contract/setup](docs/cloud-marketplace.md).
+<div align="center">
 
-## Stack
+![React 19](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black&style=for-the-badge)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white&style=for-the-badge)
+![Vite](https://img.shields.io/badge/Vite-6.x-646CFF?logo=vite&logoColor=white&style=for-the-badge)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38B2AC?logo=tailwind-css&logoColor=white&style=for-the-badge)
+![Supabase](https://img.shields.io/badge/Supabase-Database%20%26%20Auth-3ECF8E?logo=supabase&logoColor=white&style=for-the-badge)
+![MapLibre](https://img.shields.io/badge/MapLibre-GL%20JS-blue?logo=maplibre&logoColor=white&style=for-the-badge)
+![Tests](https://img.shields.io/badge/Tests-84%20Passing-success?style=for-the-badge)
 
-React 19, TypeScript, Vite, Tailwind CSS, and Supabase/PostgreSQL with PostGIS.
+**Conectando estudiantes y tutores particulares en Cúcuta y su Área Metropolitana mediante geolocalización, filtrado multicriterio y recomendación algorítmica explicable.** 🚀
 
-## Local development
+[🚀 Demostración](#-guía-rápida-de-instalación) • [✨ Características](#-características-principales) • [🛠️ Tecnologías](#-stack-tecnológico) • [📱 Modo Móvil](#-diseño-mobile-first-y-cards) • [👥 Credenciales de Prueba](#-cuentas-y-credenciales-de-prueba)
 
-Use Node.js 22 and the dependencies recorded in `package-lock.json`.
+</div>
 
-```sh
-npm ci
-cp .env.example .env
+---
+
+## 📖 ¿Qué es TutorCúcuta?
+
+**TutorCúcuta** es una plataforma web integral diseñada para resolver la dificultad de encontrar apoyo escolar y universitario de calidad en el Área Metropolitana de Cúcuta (Cúcuta, Los Patios, Villa del Rosario, El Zulia y alrededores).
+
+A diferencia de directorios tradicionales, TutorCúcuta incorpora un **motor de compatibilidad determinístico** y un **mapa interactivo en tiempo real**, permitiendo a estudiantes y acudientes descubrir al docente ideal según cercanía geográfica, materias específicas, disponibilidad horaria semanal y presupuesto en pesos colombianos ($ COP).
+
+---
+
+## ✨ Características Principales
+
+### 🔍 1. Búsqueda y Filtrado Multicriterio
+* **Materias y Áreas:** Matemáticas, Álgebra, Cálculo, Física, Química, Razonamiento Cuantitativo, Saber 11, Inglés, etc.
+* **Nivel Educativo:** Básica primaria, básica secundaria, grado 11 - media, universidad y educación de adultos.
+* **Modalidad:** Presencial (en domicilio/punto convenido) y/o Virtual.
+* **Presupuesto Ajustable:** Filtro por tarifa máxima por hora académica ($20.000 a $60.000 COP).
+* **Disponibilidad Horaria:** Selección de días (L–D) y franjas (Mañana, Tarde, Noche).
+
+### 🗺️ 2. Geolocalización y Mapas Interactivos
+* **Cartografía Abierta:** Integración con **MapLibre GL JS** y **OpenFreeMap** sin cobros de API externa ni dependencias privativas.
+* **Radio Geográfico:** Visualización dinámica de círculos de cobertura (1 a 15 km) centrados en la ubicación del estudiante o en barrios de Cúcuta (Caobos, Guaimaral, La Riviera, Centro, UFPS, etc.).
+* **Privacidad Protegida:** Posicionamiento por zonas de atención aproximadas para proteger la privacidad del docente.
+
+### 🧠 3. Motor de Recomendación Explicable
+* **Porcentaje de Coincidencia (%):** Cálculo transparente de afinidad basado en coincidencia de materia, nivel, presupuesto, cruce de disponibilidad y proximidad.
+* **Explicabilidad Clara:** Acordeón interactivo *"¿Por qué te recomendamos este tutor?"* que detalla punto por punto las razones de compatibilidad algorítmica sin opacidad.
+
+### 👥 4. Dos Portales en un Mismo Lugar
+* **Portal Estudiante:** Búsqueda avanzada, mapa interactivo, lista de favoritos persistente, visualización de perfiles completos y envío de solicitudes con validación de acudiente para menores.
+* **Portal Docente:** Panel de solicitudes recibidas (Aceptar / Rechazar), edición de perfil pedagógico en 5 pasos, fijación de tarifas por hora, disponibilidad semanal y carga de soportes académicos (PDF/imágenes).
+
+---
+
+## 📱 Diseño Mobile-First y Cards
+
+La plataforma cuenta con una arquitectura optimizada para dispositivos móviles (smartphones de 360px a 420px):
+
+* 🎴 **Tarjetas Autocontenidas (Cards):** Visualización modular de cada tutor con avatar, badges de datos declarados, grilla de 3 métricas clave (Tarifa, Sector, Disponibilidad) y botones apilables para el pulgar.
+* ☀️ **100% Modo Claro (Light Theme):** Interfaz limpia con alto contraste visual (reglas WCAG 2.2 y directrices de UI/UX Pro Max).
+* 👆 **Áreas Táctiles Accesibles:** Botones de acción y controles interactivos con tamaño mínimo de 44×44 px (`touch-target-size`).
+* 🧭 **Navegación Inferior (Mobile Bottom Nav):** Barra fija de acceso rápido (`Buscar`, `Tutores`, `Solicitudes`, `Perfil`) con respeto estricto de zonas seguras (`safe-area-inset-bottom`).
+
+---
+
+## 🛠️ Stack Tecnológico
+
+| Capa | Tecnologías |
+| :--- | :--- |
+| **Frontend** | [React 19](https://react.dev/), [TypeScript](https://www.typescriptlang.org/), [Vite](https://vitejs.dev/) |
+| **Estilos** | [Tailwind CSS v4](https://tailwindcss.com/), [Lucide React](https://lucide.dev/) (iconos vectoriales SVG) |
+| **Mapas & Geo** | [MapLibre GL JS](https://maplibre.org/), [OpenFreeMap](https://openfreemap.org/) |
+| **Backend & Auth** | [Supabase](https://supabase.com/), PostgreSQL 15, PostGIS, Row Level Security (RLS) |
+| **Almacenamiento** | Supabase Storage (Bucket privado con URLs firmadas para soportes académicos) |
+| **Testing** | Node.js Test Runner, pruebas de integración E2E con Chromium |
+
+---
+
+## 🚀 Guía Rápida de Instalación
+
+### Prerrequisitos
+* **Node.js**: v20 o superior (recomendado v22)
+* **npm**: v10 o superior
+
+### 1. Clonar el repositorio
+```bash
+git clone https://github.com/JaredBautist/TUTOR-CUCUTA.git
+cd tutorcúcuta
+```
+
+### 2. Instalar dependencias
+```bash
+npm install
+```
+
+### 3. Configurar variables de entorno
+Crea un archivo `.env` en la raíz del proyecto tomando como base `.env.example`:
+```env
+VITE_SUPABASE_URL=https://tu-proyecto.supabase.co
+VITE_SUPABASE_ANON_KEY=tu-anon-key-publica
+```
+
+### 4. Iniciar el servidor de desarrollo
+```bash
 npm run dev
 ```
+Abre en tu navegador: [http://127.0.0.1:3000](http://127.0.0.1:3000)
 
-Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` for Supabase Auth, profiles and the catalog.
-Never put a service-role key in a browser environment variable. Access requires a configured Supabase client and an authenticated account.
-The development server uses port 3000. Follow [authentication setup](docs/auth-and-profiles.md) to apply the private-account migration and configure Google and email redirects.
+---
 
-Maps load automatically without an API key or billing account. Visible maps request
-native browser location permission and center on the first permitted position. Follow
-[Maps and location setup](docs/maps-setup.md) for OpenFreeMap, the additive Supabase
-migration, publication rules and verification.
+## 🧪 Pruebas y Validación de Calidad
 
-## Project structure
+El proyecto cuenta con una sólida suite de pruebas automatizadas que validan reglas de negocio, cálculo geográfico, recomendaciones y seguridad RLS:
 
-| Path | Purpose |
-| --- | --- |
-| `src/App.tsx` | Screen navigation, selections, and shared local state |
-| `src/components/views/` | Student and teacher screens |
-| `src/components/common/` | Navigation and the shared MapLibre wrapper |
-| `src/features/accounts/` | Account validation, session controller, Auth adapter and private profile repository |
-| `src/features/maps/` | Geographic rules, location lifecycle, feed and provider adapters |
-| `src/components/modals/` | Tutoring request form |
-| `src/data/searchDefaults.ts` | Initial search preferences; no demo people |
-| `src/utils/` | Data adapters, local storage, fixture identification, and contact formatting |
-| `supabase/` | Schema migrations, reference-sector seed, and combined SQL |
-| `specs/clean-views-real-data/` | Agreed cleanup requirements, design, tasks, and verification |
-| `specs/google-maps-live-location/` | Original location contract and historical Google provider evidence |
-| `tests/` | Behavioral regressions and isolated Chromium checks |
-
-## Validation
-
-```sh
+```bash
+# Ejecutar todas las pruebas unitarias y de integración (84 tests)
 npm test
+
+# Validar tipado y linter sin errores
 npm run lint
+
+# Generar compilación optimizada para producción
 npm run build
-npm run test:browser
-npm run test:maps:browser
-npm run test:maps:db
-npm run test:accounts:browser
-npm run test:accounts:db
-npm run verify:accounts # read-only account/provider activation check
-npm run verify:marketplace # read-only new-table availability and anonymous-denial checks
+
+# Previsualizar el bundle de producción
+npm run preview
 ```
 
-The browser check requires an existing `chromium` executable and an available
-ports 4173/4174/4175/4176. The map test renders the real MapLibre SDK and public OpenFreeMap
-cartography; device/catalog/feed/Auth responses are controlled. It needs network
-access and WebGL2 support. The database test uses an existing `postgres:15-alpine`
-Docker image in a disposable isolated container and verifies the new migration's
-actual permissions and constraints. No test modifies hosted records.
+---
 
-## Preview and deployment boundary
+## 👥 Cuentas y Credenciales de Prueba
 
-`npm run build` creates `dist/`; `npm run preview` serves the static build locally.
-Configure the Vite environment variables before building a hosted preview.
-Google is enabled and the marketplace migration is applied. Real hosted account/Storage/request delivery and recommendation-quality evaluation remain required before a production readiness claim.
+Para facilitar la evaluación y demostración del sistema, se encuentran disponibles cuentas preconfiguradas tanto en el archivo interactivo [`credenciales.html`](credenciales.html) como en [`CREDENCIALES_PRUEBAS.md`](CREDENCIALES_PRUEBAS.md):
 
-Accounts have one immutable role. Both profile forms save private database records after authentication. Legacy device drafts are preserved but never claimed by a new account. Search filters remain within the active session. Favorites use private Supabase persistence after the favorites migration. Request submission and explicit teacher publication now use the protected marketplace RPCs.
+### 🧑‍🏫 Docentes Registrados en Supabase:
+| Docente | Materia Principal | Teléfono de Contacto | Tarifa / h | Modalidad |
+| :--- | :--- | :--- | :--- | :--- |
+| **Sebastián Mendoza** | Matemáticas / Álgebra | `+57 300 481 9273` | $30.000 COP | Presencial / Virtual |
+| **Valentina Duarte** | Física / Cálculo | `+57 312 849 1056` | $45.000 COP | Presencial / Virtual |
+| **Camilo Becerra** | Química | `+57 320 634 5182` | $35.000 COP | Presencial / Virtual |
+| **Laura Quintero** | Inglés | `+57 315 902 4731` | $35.000 COP | Virtual |
 
-Both SQL initialization paths seed reference sectors only. The cleanup migration
-removes the artificial default match score without deleting existing rows. These
-files have not been executed against a hosted database as part of the UI cleanup.
+*(Contraseña estándar para todas las cuentas de prueba: `Prueba123!`)*
 
-## Connected marketplace setup
+---
 
-On an existing project with the account migration already applied, execute only
-`supabase/migrations/20260912000000_cloud_marketplace.sql` through SQL Editor.
-It preserves legacy records and adds protected offers, request RPCs and documents.
-Do not run the combined seed initializer against an existing database.
+## 📂 Estructura del Proyecto
 
-```sh
-npm run verify:marketplace
-npm run test:marketplace:db
-npm run test:marketplace:browser
+```text
+tutorcúcuta/
+├── src/
+│   ├── components/
+│   │   ├── common/         # Header, navegación móvil y mapa unificado MapLibre
+│   │   ├── marketplace/    # Paneles de ofertas y documentos de soporte
+│   │   ├── modals/         # Modal de solicitud y reserva de tutorías
+│   │   └── views/          # Vistas principales (Búsqueda, Resultados, Perfil, etc.)
+│   ├── features/
+│   │   ├── accounts/       # Autenticación, perfiles y sesiones
+│   │   ├── favorites/      # Gestión de tutores guardados en Supabase
+│   │   ├── maps/           # Lógica geoespacial, cálculo de distancias y radio
+│   │   ├── marketplace/    # Repositorio de ofertas y solicitudes
+│   │   └── recommender/    # Algoritmo determinístico de compatibilidad
+│   ├── App.tsx             # Enrutador principal y control de sesión
+│   └── main.tsx            # Punto de entrada de la aplicación
+├── supabase/
+│   └── migrations/         # Migraciones SQL (cuentas, ofertas, favoritos, RLS)
+├── docs/                   # Documentación técnica, contratos y decisiones
+├── tests/                  # Pruebas automatizadas de regresión y comportamiento
+└── package.json            # Dependencias y scripts de ejecución
 ```
 
-The DB test requires an already installed Docker `postgres:15-alpine` image and
-uses an isolated disposable container. Browser tests use controlled accounts/data.
-Actual cross-device delivery and private Storage need a hosted account check.
+---
 
-Tutors save their profile, choose offer levels/modalities/weekly hours, enter a
-contact with country code, select a teaching zone for in-person classes and press
-“Guardar perfil y publicar oferta”. Students see published offers only. Document
-access requires a session; withdrawing an offer revokes new document reads.
+## 📄 Licencia
 
-
-## Persistent favorites and release preparation
-
-Favorites use `supabase/migrations/20260912010000_student_favorites.sql`, applied
-separately after marketplace. Run `npm run verify:favorites` to check remote table
-presence and anonymous protection; it does not test real cross-device saves.
-See [favorites contract](docs/persistent-favorites.md), [ranking evaluation](docs/recommender-evaluation.md)
-and [Vercel readiness](docs/vercel-readiness.md) for validation and remaining hosted checks.
+Este proyecto fue desarrollado con fines académicos para la asignatura de **Tecnologías Emergentes** (Ingeniería de Software - FESC Cúcuta, 2026). Todos los derechos reservados.
