@@ -10,3 +10,6 @@ coverage/
 # Local derived knowledge graph and caches
 graphify-out/
 .graphify/
+
+# Supabase
+supabase/
