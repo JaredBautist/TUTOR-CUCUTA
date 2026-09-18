@@ -131,7 +131,7 @@ export const StudentResultsView: React.FC<StudentResultsViewProps> = ({
 
         {/* Filter Badges Carousel */}
         <div className="flex items-center gap-1.5 pt-1 text-xs overflow-x-auto no-scrollbar pb-1">
-          {filters.subject && <span className="bg-slate-900 text-white font-bold px-2.5 py-1 rounded-md shrink-0">
+          {filters.subject && <span className="bg-teal-800 text-white font-bold px-2.5 py-1 rounded-md shrink-0">
             {filters.subject}
           </span>}
           {filters.educationLevel && <span className="bg-slate-100 text-slate-700 px-2.5 py-1 rounded-md shrink-0">
@@ -266,7 +266,7 @@ export const StudentResultsView: React.FC<StudentResultsViewProps> = ({
                     setSearchTerm('');
                     setFilterTab('all');
                   }}
-                  className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition-colors"
+                  className="px-4 py-2 bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold rounded-xl transition-colors min-h-[40px] cursor-pointer"
                 >
                   Ver todos los tutores
                 </button>}
@@ -289,18 +289,18 @@ export const StudentResultsView: React.FC<StudentResultsViewProps> = ({
                 <div
                   key={tutor.id}
                   onClick={() => setSelectedTutorId(tutor.id)}
-                  className={`bg-white rounded-xl border p-4 sm:p-5 transition-all cursor-pointer shadow-xs ${
+                  className={`bg-white rounded-2xl border p-4 sm:p-5 transition-all cursor-pointer shadow-xs ${
                     isSelected
                       ? 'border-teal-600 ring-2 ring-teal-500/20 shadow-md'
-                      : 'border-slate-200/90 hover:border-slate-300'
+                      : 'border-slate-200/90 hover:border-slate-300 hover:shadow-xs'
                   }`}
                 >
                   {/* Top Tutor Info Row */}
                   <div className="flex items-start gap-3 sm:gap-4">
                     {tutor.avatar ? (
-                      <img src={tutor.avatar} alt={tutor.name} className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl object-cover border border-slate-200 shadow-xs shrink-0" />
+                      <img src={tutor.avatar} alt={tutor.name} className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl object-cover border border-slate-200 shadow-xs shrink-0" />
                     ) : (
-                      <span aria-label={`Perfil de ${tutor.name}`} className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-teal-50 text-teal-800 font-bold flex items-center justify-center shrink-0">
+                      <span aria-label={`Perfil de ${tutor.name}`} className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-teal-50 text-teal-800 font-bold flex items-center justify-center shrink-0">
                         {tutor.name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]).join('') || 'T'}
                       </span>
                     )}
@@ -326,7 +326,7 @@ export const StudentResultsView: React.FC<StudentResultsViewProps> = ({
                             type="button"
                             disabled={favoritesDisabled}
                             onClick={(e) => handleToggleSave(tutor.id, e)}
-                            className={`p-1.5 rounded-lg border transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-wait ${
+                            className={`p-2.5 rounded-xl border transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-wait min-w-[44px] min-h-[44px] flex items-center justify-center ${
                               isSaved
                                 ? 'bg-amber-50 border-amber-300 text-amber-600'
                                 : 'border-slate-200 text-slate-400 hover:text-slate-600 hover:bg-slate-50'
@@ -353,7 +353,7 @@ export const StudentResultsView: React.FC<StudentResultsViewProps> = ({
                   </div>
 
                   {/* Key Metrics Row (Price, Location, Next Available) */}
-                  <div className="grid grid-cols-3 gap-1.5 sm:gap-2 mt-3.5 p-2.5 sm:p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs">
+                  <div className="grid grid-cols-3 gap-1.5 sm:gap-2 mt-3.5 p-2.5 sm:p-3 bg-slate-50/80 rounded-xl border border-slate-100 text-xs">
                     <div>
                       <span className="text-slate-400 block text-[9px] sm:text-[10px] uppercase font-semibold">Tarifa</span>
                       <span className="font-bold text-slate-900 text-xs sm:text-sm font-mono">
@@ -405,7 +405,7 @@ export const StudentResultsView: React.FC<StudentResultsViewProps> = ({
                           e.stopPropagation();
                           toggleReasons(tutor.id);
                         }}
-                        className="w-full flex items-center justify-between text-[11px] sm:text-xs font-semibold text-slate-700 hover:text-slate-900 cursor-pointer"
+                        className="w-full flex items-center justify-between text-[11px] sm:text-xs font-semibold text-slate-700 hover:text-slate-900 cursor-pointer min-h-[44px]"
                       >
                         <span className="flex items-center gap-1.5 text-teal-700">
                           <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
@@ -435,7 +435,7 @@ export const StudentResultsView: React.FC<StudentResultsViewProps> = ({
                         e.stopPropagation();
                         onSelectTutor(tutor);
                       }}
-                      className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors text-center min-h-[42px] cursor-pointer"
+                      className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 transition-colors text-center min-h-[44px] flex items-center justify-center cursor-pointer"
                     >
                       Ver perfil completo
                     </button>
@@ -446,7 +446,7 @@ export const StudentResultsView: React.FC<StudentResultsViewProps> = ({
                         e.stopPropagation();
                         onRequestTutor(tutor);
                       }}
-                      className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-xs hover:shadow transition-all text-center min-h-[42px] cursor-pointer"
+                      className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold shadow-xs hover:shadow transition-all text-center min-h-[44px] flex items-center justify-center cursor-pointer"
                     >
                       Solicitar tutoría
                     </button>
@@ -514,7 +514,7 @@ export const StudentResultsView: React.FC<StudentResultsViewProps> = ({
                   <button
                     type="button"
                     onClick={() => onRequestTutor(selectedTutorObj)}
-                    className="px-3 py-1.5 bg-slate-900 text-white text-[11px] font-bold rounded-lg shadow-xs cursor-pointer"
+                    className="px-3 py-1.5 bg-teal-700 hover:bg-teal-800 text-white text-[11px] font-bold rounded-lg shadow-xs cursor-pointer min-h-[36px]"
                   >
                     Solicitar
                   </button>

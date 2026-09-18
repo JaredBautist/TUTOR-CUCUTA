@@ -180,9 +180,9 @@ export const StudentSearchView: React.FC<StudentSearchViewProps> = ({
                     key={item.name}
                     type="button"
                     onClick={() => setSubject(item.name)}
-                    className={`px-3 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                    className={`px-3 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer min-h-[40px] ${
                       isSelected
-                        ? 'bg-slate-900 text-white shadow-xs'
+                        ? 'bg-teal-700 text-white shadow-xs'
                         : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200/80'
                     }`}
                   >
@@ -272,9 +272,9 @@ export const StudentSearchView: React.FC<StudentSearchViewProps> = ({
                       key={style}
                       type="button"
                       onClick={() => toggleLearningStyle(style)}
-                      className={`text-xs px-3 py-2 rounded-lg border font-medium transition-all cursor-pointer ${
+                      className={`text-xs px-3 py-2 rounded-lg border font-medium transition-all cursor-pointer min-h-[38px] ${
                         isSelected
-                          ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
+                          ? 'bg-teal-700 text-white border-teal-700 shadow-xs'
                           : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
                       }`}
                     >
@@ -310,7 +310,7 @@ export const StudentSearchView: React.FC<StudentSearchViewProps> = ({
                     onClick={() => setEducationLevel(lvl)}
                     className={`p-3 rounded-lg text-xs font-semibold border text-center transition-all min-h-[44px] flex items-center justify-center ${
                       isActive
-                        ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
+                        ? 'bg-teal-700 text-white border-teal-700 shadow-xs'
                         : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
                     }`}
                   >
@@ -417,7 +417,7 @@ export const StudentSearchView: React.FC<StudentSearchViewProps> = ({
                         onClick={() => toggleDay(d.key)}
                         className={`w-9 h-9 sm:w-8 sm:h-8 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                           isChecked
-                            ? 'bg-slate-900 text-white shadow-xs'
+                            ? 'bg-teal-700 text-white shadow-xs'
                             : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                         }`}
                       >
@@ -482,7 +482,7 @@ export const StudentSearchView: React.FC<StudentSearchViewProps> = ({
             <button
               type="button"
               onClick={handleApplySearch}
-              className="px-6 py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 min-h-[44px]"
+              className="px-6 py-3.5 bg-teal-700 hover:bg-teal-800 text-white font-bold text-sm rounded-xl shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-2 min-h-[44px] cursor-pointer"
             >
               <span>Ver tutores</span>
               <ArrowRight className="w-4 h-4" />
@@ -561,7 +561,7 @@ export const StudentSearchView: React.FC<StudentSearchViewProps> = ({
             <button
               type="button"
               onClick={handleApplySearch}
-              className="lg:hidden w-full py-3.5 bg-slate-900 text-white font-bold text-sm rounded-xl shadow-md flex items-center justify-center gap-2"
+              className="lg:hidden w-full py-3.5 bg-teal-700 hover:bg-teal-800 text-white font-bold text-sm rounded-xl shadow-sm flex items-center justify-center gap-2 min-h-[44px] cursor-pointer"
             >
               <span>Ver tutores</span>
               <ArrowRight className="w-4 h-4" />

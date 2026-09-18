@@ -64,9 +64,9 @@ export const LandingLoginView: React.FC<LandingLoginViewProps> = ({
                 <button
                   type="button"
                   onClick={() => onRoleChange('student')}
-                  className={`flex items-center justify-center gap-2 py-2.5 px-3 sm:px-4 rounded-lg transition-all min-h-[42px] cursor-pointer ${
+                  className={`flex items-center justify-center gap-2 py-2.5 px-3 sm:px-4 rounded-lg transition-all min-h-[44px] cursor-pointer ${
                     role === 'student'
-                      ? 'bg-slate-900 text-white shadow-sm'
+                      ? 'bg-teal-700 text-white shadow-sm'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
                   }`}
                 >
@@ -77,9 +77,9 @@ export const LandingLoginView: React.FC<LandingLoginViewProps> = ({
                 <button
                   type="button"
                   onClick={() => onRoleChange('tutor')}
-                  className={`flex items-center justify-center gap-2 py-2.5 px-3 sm:px-4 rounded-lg transition-all min-h-[42px] cursor-pointer ${
+                  className={`flex items-center justify-center gap-2 py-2.5 px-3 sm:px-4 rounded-lg transition-all min-h-[44px] cursor-pointer ${
                     role === 'tutor'
-                      ? 'bg-slate-900 text-white shadow-sm'
+                      ? 'bg-teal-700 text-white shadow-sm'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
                   }`}
                 >

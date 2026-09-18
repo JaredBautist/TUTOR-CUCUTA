@@ -258,26 +258,25 @@ export const TutorProfileView: React.FC<TutorProfileViewProps> = ({
           </div>
 
           {/* Booking CTA Card (Visible on Desktop / Tablet) */}
-          <div className="bg-slate-900 text-white rounded-2xl p-5 sm:p-6 shadow-xl space-y-4">
+          <div className="bg-white border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-sm space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <span className="text-xs text-slate-400 block">Tarifa por hora:</span>
-                <span className="text-2xl font-extrabold text-white font-mono">
+                <span className="text-xs text-slate-500 block font-medium">Tarifa por hora:</span>
+                <span className="text-2xl font-extrabold text-slate-900 font-mono">
                   ${tutor.ratePerHour.toLocaleString('es-CO')} COP
                 </span>
               </div>
-
             </div>
 
             <button
               type="button"
               onClick={() => onRequestTutor(tutor)}
-              className="w-full py-3.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-sm rounded-xl shadow transition-all flex items-center justify-center gap-2 cursor-pointer min-h-[44px]"
+              className="w-full py-3.5 bg-teal-700 hover:bg-teal-800 text-white font-bold text-sm rounded-xl shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer min-h-[44px]"
             >
               <span>Solicitar tutoría con {tutor.name.split(' ')[0]}</span>
             </button>
 
-            <p className="text-[11px] text-slate-400 text-center">
+            <p className="text-[11px] text-slate-500 text-center">
               Las solicitudes estarán disponibles cuando la cuenta esté conectada.
             </p>
           </div>
@@ -285,14 +284,14 @@ export const TutorProfileView: React.FC<TutorProfileViewProps> = ({
       </div>
 
       {/* MOBILE STICKY BOTTOM BOOKING BAR (Only on screen < lg) */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-t border-slate-200 px-4 py-2.5 shadow-2xl flex items-center justify-between gap-3">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-t border-slate-200 px-4 py-2.5 shadow-lg flex items-center justify-between gap-3 safe-bottom">
         <div>
-          <span className="text-[10px] text-slate-400 block font-semibold">Tarifa por hora:</span>
+          <span className="text-[10px] text-slate-500 block font-semibold">Tarifa por hora:</span>
           <div className="flex items-center gap-1.5">
             <span className="text-base font-extrabold text-slate-900 font-mono">
               ${tutor.ratePerHour.toLocaleString('es-CO')}
             </span>
-            {tutor.matchScore !== undefined && <span className="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded font-bold">
+            {tutor.matchScore !== undefined && <span className="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-bold">
               {tutor.matchScore}%
             </span>}
           </div>
@@ -301,7 +300,7 @@ export const TutorProfileView: React.FC<TutorProfileViewProps> = ({
         <button
           type="button"
           onClick={() => onRequestTutor(tutor)}
-          className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-md flex items-center justify-center gap-1.5 min-h-[44px] cursor-pointer"
+          className="px-5 py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs rounded-xl shadow-xs flex items-center justify-center gap-1.5 min-h-[44px] cursor-pointer"
         >
           <span>Solicitar tutoría</span>
         </button>

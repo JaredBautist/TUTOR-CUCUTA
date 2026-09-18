@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Credenciales de Acceso y Guía de Pruebas — TutorCúcuta</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0d9488;
+      --primary-dark: #0f766e;
+      --primary-light: #ccfbf1;
+      --secondary: #6366f1;
+      --slate-50: #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-300: #cbd5e1;
+      --slate-600: #475569;
+      --slate-700: #334155;
+      --slate-800: #1e293b;
+      --slate-900: #0f172a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: linear-gradient(135deg, #f0fdf4 0%, #f8fafc 50%, #eff6ff 100%);
+      color: var(--slate-800);
+      min-height: 100vh;
+      padding: 2.5rem 1.5rem;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .badge-header {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #e0f2fe;
+      color: #0369a1;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.4rem 0.9rem;
+      border-radius: 9999px;
+      margin-bottom: 0.8rem;
+    }
+
+    h1 {
+      font-size: 2.3rem;
+      font-weight: 800;
+      color: var(--slate-900);
+      letter-spacing: -0.03em;
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      color: var(--slate-600);
+      font-size: 1.05rem;
+      max-width: 650px;
+      margin: 0 auto;
+    }
+
+    .nav-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .tab-btn {
+      padding: 0.75rem 1.5rem;
+      border: 1px solid var(--slate-200);
+      border-radius: 0.85rem;
+      background: white;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--slate-600);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+
+    .tab-btn.active {
+      background: var(--slate-900);
+      color: white;
+      border-color: var(--slate-900);
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+    }
+
+    .tab-btn:hover:not(.active) {
+      background: var(--slate-100);
+      color: var(--slate-900);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--slate-900);
+      margin-bottom: 1.25rem;
+    }
+
+    .section-title span.pill {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .card {
+      background: white;
+      border-radius: 1.25rem;
+      border: 1px solid var(--slate-200);
+      padding: 1.5rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+      border-color: #cbd5e1;
+    }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .avatar.docente {
+      background: #ccfbf1;
+      color: #0f766e;
+    }
+
+    .avatar.estudiante {
+      background: #e0e7ff;
+      color: #4338ca;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--slate-900);
+      line-height: 1.2;
+    }
+
+    .card-subtitle {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--slate-600);
+      margin-top: 0.2rem;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.25rem 0.6rem;
+      border-radius: 0.5rem;
+      background: var(--slate-100);
+      color: var(--slate-700);
+    }
+
+    .tag.rate {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .tag.modality {
+      background: #e0f2fe;
+      color: #0369a1;
+    }
+
+    .tag.phone {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .credentials-box {
+      background: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      border-radius: 0.85rem;
+      padding: 0.85rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      font-size: 0.85rem;
+    }
+
+    .cred-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .cred-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--slate-600);
+    }
+
+    .cred-value {
+      font-family: monospace;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--slate-800);
+      word-break: break-all;
+      background: white;
+      padding: 0.2rem 0.45rem;
+      border-radius: 0.35rem;
+      border: 1px solid var(--slate-200);
+    }
+
+    .copy-btn {
+      background: var(--slate-200);
+      color: var(--slate-700);
+      border: none;
+      padding: 0.3rem 0.6rem;
+      border-radius: 0.4rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+    }
+
+    .copy-btn:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .guide-card {
+      background: white;
+      border-radius: 1.25rem;
+      border: 1px solid var(--slate-200);
+      padding: 1.75rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+      margin-top: 1rem;
+    }
+
+    .guide-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 9999px;
+      background: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+
+    .step-text h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--slate-900);
+      margin-bottom: 0.2rem;
+    }
+
+    .step-text p {
+      font-size: 0.85rem;
+      color: var(--slate-600);
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 3rem;
+      color: var(--slate-600);
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="badge-header">
+      <span>🎓 TutorCúcuta</span>
+      <span>•</span>
+      <span>Base de Datos Supabase Conectada</span>
+    </div>
+    <h1>Credenciales de Acceso para Pruebas</h1>
+    <p>Haz clic en el botón de copiar en cualquier correo o contraseña para ingresar al sistema y realizar la evaluación interactiva.</p>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="filterRole('all')">Todos los Usuarios</button>
+    <button class="tab-btn" onclick="filterRole('docente')">👨‍🏫 Docentes (4)</button>
+    <button class="tab-btn" onclick="filterRole('estudiante')">👨‍🎓 Estudiantes (4)</button>
+  </div>
+
+  <!-- SECCIÓN DOCENTES -->
+  <div id="section-docentes">
+    <div class="section-title">
+      <span>👨‍🏫 Cuentas de Docentes / Tutores</span>
+      <span class="pill">4 Registrados con Teléfono Real</span>
+    </div>
+
+    <div class="cards-grid">
+      <!-- Docente 1 -->
+      <div class="card" data-role="docente">
+        <div>
+          <div class="card-top">
+            <div class="avatar docente">SM</div>
+            <div>
+              <div class="card-title">Sebastián Mendoza</div>
+              <div class="card-subtitle">Ingeniero de Sistemas</div>
+            </div>
+          </div>
+          <div class="tags">
+            <span class="tag">📐 Matemáticas</span>
+            <span class="tag rate">$30.000 COP/h</span>
+            <span class="tag modality">📍 Presencial (Centro)</span>
+            <span class="tag">🕒 Lunes 15:00–18:00</span>
+            <span class="tag phone">📞 +57 300 481 9273</span>
+          </div>
+        </div>
+        <div class="credentials-box">
+          <div class="cred-row">
+            <span class="cred-label">Correo</span>
+            <span class="cred-value">sebastian-mendoza@demo.tutorcucuta.example</span>
+            <button class="copy-btn" onclick="copyText('sebastian-mendoza@demo.tutorcucuta.example', this)">Copiar</button>
+          </div>
+          <div class="cred-row">
+            <span class="cred-label">Clave</span>
+            <span class="cred-value">OM9UiWgkC2fHH86r2_sVjO_IT2jZhPQb</span>
+            <button class="copy-btn" onclick="copyText('OM9UiWgkC2fHH86r2_sVjO_IT2jZhPQb', this)">Copiar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Docente 2 -->
+      <div class="card" data-role="docente">
+        <div>
+          <div class="card-top">
+            <div class="avatar docente">VD</div>
+            <div>
+              <div class="card-title">Valentina Duarte</div>
+              <div class="card-subtitle">Lic. en Matemáticas y Física</div>
+            </div>
+          </div>
+          <div class="tags">
+            <span class="tag">📐 Matemáticas / Física</span>
+            <span class="tag rate">$45.000 COP/h</span>
+            <span class="tag modality">📍 Presencial y Virtual (Guaimaral)</span>
+            <span class="tag">🕒 Lunes 14:00–18:00</span>
+            <span class="tag phone">📞 +57 312 849 1056</span>
+          </div>
+        </div>
+        <div class="credentials-box">
+          <div class="cred-row">
+            <span class="cred-label">Correo</span>
+            <span class="cred-value">valentina-duarte@demo.tutorcucuta.example</span>
+            <button class="copy-btn" onclick="copyText('valentina-duarte@demo.tutorcucuta.example', this)">Copiar</button>
+          </div>
+          <div class="cred-row">
+            <span class="cred-label">Clave</span>
+            <span class="cred-value">rWjO2f0fcXpM3bwrTrkWxbi4bQreqPlW</span>
+            <button class="copy-btn" onclick="copyText('rWjO2f0fcXpM3bwrTrkWxbi4bQreqPlW', this)">Copiar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Docente 3 -->
+      <div class="card" data-role="docente">
+        <div>
+          <div class="card-top">
+            <div class="avatar docente">CB</div>
+            <div>
+              <div class="card-title">Camilo Becerra</div>
+              <div class="card-subtitle">Ingeniero Electrónico</div>
+            </div>
+          </div>
+          <div class="tags">
+            <span class="tag">📐 Matemáticas</span>
+            <span class="tag rate">$25.000 COP/h</span>
+            <span class="tag modality">💻 Virtual (Cúcuta)</span>
+            <span class="tag">🕒 Martes 18:00–21:00</span>
+            <span class="tag phone">📞 +57 320 634 5182</span>
+          </div>
+        </div>
+        <div class="credentials-box">
+          <div class="cred-row">
+            <span class="cred-label">Correo</span>
+            <span class="cred-value">camilo-becerra@demo.tutorcucuta.example</span>
+            <button class="copy-btn" onclick="copyText('camilo-becerra@demo.tutorcucuta.example', this)">Copiar</button>
+          </div>
+          <div class="cred-row">
+            <span class="cred-label">Clave</span>
+            <span class="cred-value">VIrQAwFeTmuuQ8xKnIwmo2ybqZShxoxV</span>
+            <button class="copy-btn" onclick="copyText('VIrQAwFeTmuuQ8xKnIwmo2ybqZShxoxV', this)">Copiar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Docente 4 -->
+      <div class="card" data-role="docente">
+        <div>
+          <div class="card-top">
+            <div class="avatar docente">LQ</div>
+            <div>
+              <div class="card-title">Laura Quintero</div>
+              <div class="card-subtitle">Lic. en Lenguas Extranjeras</div>
+            </div>
+          </div>
+          <div class="tags">
+            <span class="tag">🌐 Inglés</span>
+            <span class="tag rate">$35.000 COP/h</span>
+            <span class="tag modality">📍 Presencial y Virtual (Los Patios)</span>
+            <span class="tag">🕒 Martes 18:00–21:00</span>
+            <span class="tag phone">📞 +57 315 902 4731</span>
+          </div>
+        </div>
+        <div class="credentials-box">
+          <div class="cred-row">
+            <span class="cred-label">Correo</span>
+            <span class="cred-value">laura-quintero@demo.tutorcucuta.example</span>
+            <button class="copy-btn" onclick="copyText('laura-quintero@demo.tutorcucuta.example', this)">Copiar</button>
+          </div>
+          <div class="cred-row">
+            <span class="cred-label">Clave</span>
+            <span class="cred-value">9r0O-PvsuZ1RP1eByNOOi2JY3MUbL_Z7</span>
+            <button class="copy-btn" onclick="copyText('9r0O-PvsuZ1RP1eByNOOi2JY3MUbL_Z7', this)">Copiar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECCIÓN ESTUDIANTES -->
+  <div id="section-estudiantes">
+    <div class="section-title">
+      <span>👨‍🎓 Cuentas de Estudiantes</span>
+      <span class="pill">Para Búsqueda y Resultados</span>
+    </div>
+
+    <div class="cards-grid">
+      <!-- Estudiante 1 -->
+      <div class="card" data-role="estudiante">
+        <div>
+          <div class="card-top">
+            <div class="avatar estudiante">SS</div>
+            <div>
+              <div class="card-title">Santiago Suárez</div>
+              <div class="card-subtitle">20 años • Universidad</div>
+            </div>
+          </div>
+          <div class="tags">
+            <span class="tag">Objetivo: Cálculo diferencial</span>
+            <span class="tag">Sector: La Riviera</span>
+          </div>
+        </div>
+        <div class="credentials-box">
+          <div class="cred-row">
+            <span class="cred-label">Correo</span>
+            <span class="cred-value">santiago-suarez@demo.tutorcucuta.example</span>
+            <button class="copy-btn" onclick="copyText('santiago-suarez@demo.tutorcucuta.example', this)">Copiar</button>
+          </div>
+          <div class="cred-row">
+            <span class="cred-label">Clave</span>
+            <span class="cred-value">B3xf-wK8N5D_ZidLR_pJIOlv7Swy7QDi</span>
+            <button class="copy-btn" onclick="copyText('B3xf-wK8N5D_ZidLR_pJIOlv7Swy7QDi', this)">Copiar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Estudiante 2 -->
+      <div class="card" data-role="estudiante">
+        <div>
+          <div class="card-top">
+            <div class="avatar estudiante">MR</div>
+            <div>
+              <div class="card-title">Mateo Rojas</div>
+              <div class="card-subtitle">16 años • Grado 11 Media</div>
+            </div>
+          </div>
+          <div class="tags">
+            <span class="tag">Objetivo: Saber 11 Matemáticas</span>
+            <span class="tag">Sector: Centro</span>
+          </div>
+        </div>
+        <div class="credentials-box">
+          <div class="cred-row">
+            <span class="cred-label">Correo</span>
+            <span class="cred-value">mateo-rojas@demo.tutorcucuta.example</span>
+            <button class="copy-btn" onclick="copyText('mateo-rojas@demo.tutorcucuta.example', this)">Copiar</button>
+          </div>
+          <div class="cred-row">
+            <span class="cred-label">Clave</span>
+            <span class="cred-value">5X5I_cUEYvGIlO787lpAyndE5xnvyVVz</span>
+            <button class="copy-btn" onclick="copyText('5X5I_cUEYvGIlO787lpAyndE5xnvyVVz', this)">Copiar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Estudiante 3 -->
+      <div class="card" data-role="estudiante">
+        <div>
+          <div class="card-top">
+            <div class="avatar estudiante">MC</div>
+            <div>
+              <div class="card-title">Mariana Castro</div>
+              <div class="card-subtitle">22 años • Universidad</div>
+            </div>
+          </div>
+          <div class="tags">
+            <span class="tag">Objetivo: Inglés conversación</span>
+            <span class="tag">Sector: Los Patios</span>
+          </div>
+        </div>
+        <div class="credentials-box">
+          <div class="cred-row">
+            <span class="cred-label">Correo</span>
+            <span class="cred-value">mariana-castro@demo.tutorcucuta.example</span>
+            <button class="copy-btn" onclick="copyText('mariana-castro@demo.tutorcucuta.example', this)">Copiar</button>
+          </div>
+          <div class="cred-row">
+            <span class="cred-label">Clave</span>
+            <span class="cred-value">LeMMcjyMt05rYpKv8P0S762XMVGj3YWz</span>
+            <button class="copy-btn" onclick="copyText('LeMMcjyMt05rYpKv8P0S762XMVGj3YWz', this)">Copiar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Estudiante 4 -->
+      <div class="card" data-role="estudiante">
+        <div>
+          <div class="card-top">
+            <div class="avatar estudiante">ST</div>
+            <div>
+              <div class="card-title">Salomé Torres</div>
+              <div class="card-subtitle">17 años • Grado 11 Media</div>
+            </div>
+          </div>
+          <div class="tags">
+            <span class="tag">Objetivo: Física cinemática</span>
+            <span class="tag">Sector: Guaimaral</span>
+          </div>
+        </div>
+        <div class="credentials-box">
+          <div class="cred-row">
+            <span class="cred-label">Correo</span>
+            <span class="cred-value">salome-torres@demo.tutorcucuta.example</span>
+            <button class="copy-btn" onclick="copyText('salome-torres@demo.tutorcucuta.example', this)">Copiar</button>
+          </div>
+          <div class="cred-row">
+            <span class="cred-label">Clave</span>
+            <span class="cred-value">HdoTLZ8sZJwZn5ZQ2tKAfnDnpOy6YjT6</span>
+            <button class="copy-btn" onclick="copyText('HdoTLZ8sZJwZn5ZQ2tKAfnDnpOy6YjT6', this)">Copiar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GUÍA RÁPIDA DE PRUEBAS PARA LA DOCENTE -->
+  <div class="guide-card">
+    <div class="section-title" style="margin-bottom: 1rem;">
+      <span>🧪 Pruebas Rápidas Sugeridas para Evaluar la Rúbrica</span>
+    </div>
+
+    <div class="guide-step">
+      <div class="step-num">1</div>
+      <div class="step-text">
+        <h4>Prueba de Presupuesto y Modalidad (Matemáticas Presencial)</h4>
+        <p>Inicia sesión como Estudiante. Selecciona <strong>Matemáticas</strong>, modalidad <strong>Presencial</strong> y presupuesto máximo de <strong>$40.000 COP</strong>. Verás que el sistema filtra y recomienda a <strong>Sebastián Mendoza ($30.000)</strong> y excluye a <strong>Valentina Duarte ($45.000)</strong> por superar el presupuesto.</p>
+      </div>
+    </div>
+
+    <div class="guide-step">
+      <div class="step-num">2</div>
+      <div class="step-text">
+        <h4>Explicación de Compatibilidad</h4>
+        <p>En la tarjeta de Sebastián Mendoza, haz clic en <strong>"¿Por qué te recomendamos este tutor?"</strong> para desplegar la afinidad (90%) y los 4 motivos objetivos de coincidencia (materia, tarifa, horario y ubicación).</p>
+      </div>
+    </div>
+
+    <div class="guide-step">
+      <div class="step-num">3</div>
+      <div class="step-text">
+        <h4>Prueba de Asignatura (Inglés)</h4>
+        <p>Modifica la búsqueda a materia <strong>Inglés</strong>. El catálogo filtrará de forma estricta mostrando únicamente a <strong>Laura Quintero ($35.000)</strong>.</p>
+      </div>
+    </div>
+
+    <div class="guide-step" style="margin-bottom: 0;">
+      <div class="step-num">4</div>
+      <div class="step-text">
+        <h4>Prueba de Modalidad Virtual</h4>
+        <p>Selecciona modalidad <strong>Virtual</strong> y materia <strong>Matemáticas</strong>. El sistema mostrará a <strong>Camilo Becerra ($25.000)</strong>, demostrando que en virtual la distancia geográfica es neutral.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    TutorCúcuta • Plataforma de Tutorías Académicas Georreferenciadas • Tecnologías Emergentes 2026-II
+  </footer>
+</div>
+
+<script>
+  function filterRole(role) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+
+    const secDocentes = document.getElementById('section-docentes');
+    const secEstudiantes = document.getElementById('section-estudiantes');
+
+    if (role === 'all') {
+      secDocentes.style.display = 'block';
+      secEstudiantes.style.display = 'block';
+    } else if (role === 'docente') {
+      secDocentes.style.display = 'block';
+      secEstudiantes.style.display = 'none';
+    } else {
+      secDocentes.style.display = 'none';
+      secEstudiantes.style.display = 'block';
+    }
+  }
+
+  function copyText(text, btn) {
+    navigator.clipboard.writeText(text).then(() => {
+      const originalText = btn.innerText;
+      btn.innerText = '✓ ¡Copiado!';
+      btn.style.background = '#0d9488';
+      btn.style.color = 'white';
+      setTimeout(() => {
+        btn.innerText = originalText;
+        btn.style.background = '';
+        btn.style.color = '';
+      }, 1800);
+    });
+  }
+</script>
+
+</body>
+</html>

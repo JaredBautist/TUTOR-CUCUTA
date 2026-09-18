@@ -83,3 +83,27 @@ Favorites and release preparation: see [persistent favorites](../persistent-favo
 [ranking evaluation](../recommender-evaluation.md) and [Vercel readiness](../vercel-readiness.md).
 Technical scenario tests passed with unchanged ranking weights; no claim of academic
 effectiveness or completed deployment. Existing visual identity is preserved.
+
+
+## Live verification update — 2026-09-12
+
+[Hosted account verification](../hosted-validation-2026-09-12.md) supersedes earlier
+pending email/Storage/request/favorites checks: the agent tested both real accounts
+with explicitly authorized fictional data, restored the original private profiles,
+removed test favorites/documents, withdrew the offer and cancelled the request.
+Only the cancelled request/private withdrawn draft remain as test history. No mocks
+were added to source. Google OAuth consent, actual GPS/device and production checks
+remain outside this evidence. Four UI/data presentation findings are documented
+for a subsequent bounded correction; the existing UI was not modified by testing.
+
+
+### Approved academic demonstration dataset — 2026-09-17
+
+The user now explicitly authorizes eight persisted fictional demonstration identities
+(four tutors/four students) with natural Colombian-style display names, administrative
+demo metadata and documented provenance. This is a bounded exception for the delivery
+dataset, not authorization to restore old inline mocks or present fictional credentials
+as verified. `docs/delivery-accounts.md` defines the dataset and provisioning contract.
+Implementation is prepared and locally validated; hosted creation is pending a
+server-only administrative key and controlled +57 contact. No accounts were created
+by this preparation. Existing real profiles and the visual design are preserved.

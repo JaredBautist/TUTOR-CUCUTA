@@ -1,6 +1,13 @@
 # TutorCúcuta session handoff
 
-Updated: 2026-09-12. This snapshot supersedes earlier prototype/local-only claims.
+Updated: 2026-09-18. This snapshot records the mobile responsiveness optimization, strict light mode enforcement, and UI/UX Pro Max skill integration.
+
+## Mobile responsiveness, light mode and UI/UX skill update (2026-09-18)
+
+- **Skill UI/UX Pro Max installed**: Cloned from `https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git` into `.agents/skills/ui-ux-pro-max` and linked as `.agents/skills/ui-ux-pro-max-skill`. Validated Python CLI search query against WCAG 2.2 and mobile responsive guidelines.
+- **Strict Light Mode Enforcement**: Eliminated dark-themed containers (`bg-slate-900`) across all views. Converted tutor profile booking CTA card and mobile sticky booking bar to clean light mode (`bg-white border border-slate-200/90 text-slate-900`) with brand teal primary buttons (`bg-teal-700 hover:bg-teal-800 text-white`). Updated search chips, role selectors, and action buttons in `StudentSearchView`, `StudentResultsView`, `StudentRequestsView`, and `LandingLoginView` to brand teal.
+- **Mobile Touch Target Optimization**: Enforced WCAG 2.2 / Apple HIG minimum touch target sizing (`min-h-[44px] min-w-[44px]`) on mobile hamburger navigation (`Header.tsx`), search inputs, and full-width card CTA buttons. Preserved safe area padding (`pb-28 sm:pb-12`) to prevent navigation overlap (`fixed-element-offset`).
+- **Validation**: 84/84 tests passing (`npm test`), `npm run lint` clean, `npm run build` passing, mobile viewport (`390x844`) audited via browser subagent with screenshot proof. Graphify refreshed (`graphify update .`).
 
 ## Current authorized work
 
@@ -136,8 +143,8 @@ empty/filled offer and mobile screenshots were inspected. No hosted writes occur
 
 ## Persistent favorites, ranking evaluation and Vercel preparation — 2026-09-12
 
-Authorized follow-up contract: `docs/persistent-favorites.md`. The user accepted
-performing the real two-account browser flow; results are not yet reported.
+Authorized follow-up contract: `docs/persistent-favorites.md`. The user subsequently authorized agent-driven real hosted tests; see the verification
+update below for completed checks and remaining limits.
 
 - Implemented `src/features/favorites/` with a domain Repository port, Supabase
   adapter and application hook. Existing result/profile bookmarks now load private
@@ -176,3 +183,78 @@ Next: collect the user's real two-account flow outcome (including favorite reloa
 logout/login and another device), then finalize redirects for the actual production
 origin. Do not repeat implemented favorites work or claim hosted end-to-end success
 from local tests. No publishing or messages to third parties were performed.
+
+
+## Live hosted validation completed — 2026-09-12
+
+The user provided existing student/tutor access and then explicitly authorized
+fictional test profiles (16-year-old grade 11 student, limits exam, 26-year-old systems
+engineer tutor, presencial COP 30,000/h). Report: `docs/hosted-validation-2026-09-12.md`.
+The existing port-3000 app was used; no server restart, fake HTTP response or Auth bypass.
+
+Verified live: email sign-in and session restore, profile save/reload, published
+rounded map point and offer delivery, real private Storage upload/student PDF view,
+server/UI guardian block, declared-test guardian transition, request delivery,
+acceptance/contact disclosure, cancellation/contact revocation, private favorites
+across independent browsers, focus synchronization, RLS isolation and withdrawal.
+Both original private profiles restored; favorite removed; document/object deleted;
+offer withdrawn. One cancelled test request and a private withdrawn offer remain
+as explicit test history. No contacts were called or messaged. Temporary isolated
+browser profiles were removed and the original server remains running.
+
+Evidence: 22 local screenshots and gallery outside the repo at
+`~/Escritorio/TutorCucuta-pruebas-2026-09-12/index.html`. No credentials or tokens in
+project memory. This supersedes the earlier pending hosted-email-flow statements;
+Google consent, actual device GPS, another physical device and production redirects
+are still unverified. One read failed transiently and passed on retry.
+
+Next bounded fixes from the live check: truthful weekly-availability text (currently
+nextAvailable is blank), remove stale account-connection copy on tutor detail,
+propagate the specific topic or hide its empty section, align result/favorite counts
+when no search origin exists. No application code was modified during this QA turn.
+
+
+## Recorded walkthrough — 2026-09-12
+
+User requested a complete video in the existing screenshot folder. Recorded actual
+browser interactions against the existing localhost:3000 app and hosted Supabase:
+student/tutor profiles, published teaching zone, private demonstration PNG, search
+radius and map, explanations, favorite, request, acceptance, cancellation/contact
+revocation and a 390px responsive viewport. User-authorized fictional scenario was
+reused; no backend mocks or application source changes. Output is a silent MP4 with
+Spanish captions and chapters, approximately 4 minutes, plus `video.html` and
+`video-notas.md` in `~/Escritorio/TutorCucuta-pruebas-2026-09-12/`.
+
+Original profiles restored and verified; favorite removed; document metadata and
+Storage object absent; offer withdrawn. The new video request is cancelled and
+retained alongside the earlier cancelled QA request; private withdrawn draft remains.
+Both temporary sessions signed out locally and RAM browser profiles removed. A
+transient offer-read failure recovered on retry. No contacts called or messaged.
+The four previously documented presentation findings remain unfixed; Google OAuth,
+physical GPS/device and production checks remain unverified.
+
+
+## Academic delivery dataset prepared — 2026-09-17
+
+User authorized four tutor and four student demonstration accounts (interpreting
+the repeated student count from the preceding tutor request), Colombian-style
+fictional names without visible PRUEBA suffixes, varied subjects/modalities/prices/
+schedules/zones, and persistent offers for the academic delivery. This authorizes
+intentional hosted demonstration records, not a browser mock fallback.
+
+Contract and operator instructions: `docs/delivery-accounts.md`. Dataset:
+`scripts/delivery/accounts.ts`. Provisioner: `scripts/provision-delivery-accounts.ts`.
+Uses Admin Auth with fictional reserved-domain identities, normal account Repository
+and publication RPC, a private credential journal outside the repo, collision/role
+checks and resumable stages. Minor profiles leave guardian authorization false.
+No real account is overwritten, no university/document credential is invented.
+
+Validation: eight new dataset/ownership tests pass; full suite 84/84 and TypeScript
+pass. Six criteria scenarios cover inclusion, budget/proximity exclusions, virtual
+matching and empty results, using the existing recommender and derived explanations.
+Local `--apply` stopped at prerequisite validation before any network mutation.
+NOT REGISTERED REMOTELY YET: only public Supabase configuration is available and
+no controlled Colombian contact has been supplied. User was asked for
+SUPABASE_SERVICE_ROLE_KEY and DELIVERY_CONTACT_PHONE in ignored `.env.admin`.
+Once supplied, run `--apply` and verify actual hosted account/catalog scenarios;
+do not claim that local tests prove those accounts already exist. No UI changed.

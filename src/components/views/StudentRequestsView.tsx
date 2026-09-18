@@ -63,7 +63,7 @@ export const StudentRequestsView: React.FC<StudentRequestsViewProps> = ({
           <button
             type="button"
             onClick={onBackToSearch}
-            className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow-xs transition-colors flex items-center gap-1.5 min-h-[40px] cursor-pointer"
+            className="px-4 py-2 bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold rounded-xl shadow-xs transition-colors flex items-center gap-1.5 min-h-[40px] cursor-pointer"
           >
             <Search className="w-3.5 h-3.5" />
             <span>Buscar nuevos tutores</span>
@@ -78,7 +78,7 @@ export const StudentRequestsView: React.FC<StudentRequestsViewProps> = ({
           onClick={() => setFilterStatus('all')}
           className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
             filterStatus === 'all'
-              ? 'bg-slate-900 text-white'
+              ? 'bg-teal-700 text-white'
               : 'text-slate-600 hover:bg-slate-100'
           }`}
         >
