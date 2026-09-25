@@ -277,7 +277,7 @@ export const TutorProfileView: React.FC<TutorProfileViewProps> = ({
             </button>
 
             <p className="text-[11px] text-slate-500 text-center">
-              Las solicitudes estarán disponibles cuando la cuenta esté conectada.
+              El contacto se comparte únicamente si el docente acepta la solicitud.
             </p>
           </div>
         </div>

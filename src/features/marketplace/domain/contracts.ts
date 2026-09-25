@@ -42,6 +42,19 @@ const normalized = (value: string) => value.normalize('NFD').replace(/[\u0300-\u
 export const matchesLabel = (a: string, b: string) => normalized(a) === normalized(b);
 export const minutes = (time: string) => Number(time.slice(0,2)) * 60 + Number(time.slice(3));
 
+/** Summarize the first declared weekly slot and report how many additional slots exist. */
+export function weeklyAvailabilitySummary(slots: WeeklySlot[] | undefined): string {
+  const validSlots = (slots || [])
+    .filter(slot => Number.isInteger(slot.day) && slot.day >= 1 && slot.day <= 7
+      && /^([01]\d|2[0-3]):[0-5]\d$/.test(slot.start)
+      && /^([01]\d|2[0-3]):[0-5]\d$/.test(slot.end) && slot.start < slot.end)
+    .sort((a,b) => a.day-b.day || a.start.localeCompare(b.start));
+  const first = validSlots[0];
+  if (!first) return '';
+  const additional = validSlots.length - 1;
+  return `${WEEKDAYS[first.day-1]} ${first.start}–${first.end}${additional ? ` · +${additional}` : ''}`;
+}
+
 /** Validate declaration required before creating a request. Server repeats against stored profile. */
 export function requestProfileError(profile?: Pick<StudentProfile,'name'|'age'|'guardianAuthorized'|'guardianName'|'guardianPhone'|'phone'>): string | undefined {
   if (!profile?.name.trim() || !profile.age || !Number.isInteger(profile.age)) return 'Completa tu nombre y edad en Mi perfil antes de solicitar.';

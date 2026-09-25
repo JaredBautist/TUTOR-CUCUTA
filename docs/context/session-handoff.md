@@ -231,8 +231,9 @@ Storage object absent; offer withdrawn. The new video request is cancelled and
 retained alongside the earlier cancelled QA request; private withdrawn draft remains.
 Both temporary sessions signed out locally and RAM browser profiles removed. A
 transient offer-read failure recovered on retry. No contacts called or messaged.
-The four previously documented presentation findings remain unfixed; Google OAuth,
-physical GPS/device and production checks remain unverified.
+The four presentation findings recorded during this walkthrough were resolved on
+2026-09-25 as documented below. Physical GPS/device and production checks remain
+separate release validations.
 
 
 ## Academic delivery dataset prepared — 2026-09-17
@@ -289,3 +290,15 @@ accuracy plus the privacy-rounding offset. Manual map origins and public tutor r
 are limited to the same precision. UI copy consistently says approximate zone; exact
 coordinates are neither rendered, persisted nor published. Targeted regressions cover
 rounding, labels, uncertainty and feed precision.
+
+## Hosted presentation findings resolved — 2026-09-25
+
+The four P2 findings from the hosted walkthrough are closed without a database
+migration or visual redesign. Results cards summarize the first valid declared weekly
+slot and additional-slot count; tutor profile copy states the real contact-release
+rule; request views omit an empty structured topic while preserving subject, goal and
+student note; and result/favorite tab counts now use the same eligible recommendation
+set as the rendered cards. Missing in-person search areas show a direct instruction to
+define an approximate zone and radius. Three focused SSR regressions were added.
+The full suite passed 90/90, TypeScript and production build passed, and clean-view
+plus marketplace browser suites passed. The existing large-chunk build warning remains.

@@ -282,9 +282,9 @@ export const TeacherDashboardView: React.FC<TeacherDashboardViewProps> = ({
                         </span>
                       </div>
 
-                      <div className="text-slate-600 text-[11px] sm:text-xs">
+                      {req.focalTopic.trim() && <div className="text-slate-600 text-[11px] sm:text-xs">
                         <strong>Tema:</strong> {req.focalTopic}
-                      </div>
+                      </div>}
 
                       {/* Student note blockquote */}
                       <p className="text-slate-600 italic bg-white p-2 rounded-lg border border-slate-200/60 leading-relaxed text-[11px]">

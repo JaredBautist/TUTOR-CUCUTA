@@ -134,10 +134,10 @@ export const TeacherRequestDetailView: React.FC<TeacherRequestDetailViewProps> =
                 <span className="font-bold text-teal-800 text-sm">{request.subject}</span>
               </div>
 
-              <div>
+              {request.focalTopic.trim() && <div>
                 <span className="text-slate-400 block text-[10px] uppercase font-semibold">Tema específico</span>
                 <span className="font-semibold text-slate-900">{request.focalTopic}</span>
-              </div>
+              </div>}
 
               <div>
                 <span className="text-slate-400 block text-[10px] uppercase font-semibold">Objetivo del estudiante</span>

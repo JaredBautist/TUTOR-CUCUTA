@@ -51,28 +51,21 @@ its cause was not established. An early automation click ran before the document
 button appeared; the corrected wait/retry opened and visually verified the actual
 PDF. Do not describe these two events as zero-error execution.
 
-## Findings for the next bounded correction
+## Presentation findings resolved — 2026-09-25
 
-No application code was changed in this test-only task.
+The four presentation findings observed during this hosted validation were resolved
+without changing the hosted database contract:
 
-1. **P2 — Availability copy contradicts saved hours.** The result card says
-   “Sin horario registrado” although Monday 16:00–18:00 is stored and used for
-   eligibility/request validation. `StudentResultsView.tsx:376` uses nextAvailable;
-   `20260912000000_cloud_marketplace.sql:105` publishes that field as an empty string.
-   Render the declared weekly availability or a truthful neutral label.
-2. **P2 — Stale connection message.** `TutorProfileView.tsx:281` says requests will
-   become available when the account is connected, even during a working authenticated
-   request flow. Update this copy without changing layout (capture 08).
-3. **P2 — Specific topic is lost as a structured field.** The search topic was
-   limits, but `TeacherRequestDetailView.tsx:139` renders an empty focalTopic. The
-   request RPC currently hardcodes focalTopic to an empty string at migration line
-   156. The subject, goal and explicit message are preserved. Define and propagate
-   a versioned specific-topic field, or omit the empty section until it is supported.
-4. **P2 — Inconsistent counts without search origin.** Opening Results immediately
-   after login showed 0 available cards but Todos (1)/Favoritos (1). Header uses
-   filteredTutors at `StudentResultsView.tsx:112`, tabs use raw tutors at lines
-   186/197. In-person eligibility requires an origin. Reconcile counts and guide
-   the student to establish the search area (capture 16).
+1. Result cards derive a compact summary from the declared weekly `availability`
+   instead of claiming that no schedule exists.
+2. The tutor profile explains the actual contact-release rule instead of referring
+   to an already connected account.
+3. Empty `focalTopic` fields are omitted in student and teacher request views; the
+   preserved subject, goal and student note remain visible.
+4. Results tab counts use the same eligible recommendation set as the cards, and an
+   in-person visit without a search area guides the student to define one.
+
+`tests/presentation-findings.test.ts` provides regressions for all four corrections.
 
 ## Cleanup and evidence
 

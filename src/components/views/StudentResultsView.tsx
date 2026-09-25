@@ -5,6 +5,7 @@ import { UnifiedCucutaMap } from '../common/UnifiedCucutaMap';
 import type { LocationFeedStatus, SearchArea } from '../../features/maps/domain/contracts';
 import { getOriginPosition } from '../../features/maps/domain/geography';
 import { recommendTutors } from '../../features/recommender/domain/recommender';
+import { weeklyAvailabilitySummary } from '../../features/marketplace/domain/contracts';
 
 interface StudentResultsViewProps {
   tutors: Tutor[];
@@ -98,6 +99,8 @@ export const StudentResultsView: React.FC<StudentResultsViewProps> = ({
 
   const selectedTutorObj =
     filteredTutors.find((t) => t.id === selectedTutorId) || filteredTutors[0];
+  const eligibleFavoriteCount = recommendedBase.filter((tutor) => savedTutors.includes(tutor.id)).length;
+  const missingSearchArea = !searchArea && filters.modality !== 'virtual';
 
   return (
     <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-5 pb-28 sm:pb-12">
@@ -127,7 +130,9 @@ export const StudentResultsView: React.FC<StudentResultsViewProps> = ({
 
         <p className="text-xs text-slate-500">{searchArea
           ? 'Materia, nivel, presupuesto, modalidad y horario seleccionado aplicados. Distancias aproximadas en línea recta; la puntuación no certifica calidad docente.'
-          : 'Aplica una búsqueda para filtrar por modalidad y radio.'}</p>
+          : missingSearchArea
+            ? 'Define una zona y un radio desde Buscar tutores para consultar opciones presenciales.'
+            : 'Aplica una búsqueda para filtrar por modalidad y horario.'}</p>
 
         {/* Filter Badges Carousel */}
         <div className="flex items-center gap-1.5 pt-1 text-xs overflow-x-auto no-scrollbar pb-1">
@@ -183,7 +188,7 @@ export const StudentResultsView: React.FC<StudentResultsViewProps> = ({
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              Todos ({tutors.length})
+              Todos ({recommendedBase.length})
             </button>
             <button
               type="button"
@@ -194,7 +199,7 @@ export const StudentResultsView: React.FC<StudentResultsViewProps> = ({
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              Favoritos ({tutors.filter((tutor) => savedTutors.includes(tutor.id)).length})
+              Favoritos ({eligibleFavoriteCount})
             </button>
           </div>
 
@@ -255,12 +260,16 @@ export const StudentResultsView: React.FC<StudentResultsViewProps> = ({
               <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
                 <Search className="w-6 h-6" />
               </div>
-              <h3 className="text-base font-bold text-slate-800">{tutors.length === 0 ? 'Aún no hay tutores registrados' : filterTab === 'saved' ? 'No hay favoritos con esta búsqueda' : 'No encontramos tutores con esta búsqueda'}</h3>
+              <h3 className="text-base font-bold text-slate-800">{tutors.length === 0 ? 'Aún no hay tutores registrados' : missingSearchArea ? 'Define tu zona de búsqueda' : filterTab === 'saved' ? 'No hay favoritos con esta búsqueda' : 'No encontramos tutores con esta búsqueda'}</h3>
               <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                {tutors.length === 0 ? 'Los perfiles aparecerán aquí cuando haya docentes registrados.' : 'Puedes borrar el texto de búsqueda o consultar todos los tutores.'}
+                {tutors.length === 0
+                  ? 'Los perfiles aparecerán aquí cuando haya docentes registrados.'
+                  : missingSearchArea
+                    ? 'Vuelve a Buscar tutores y selecciona una zona aproximada para aplicar la proximidad y el radio.'
+                    : 'Puedes borrar el texto de búsqueda o consultar todos los tutores.'}
               </p>
               <div className="flex items-center justify-center gap-2 pt-2">
-                {tutors.length > 0 && <button
+                {tutors.length > 0 && !missingSearchArea && <button
                   type="button"
                   onClick={() => {
                     setSearchTerm('');
@@ -371,9 +380,9 @@ export const StudentResultsView: React.FC<StudentResultsViewProps> = ({
                     </div>
 
                     <div>
-                      <span className="text-slate-400 block text-[9px] sm:text-[10px] uppercase font-semibold">Disponible</span>
+                      <span className="text-slate-400 block text-[9px] sm:text-[10px] uppercase font-semibold">Horario semanal</span>
                       <span className="font-semibold text-teal-700 truncate block text-[11px] sm:text-xs">
-                        {tutor.nextAvailable || 'Sin horario registrado'}
+                        {weeklyAvailabilitySummary(tutor.availability) || tutor.nextAvailable || 'Horario por confirmar'}
                       </span>
                       <span className="text-slate-500 text-[9px] truncate block">{tutor.modalities.join(', ')}</span>
                     </div>

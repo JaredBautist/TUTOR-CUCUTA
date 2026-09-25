@@ -151,7 +151,7 @@ export const StudentRequestsView: React.FC<StudentRequestsViewProps> = ({
                       {req.targetTutorName || 'Tutor sin identificar'}
                     </h2>
                     <span className="text-xs text-slate-500">
-                      Materia: <strong className="text-teal-800">{req.subject}</strong> · {req.focalTopic}
+                      Materia: <strong className="text-teal-800">{req.subject}</strong>{req.focalTopic.trim() && <> · {req.focalTopic}</>}
                     </span>
                   </div>
 
