@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { readFile } from 'node:fs/promises';
 import { test } from 'node:test';
@@ -108,14 +109,10 @@ test('CV-02/CV-04: remote empty/seed-only responses stay empty and real names re
   }
 });
 
-test('CV-11: both SQL initialization paths seed reference sectors only', async () => {
-  const seed = await readFile('supabase/seed.sql', 'utf8');
-  const combined = await readFile('supabase/full_schema_and_seed.sql', 'utf8');
-  assert.match(seed, /INSERT INTO public.sectors/);
-  assert.doesNotMatch(seed, /INSERT INTO public\.(profiles|students|tutors|student_requests)/);
-  assert.ok(combined.endsWith(seed));
-  assert.doesNotMatch(combined, /b0000000-0000-0000-0000-000000000001/);
-  const removeDefault = await readFile('supabase/migrations/20260909000000_remove_mock_match_default.sql', 'utf8');
-  assert.match(removeDefault, /ALTER COLUMN match_score DROP DEFAULT/);
-  assert.ok(combined.includes(removeDefault.trim()));
+test('CV-11: removed Supabase initializers cannot reintroduce seed tutors', () => {
+  const trackedSupabaseFiles = execFileSync('git', ['ls-files', '--', 'supabase'], { encoding: 'utf8' })
+    .trim()
+    .split('\n')
+    .filter(Boolean);
+  assert.deepEqual(trackedSupabaseFiles, []);
 });

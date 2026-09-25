@@ -126,19 +126,12 @@ npm run preview
 
 ---
 
-## 👥 Cuentas y Credenciales de Prueba
+## 👥 Cuentas de demostración
 
-Para facilitar la evaluación y demostración del sistema, se encuentran disponibles cuentas preconfiguradas tanto en el archivo interactivo [`credenciales.html`](credenciales.html) como en [`CREDENCIALES_PRUEBAS.md`](CREDENCIALES_PRUEBAS.md):
-
-### 🧑‍🏫 Docentes Registrados en Supabase:
-| Docente | Materia Principal | Teléfono de Contacto | Tarifa / h | Modalidad |
-| :--- | :--- | :--- | :--- | :--- |
-| **Sebastián Mendoza** | Matemáticas / Álgebra | `+57 300 481 9273` | $30.000 COP | Presencial / Virtual |
-| **Valentina Duarte** | Física / Cálculo | `+57 312 849 1056` | $45.000 COP | Presencial / Virtual |
-| **Camilo Becerra** | Química | `+57 320 634 5182` | $35.000 COP | Presencial / Virtual |
-| **Laura Quintero** | Inglés | `+57 315 902 4731` | $35.000 COP | Virtual |
-
-*(Contraseña estándar para todas las cuentas de prueba: `Prueba123!`)*
+La entrega incluye cuatro perfiles docentes y cuatro estudiantiles alojados en
+Supabase. Sus credenciales no se publican en el repositorio. El operador autorizado
+las encuentra únicamente en el archivo local privado documentado en
+[`docs/delivery-accounts.md`](docs/delivery-accounts.md).
 
 ---
 

@@ -6,6 +6,8 @@ coverage/
 *.log
 .env*
 !.env.example
+CREDENCIALES_PRUEBAS.md
+credenciales.html
 
 # Local derived knowledge graph and caches
 graphify-out/

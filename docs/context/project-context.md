@@ -104,6 +104,9 @@ The user now explicitly authorizes eight persisted fictional demonstration ident
 demo metadata and documented provenance. This is a bounded exception for the delivery
 dataset, not authorization to restore old inline mocks or present fictional credentials
 as verified. `docs/delivery-accounts.md` defines the dataset and provisioning contract.
-Implementation is prepared and locally validated; hosted creation is pending a
-server-only administrative key and controlled +57 contact. No accounts were created
-by this preparation. Existing real profiles and the visual design are preserved.
+Hosted creation and verification completed on 2026-09-25: eight accounts, four
+published offers and six recommendation scenarios passed. Existing real profiles
+and the visual design remain preserved. After public plaintext demonstration
+credentials were detected, all eight passwords were rotated and credential/contact
+artifacts were removed from the tracked corpus. Current access details and admin
+configuration stay only in ignored mode-0600 local files.

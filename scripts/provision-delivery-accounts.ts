@@ -2,7 +2,7 @@ import 'dotenv/config';
 import {config} from 'dotenv';
 import {createClient} from '@supabase/supabase-js';
 import {randomBytes} from 'node:crypto';
-import {mkdir,open,readFile,rename,unlink} from 'node:fs/promises';
+import {chmod,mkdir,open,readFile,rename,unlink,writeFile} from 'node:fs/promises';
 import {homedir} from 'node:os';
 import {join} from 'node:path';
 import assert from 'node:assert/strict';
@@ -14,20 +14,27 @@ import {recommendTutors} from '../src/features/recommender/domain/recommender';
 import {validateOffer} from '../src/features/marketplace/domain/contracts';
 import {emptyProfile,validateProfile} from '../src/features/accounts/domain/profile';
 
-type Entry={email:string;password:string;id?:string;profileSaved?:boolean;published?:boolean};
+type Entry={email:string;password:string;pendingPassword?:string;id?:string;profileSaved?:boolean;published?:boolean};
 type Journal={set:string;url:string;accounts:Record<string,Entry>};
 const folder=join(homedir(),'.local/share/tutorcucuta',DELIVERY_SET);
 const journalPath=join(folder,'accounts.json');
+const credentialsPath=join(folder,'CREDENCIALES_ENTREGA.md');
 const options={auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}};
+const phoneVariables:Record<string,string>={
+ 'sebastian-mendoza':'DELIVERY_PHONE_SEBASTIAN_MENDOZA',
+ 'valentina-duarte':'DELIVERY_PHONE_VALENTINA_DUARTE',
+ 'camilo-becerra':'DELIVERY_PHONE_CAMILO_BECERRA',
+ 'laura-quintero':'DELIVERY_PHONE_LAURA_QUINTERO',
+};
 
 /** Explicit operator utility. Default mode never connects or changes remote data. */
 async function main(){
  const args=process.argv.slice(2);
- if(args.some(arg=>!['--apply','--verify'].includes(arg)) || args.length>1)throw new Error('Use no arguments, --apply, or --verify.');
+ if(args.some(arg=>!['--apply','--verify','--rotate'].includes(arg)) || args.length>1)throw new Error('Use no arguments, --apply, --verify, or --rotate.');
  for(const account of deliveryAccounts)validateProfile(account.role,account.profile);
  if(!args.length){
   console.table(deliveryAccounts.map(a=>({role:a.role,name:a.profile.name,rate:a.profile.ratePerHour ?? '',modalities:a.offer?.modalities.join(',') ?? ''})));
-  console.log('PLAN ONLY: 4 tutors + 4 students. No remote changes. Apply requires .env.admin SUPABASE_SERVICE_ROLE_KEY and DELIVERY_CONTACT_PHONE (+57, controlled by operator).');
+  console.log('PLAN ONLY: 4 tutors + 4 students. No remote changes. Apply requires .env.admin with SUPABASE_SERVICE_ROLE_KEY and the four DELIVERY_PHONE_* contacts.');
   return;
  }
  config({path:'.env.admin',quiet:true});
@@ -35,17 +42,12 @@ async function main(){
  const publicKey=process.env.VITE_SUPABASE_ANON_KEY;
  if(!url || !publicKey)throw new Error('Public Supabase configuration is missing.');
  const apply=args[0]==='--apply';
+ const rotate=args[0]==='--rotate';
  const adminKey=process.env.SUPABASE_SERVICE_ROLE_KEY;
- const tutorPhones:Record<string,string>={
-  'sebastian-mendoza':'+573004819273',
-  'valentina-duarte':'+573128491056',
-  'camilo-becerra':'+573206345182',
-  'laura-quintero':'+573159024731',
- };
- const phone=process.env.DELIVERY_CONTACT_PHONE?.trim();
- if(apply && !adminKey)throw new Error('Set SUPABASE_SERVICE_ROLE_KEY in .env. Nothing was registered.');
+ const tutorPhones=Object.fromEntries(Object.entries(phoneVariables).map(([key,variable])=>[key,process.env[variable]?.trim()]));
+ if((apply || rotate) && !adminKey)throw new Error('Set SUPABASE_SERVICE_ROLE_KEY in .env.admin. Nothing was changed.');
  if(apply)for(const a of deliveryAccounts)if(a.offer){
-  const contactPhone=tutorPhones[a.key] || phone;
+  const contactPhone=tutorPhones[a.key];
   if(!contactPhone || !/^\+57\d{10}$/.test(contactPhone))throw new Error(`Valid phone (+57 followed by 10 digits) required for ${a.key}`);
   validateOffer({...a.offer,phone:contactPhone,version:0,published:false});
  }
@@ -61,6 +63,15 @@ async function main(){
    const temporary=await open(`${journalPath}.tmp`,'w',0o600);
    try{await temporary.writeFile(JSON.stringify(journal,null,2));await temporary.sync();}finally{await temporary.close();}
    await rename(`${journalPath}.tmp`,journalPath);
+  };
+  const saveCredentials=async()=>{
+   const sections=deliveryAccounts.map(account=>{
+    const entry=journal.accounts[account.key];
+    if(!entry?.password)return '';
+    return `## ${account.profile.name}\n\n- Rol: ${account.role==='tutor'?'Docente':'Estudiante'}\n- Correo: ${entry.email}\n- Contrase\u00f1a: ${entry.password}\n`;
+   }).filter(Boolean).join('\n');
+   await writeFile(credentialsPath,`# Credenciales locales de entrega — TutorC\u00facuta\n\nArchivo privado. No versionar ni compartir p\u00fablicamente.\n\n${sections}`,{mode:0o600});
+   await chmod(credentialsPath,0o600);
   };
   if(apply){
    const admin=createClient(url,adminKey!,options);
@@ -113,12 +124,31 @@ async function main(){
      if(account.offer && !entry.published){
       const marketplace=createMarketplaceRepository(client);
       const prior=await marketplace.ownOffer();
-      if(!prior?.published)await marketplace.publish({...account.offer,phone:tutorPhones[account.key] || phone!,version:prior?.version ?? 0,published:false});
+      if(!prior?.published)await marketplace.publish({...account.offer,phone:tutorPhones[account.key]!,version:prior?.version ?? 0,published:false});
       entry.published=true;await saveJournal();
      }
      console.log(`Ready: ${account.role} ${account.profile.name}`);
     }finally{await client.auth.signOut({scope:'local'});}
    }
+  }
+  if(rotate){
+   const admin=createClient(url,adminKey!,options);
+   for(const account of deliveryAccounts){
+    const entry=journal.accounts[account.key];
+    if(!entry?.id)throw new Error(`Not provisioned: ${account.key}`);
+    const lookup=await admin.auth.admin.getUserById(entry.id);
+    if(lookup.error || !lookup.data.user)throw new Error(`Could not verify identity ${account.key}: ${lookup.error?.message || 'No identity returned'}`);
+    assertOwnedIdentity(account,lookup.data.user);
+    entry.pendingPassword ||= randomBytes(24).toString('base64url');
+    await saveJournal();
+    const changed=await admin.auth.admin.updateUserById(entry.id,{password:entry.pendingPassword});
+    if(changed.error)throw new Error(`Could not rotate ${account.key}: ${changed.error.message}`);
+    entry.password=entry.pendingPassword;
+    delete entry.pendingPassword;
+    await saveJournal();
+    console.log(`Rotated: ${account.role} ${account.profile.name}`);
+   }
+   await saveCredentials();
   }
   // Verify real sign-in and stored fields independently of provisioning receipts.
   for(const account of deliveryAccounts){
@@ -153,6 +183,7 @@ async function main(){
    }finally{await client.auth.signOut({scope:'local'});}
   }
   console.log(`VERIFIED: 8 hosted accounts, 4 published offers, 6 recommendation scenarios. Private login journal: ${journalPath}`);
+  if(apply){await saveCredentials();console.log(`Private delivery credentials: ${credentialsPath}`);}
  }finally{await lock.close();await unlink(lockPath);}
 }
 main().catch(error=>{console.error(error instanceof Error?error.message:'Delivery provisioning failed.');process.exitCode=1;});

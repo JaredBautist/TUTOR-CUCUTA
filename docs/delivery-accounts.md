@@ -53,25 +53,28 @@ not overwritten. Withdrawal/deletion is a separate authorized cleanup action.
    published locations and explanations against real hosted Supabase.
 5. Save the delivery outcome and remaining limitations in Graphify and handoff.
 
-Pending prerequisites: controlled Colombian contact and administrative access.
-Local plan/tests alone do not prove remote registration.
+Hosted verification completed on 2026-09-25: all eight identities can sign in with
+their immutable roles, all profiles match this dataset, all four offers are
+published and all six recommendation scenarios produce the expected results.
 
 ## Operator commands
 
-Put `SUPABASE_SERVICE_ROLE_KEY` and `DELIVERY_CONTACT_PHONE` in the ignored local
-`.env.admin`. Do not paste the secret into a chat, commit it, or prefix it with
-`VITE_`. The contact must be controlled by the operator, using +57 and ten digits.
+Put `SUPABASE_SERVICE_ROLE_KEY` and one controlled contact per tutor under the
+`DELIVERY_PHONE_*` variables in the ignored local `.env.admin`. Do not paste the
+secret into a chat, commit it, or prefix it with `VITE_`. Contacts use +57 and ten digits.
 The script uses the existing public `.env` to target the same Supabase project.
 
 ```sh
 node --import tsx scripts/provision-delivery-accounts.ts          # local plan
 node --import tsx scripts/provision-delivery-accounts.ts --apply  # register + verify
 node --import tsx scripts/provision-delivery-accounts.ts --verify # hosted checks
+node --import tsx scripts/provision-delivery-accounts.ts --rotate # rotate + verify
 ```
 
-Generated login details are written only to the owner's private local file
-`~/.local/share/tutorcucuta/academic-2026-09-17/accounts.json` (0600), never to
-Graphify or repository documentation. Reserved `.example` emails are login names;
+Generated login details are written only to the owner's private local files
+`~/.local/share/tutorcucuta/academic-2026-09-17/accounts.json` and
+`CREDENCIALES_ENTREGA.md` in that same directory (both 0600), never to Graphify or
+repository documentation. Reserved `.example` emails are login names;
 email delivery/recovery is deliberately unavailable for these demonstration users.
 The confirmed Admin Auth creation does not send mail. Existing real accounts retain
 their normal authentication and recovery behavior.
@@ -87,3 +90,12 @@ Students: Mateo Rojas (16), Salomé Torres (17), Santiago Suárez (20), Mariana 
 (22). All identities and biographies are fictional; no institution is claimed and
 no credentials or documents are invented. Minors can search but cannot request a
 tutoring session until a genuine guardian declaration/contact is supplied.
+
+## Credential incident and remediation
+
+An earlier public revision included demonstration passwords and contact numbers in
+tracked files. On 2026-09-25 all eight passwords were replaced with independent
+random values, public credential pages were removed, contacts and the service-role
+key were moved to ignored `.env.admin`, and a regression test was added. The old
+passwords in Git history are invalid. The local credential journal is the only
+current source of access details.

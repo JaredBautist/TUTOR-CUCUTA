@@ -250,12 +250,17 @@ and publication RPC, a private credential journal outside the repo, collision/ro
 checks and resumable stages. Minor profiles leave guardian authorization false.
 No real account is overwritten, no university/document credential is invented.
 
-Validation: eight new dataset/ownership tests pass; full suite 84/84 and TypeScript
-pass. Six criteria scenarios cover inclusion, budget/proximity exclusions, virtual
-matching and empty results, using the existing recommender and derived explanations.
-Local `--apply` stopped at prerequisite validation before any network mutation.
-NOT REGISTERED REMOTELY YET: only public Supabase configuration is available and
-no controlled Colombian contact has been supplied. User was asked for
-SUPABASE_SERVICE_ROLE_KEY and DELIVERY_CONTACT_PHONE in ignored `.env.admin`.
-Once supplied, run `--apply` and verify actual hosted account/catalog scenarios;
-do not claim that local tests prove those accounts already exist. No UI changed.
+Validation originally covered eight dataset/ownership tests, the full 84-test suite
+and TypeScript. On 2026-09-25 hosted verification superseded the earlier pending
+state: all eight accounts signed in, four offers were published, and all six expected
+budget/proximity/modality/subject/schedule scenarios passed with derived reasons.
+
+Security remediation on 2026-09-25 rotated all eight passwords after plaintext demo
+credentials were found in the public repository. `CREDENCIALES_PRUEBAS.md` and
+`credenciales.html` were removed; current credentials exist only in mode-0600 files
+under `~/.local/share/tutorcucuta/academic-2026-09-17/`. The service-role key and
+controlled tutor contacts moved from tracked/default locations into ignored
+`.env.admin`; `.env` contains only the public Supabase URL and anon key. Provisioning
+now reads `DELIVERY_PHONE_*` variables and supports resumable `--rotate`. A security
+regression test prevents publishing credential pages, the previous shared password,
+or Colombian contact numbers outside test/spec fixtures. No UI changed.
