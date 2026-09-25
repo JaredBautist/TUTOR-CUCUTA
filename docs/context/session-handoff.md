@@ -264,3 +264,15 @@ controlled tutor contacts moved from tracked/default locations into ignored
 now reads `DELIVERY_PHONE_*` variables and supports resumable `--rotate`. A security
 regression test prevents publishing credential pages, the previous shared password,
 or Colombian contact numbers outside test/spec fixtures. No UI changed.
+
+
+## Dependency and README maintenance — 2026-09-25
+
+Removed unused `@google/genai`, `express` and `@types/express` dependencies; no source
+module imported them and the academic scope excludes generative AI. Updated README
+to state the current React/Vite stack, 85-test suite, Google/email authentication,
+persistent Supabase data, hosted demonstration dataset and approximate published map
+zones without continuous GPS tracking. The user reports the Google login, schedules,
+PostGIS and hosted migrations complete; a read-only Auth settings probe independently
+confirmed that Google and email providers are enabled. `npm test` passed 85/85,
+TypeScript passed and the production build passed with the existing large-chunk warnings.

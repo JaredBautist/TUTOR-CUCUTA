@@ -8,11 +8,11 @@
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38B2AC?logo=tailwind-css&logoColor=white&style=for-the-badge)
 ![Supabase](https://img.shields.io/badge/Supabase-Database%20%26%20Auth-3ECF8E?logo=supabase&logoColor=white&style=for-the-badge)
 ![MapLibre](https://img.shields.io/badge/MapLibre-GL%20JS-blue?logo=maplibre&logoColor=white&style=for-the-badge)
-![Tests](https://img.shields.io/badge/Tests-84%20Passing-success?style=for-the-badge)
+![Tests](https://img.shields.io/badge/Tests-85%20Passing-success?style=for-the-badge)
 
 **Conectando estudiantes y tutores particulares en Cúcuta y su Área Metropolitana mediante geolocalización, filtrado multicriterio y recomendación algorítmica explicable.** 🚀
 
-[🚀 Demostración](#-guía-rápida-de-instalación) • [✨ Características](#-características-principales) • [🛠️ Tecnologías](#-stack-tecnológico) • [📱 Modo Móvil](#-diseño-mobile-first-y-cards) • [👥 Credenciales de Prueba](#-cuentas-y-credenciales-de-prueba)
+[🚀 Demostración](#-guía-rápida-de-instalación) • [✨ Características](#-características-principales) • [🛠️ Tecnologías](#-stack-tecnológico) • [📱 Modo Móvil](#-diseño-mobile-first-y-cards) • [👥 Cuentas de demostración](#-cuentas-de-demostración)
 
 </div>
 
@@ -22,7 +22,7 @@
 
 **TutorCúcuta** es una plataforma web integral diseñada para resolver la dificultad de encontrar apoyo escolar y universitario de calidad en el Área Metropolitana de Cúcuta (Cúcuta, Los Patios, Villa del Rosario, El Zulia y alrededores).
 
-A diferencia de directorios tradicionales, TutorCúcuta incorpora un **motor de compatibilidad determinístico** y un **mapa interactivo en tiempo real**, permitiendo a estudiantes y acudientes descubrir al docente ideal según cercanía geográfica, materias específicas, disponibilidad horaria semanal y presupuesto en pesos colombianos ($ COP).
+A diferencia de directorios tradicionales, TutorCúcuta incorpora un **motor de compatibilidad determinístico** y un **mapa interactivo con actualización de zonas aproximadas publicadas**, permitiendo a estudiantes y acudientes comparar docentes según cercanía geográfica, materias específicas, disponibilidad horaria semanal y presupuesto en pesos colombianos ($ COP). La aplicación no realiza seguimiento GPS continuo ni publica domicilios exactos.
 
 ---
 
@@ -47,6 +47,11 @@ A diferencia de directorios tradicionales, TutorCúcuta incorpora un **motor de 
 ### 👥 4. Dos Portales en un Mismo Lugar
 * **Portal Estudiante:** Búsqueda avanzada, mapa interactivo, lista de favoritos persistente, visualización de perfiles completos y envío de solicitudes con validación de acudiente para menores.
 * **Portal Docente:** Panel de solicitudes recibidas (Aceptar / Rechazar), edición de perfil pedagógico en 5 pasos, fijación de tarifas por hora, disponibilidad semanal y carga de soportes académicos (PDF/imágenes).
+
+### 🔐 5. Acceso y persistencia
+* **Autenticación:** Registro e inicio de sesión mediante Google o correo y contraseña con Supabase Auth.
+* **Datos persistentes:** Perfiles, ofertas, horarios, favoritos, documentos y solicitudes permanecen asociados a la cuenta.
+* **Seguridad:** Las políticas RLS separan la información privada del catálogo publicado y los contactos se revelan únicamente cuando corresponde al flujo de una solicitud aceptada.
 
 ---
 
@@ -111,7 +116,7 @@ Abre en tu navegador: [http://127.0.0.1:3000](http://127.0.0.1:3000)
 El proyecto cuenta con una sólida suite de pruebas automatizadas que validan reglas de negocio, cálculo geográfico, recomendaciones y seguridad RLS:
 
 ```bash
-# Ejecutar todas las pruebas unitarias y de integración (84 tests)
+# Ejecutar todas las pruebas unitarias y de integración (85 tests)
 npm test
 
 # Validar tipado y linter sin errores
@@ -123,6 +128,11 @@ npm run build
 # Previsualizar el bundle de producción
 npm run preview
 ```
+
+La configuración alojada de Supabase tiene activados Google y correo, las migraciones
+del MVP y las políticas RLS. La entrega fue verificada con cuatro cuentas docentes,
+cuatro estudiantiles, cuatro ofertas publicadas y seis escenarios de recomendación
+multicriterio. Las credenciales vigentes permanecen fuera del repositorio.
 
 ---
 
@@ -153,9 +163,8 @@ tutorcúcuta/
 │   │   └── recommender/    # Algoritmo determinístico de compatibilidad
 │   ├── App.tsx             # Enrutador principal y control de sesión
 │   └── main.tsx            # Punto de entrada de la aplicación
-├── supabase/
-│   └── migrations/         # Migraciones SQL (cuentas, ofertas, favoritos, RLS)
 ├── docs/                   # Documentación técnica, contratos y decisiones
+├── scripts/                # Verificación del entorno alojado y datos de entrega
 ├── tests/                  # Pruebas automatizadas de regresión y comportamiento
 └── package.json            # Dependencias y scripts de ejecución
 ```
