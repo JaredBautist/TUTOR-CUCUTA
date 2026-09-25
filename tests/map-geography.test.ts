@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import {
-  CUCUTA_REFERENCE_ORIGIN, distanceKilometers, getOriginPosition,
+  approximateGeographicPosition, CUCUTA_REFERENCE_ORIGIN, distanceKilometers, getOriginPosition,
   isGeographicPosition, radiusToMeters, selectTutorsInArea,
 } from '../src/features/maps/domain/geography';
 import type { Tutor } from '../src/types';
@@ -25,6 +25,13 @@ test('GM-06/12: geographic validation rejects offsets, coercions and invalid lat
   for (const invalid of [null, {}, { x: 490, y: 395 }, { latitude: '7.89', longitude: -72.5 },
     { latitude: 90, longitude: -72.5 }, { latitude: 7.89, longitude: 181 },
     { latitude: NaN, longitude: -72.5 }]) assert.equal(isGeographicPosition(invalid), false);
+});
+
+test('device and selected origins are reduced to an approximate map zone', () => {
+  const observed = { latitude: 7.896234, longitude: -72.509876 };
+  assert.deepEqual(approximateGeographicPosition(observed), { latitude: 7.9, longitude: -72.51 });
+  assert.deepEqual(approximateGeographicPosition({ latitude: 7.8949, longitude: -72.5049 }), { latitude: 7.89, longitude: -72.5 });
+  assert.throws(() => approximateGeographicPosition({ latitude: Number.NaN, longitude: -72.5 }));
 });
 
 test('GM-16: in-person area filters cards by measured location, while virtual bypasses radius', () => {

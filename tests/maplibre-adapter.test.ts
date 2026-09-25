@@ -139,14 +139,14 @@ test('style switching restores latest geometry, positions and camera without rec
   h.controller.dispose();
 });
 
-test('own observation uses actual accuracy and stale labels, then disappears when stopped', () => {
+test('own observation is labeled as an approximate zone and disappears when stopped', () => {
   const h = harness();
   const observation = { position: origin.position, accuracyMeters: 37, observedAt: '2026-09-10T00:00:00Z' };
   h.controller.update({ origin, tutors: [], observation });
   assert.deepEqual(h.markers[0].position, [-72.5, 7.89]);
   assert.equal(h.map.getSource('device-accuracy').data.properties.radiusMeters, 37);
   h.controller.update({ origin, tutors: [], observation, observationIsCurrent: false });
-  assert.equal(h.markers[0].element.title, 'Última ubicación observada');
+  assert.equal(h.markers[0].element.title, 'Última zona aproximada');
   h.controller.update({ origin, tutors: [] });
   assert.equal(h.markers[0].map, null);
   assert.equal(h.map.getSource('device-accuracy'), undefined);

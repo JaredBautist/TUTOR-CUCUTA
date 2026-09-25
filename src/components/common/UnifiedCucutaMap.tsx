@@ -3,7 +3,7 @@ import { ZoomIn, ZoomOut, Compass, Layers, LocateFixed, LocateOff, MapPin, Loade
 import type { Tutor } from '../../types';
 import { isDemoTutorId } from '../../utils/demoRecords';
 import type { LocationFeedStatus, SearchOrigin } from '../../features/maps/domain/contracts';
-import { CUCUTA_REFERENCE_ORIGIN, getOriginPosition, isGeographicPosition } from '../../features/maps/domain/geography';
+import { approximateGeographicPosition, CUCUTA_REFERENCE_ORIGIN, getOriginPosition, isGeographicPosition } from '../../features/maps/domain/geography';
 import { useDeviceLocation } from '../../features/maps/application/useDeviceLocation';
 import { useMapVisibility } from '../../features/maps/application/useMapVisibility';
 import { useMapLibre } from '../../features/maps/application/useMapLibre';
@@ -66,7 +66,7 @@ export const UnifiedCucutaMap: React.FC<UnifiedMapProps> = ({
     reducedMotion, onSelectTutor,
     onSelectOrigin: onOriginChange ? (position) => {
       device.stop();
-      onOriginChange({ kind: 'selected', position, label: 'Punto seleccionado' });
+      onOriginChange({ kind: 'selected', position: approximateGeographicPosition(position), label: 'Zona aproximada seleccionada' });
     } : undefined,
   }, active);
 
@@ -88,12 +88,12 @@ export const UnifiedCucutaMap: React.FC<UnifiedMapProps> = ({
   useEffect(() => { if (map.state === 'error') device.stop(); }, [map.state, device.stop]);
 
   const positionLabels = {
-    idle: '', requesting: 'Buscando tu ubicación…', tracking: device.observation ? `Tu ubicación · precisión ±${Math.round(device.observation.accuracyMeters)} m` : '',
-    paused: 'Ubicación pausada', denied: 'Permiso de ubicación denegado', unavailable: 'Ubicación no disponible', timeout: 'La ubicación tardó demasiado', stale: 'Última ubicación · pendiente de actualizar',
+    idle: '', requesting: 'Buscando una zona aproximada…', tracking: device.observation ? `Zona aproximada · margen ±${Math.round(device.observation.accuracyMeters)} m` : '',
+    paused: 'Ubicación pausada', denied: 'Permiso de ubicación denegado', unavailable: 'Ubicación no disponible', timeout: 'La ubicación tardó demasiado', stale: 'Última zona aproximada · pendiente de actualizar',
   };
   const locationLabel = positionLabels[device.status];
   const contextLabel = effectiveOrigin.kind === 'reference' ? 'Cúcuta AMC · Vista de referencia'
-    : effectiveOrigin.kind === 'device' ? 'Centro: ubicación observada' : effectiveOrigin.label;
+    : effectiveOrigin.kind === 'device' ? 'Centro: zona aproximada' : effectiveOrigin.label;
   const disabled = map.state !== 'ready';
   const controlClass = 'w-9 h-9 sm:w-8 sm:h-8 flex items-center justify-center text-slate-700 hover:bg-slate-100 hover:text-slate-900 rounded-lg transition-colors cursor-pointer min-h-[36px] min-w-[36px] disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-teal-600';
 
@@ -116,7 +116,7 @@ export const UnifiedCucutaMap: React.FC<UnifiedMapProps> = ({
           <div className="bg-white/95 backdrop-blur-sm border border-slate-300 text-slate-800 px-2.5 py-1 rounded-lg shadow-sm flex items-center gap-1.5 text-[11px] sm:text-xs font-semibold max-w-full">
             <span className={`w-2 h-2 rounded-full shrink-0 ${locationFeedStatus === 'unavailable' || locationFeedStatus === 'reconnecting' ? 'bg-amber-500' : 'bg-teal-600'}`} />
             <span>{locatedTutors.length ? `${locatedTutors.length} ${locatedTutors.length === 1 ? 'docente con ubicación publicada' : 'docentes con ubicación publicada'}`
-              : mode === 'student-profile' ? (device.isEnabled && device.observation ? 'Tu ubicación en este dispositivo' : 'Esperando tu ubicación') : 'Vista de Cúcuta · Sin ubicaciones registradas'}</span>
+              : mode === 'student-profile' ? (device.isEnabled && device.observation ? 'Tu zona aproximada en este dispositivo' : 'Esperando una zona aproximada') : 'Vista de Cúcuta · Sin ubicaciones registradas'}</span>
           </div>
           {locationFeedStatus && <span role="status" className="bg-white/95 border border-slate-200 px-2 py-1 rounded-lg text-[10px] text-slate-600">{feedLabels[locationFeedStatus]}</span>}
           {locationFeedStatus === 'unavailable' && onRetryLocations && <button type="button" onClick={onRetryLocations} className="pointer-events-auto bg-white rounded-lg border border-slate-300 px-2 py-1 text-[10px] font-semibold text-slate-700 focus-visible:outline-2 focus-visible:outline-teal-600">Actualizar ubicaciones</button>}

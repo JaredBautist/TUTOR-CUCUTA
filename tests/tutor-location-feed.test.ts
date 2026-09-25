@@ -7,7 +7,7 @@ import type { LocationFeedStatus, PublishedTutorLocation, TutorLocationRepositor
 
 const publishedLocation: PublishedTutorLocation = {
   tutorId: 'd83f546f-69b8-484c-a5d2-26c07c7d6184',
-  position: { latitude: 7.894, longitude: -72.501 },
+  position: { latitude: 7.89, longitude: -72.5 },
   precision: 'approximate',
   updatedAt: '2026-09-10T05:00:00.000Z',
 };
@@ -153,8 +153,8 @@ test('GM-18: dispose releases subscription and ignores late reads/statuses/event
 
 const row = {
   tutor_id: publishedLocation.tutorId,
-  latitude: 7.894,
-  longitude: -72.501,
+  latitude: 7.89,
+  longitude: -72.5,
   precision: 'approximate',
   updated_at: publishedLocation.updatedAt,
 };
@@ -164,8 +164,8 @@ test('GM-11: only valid deliberately approximate rows become map positions', () 
   for (const invalid of [
     { ...row, latitude: 91 }, { ...row, longitude: -181 },
     { ...row, latitude: 90 }, { ...row, latitude: -90 }, { ...row, latitude: 85.052 },
-    { ...row, latitude: Number.NaN }, { ...row, latitude: 7.894123 },
-    { ...row, latitude: '7.894' }, { ...row, precision: 'exact' },
+    { ...row, latitude: Number.NaN }, { ...row, latitude: 7.891 },
+    { ...row, latitude: '7.89' }, { ...row, precision: 'exact' },
     { ...row, updated_at: 'not-a-date' }, { ...row, tutor_id: 'some-name' },
   ]) {
     assert.throws(() => decodePublishedTutorLocations([invalid]), { code: 'LOCATION_RECORD_INVALID' });

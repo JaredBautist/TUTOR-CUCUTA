@@ -2,6 +2,7 @@ import type { SearchFilters, Tutor } from '../../../types';
 import type { GeographicPosition, SearchArea, SearchOrigin } from './contracts';
 
 const EARTH_RADIUS_KM = 6371.0088;
+const APPROXIMATE_COORDINATE_SCALE = 100;
 export const MAX_MAP_LATITUDE = 85.05112878;
 
 /** City reference only; it never represents a student's or tutor's actual position. */
@@ -22,6 +23,15 @@ export function isGeographicPosition(value: unknown): value is GeographicPositio
     && Math.abs(position.latitude) <= MAX_MAP_LATITUDE
     && typeof position.longitude === 'number' && Number.isFinite(position.longitude)
     && Math.abs(position.longitude) <= 180;
+}
+
+/** Reduce a device or selected point to a roughly kilometre-scale map zone. */
+export function approximateGeographicPosition(position: GeographicPosition): GeographicPosition {
+  if (!isGeographicPosition(position)) throw new RangeError('La ubicación no contiene coordenadas geográficas válidas.');
+  return {
+    latitude: Math.round(position.latitude * APPROXIMATE_COORDINATE_SCALE) / APPROXIMATE_COORDINATE_SCALE,
+    longitude: Math.round(position.longitude * APPROXIMATE_COORDINATE_SCALE) / APPROXIMATE_COORDINATE_SCALE,
+  };
 }
 
 /** Convert a positive kilometer radius into meters; rejects invalid input. */

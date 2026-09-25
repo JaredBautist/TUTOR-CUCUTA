@@ -289,10 +289,10 @@ export class MapLibreController {
       return;
     }
     this.deviceMarker ??= this.createMarker(observation.position);
-    const title = this.snapshot.observationIsCurrent === false ? 'Última ubicación observada' : 'Tu ubicación actual';
+    const title = this.snapshot.observationIsCurrent === false ? 'Última zona aproximada' : 'Tu zona aproximada';
     this.deviceMarker.container.title = title;
     this.deviceMarker.element.className = 'w-5 h-5 rounded-full border-[3px] border-white bg-blue-600 shadow-md ring-4 ring-blue-500/20';
-    this.deviceMarker.element.setAttribute('aria-label', `${title}, precisión aproximada ${Math.round(observation.accuracyMeters)} metros`);
+    this.deviceMarker.element.setAttribute('aria-label', `${title}, margen aproximado ${Math.round(observation.accuracyMeters)} metros`);
     this.deviceMarker.container.style.zIndex = '30';
     this.moveMarker(this.deviceMarker, observation.position);
     this.drawCircle('device-accuracy', observation.accuracyMeters, observation.position);

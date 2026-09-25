@@ -2,6 +2,13 @@
 
 Status: Approved for implementation; published approximate teaching locations selected.
 
+Current privacy amendment: MapLibre/OpenFreeMap replaced the proposed Google engine.
+Browser positioning uses a single `getCurrentPosition` reading and converts it to a
+two-decimal zone at the infrastructure boundary. Exact coordinates never reach React
+state or the map adapter. The uncertainty circle includes native accuracy plus the
+distance introduced by rounding. This supersedes the continuous `watchPosition` and
+exact session-coordinate language in the historical design below.
+
 ## Existing integration boundaries
 
 | View | Current map height | Required connection |
@@ -91,15 +98,14 @@ if selected, requires a separate observation/consent contract before implementin
 3. Update the existing circle when the slider changes. Animate for approximately
    200 ms, cancel superseded frames and snap to the exact final radius. Keep network
    queries out of this animation. Preserve the user's viewport during ordinary updates.
-4. Own-location action requests browser permission and starts `watchPosition`.
-   Use observed accuracy; never promise GPS-level accuracy on a desktop. Suspend
-   on a hidden page or CSS-hidden mobile map tab, stop on opt-out/unmount, and
-   reacquire when an active view resumes. Pass explicit map visibility from its tab
-   container; unmount cleanup alone cannot detect the existing CSS-hidden tabs.
-   GPS position is session-only. On Ver tutores, capture the shown origin/radius
-   for Search-to-Results navigation without persisting exact observations to browser
-   storage. Subsequent device observations update the own-position marker separately;
-   changing the search area requires applying criteria again.
+4. Own-location action requests browser permission through `getCurrentPosition`.
+   The infrastructure adapter rounds the observation to two decimals before emitting
+   it and increases the uncertainty radius by the rounding displacement. Never expose
+   the raw coordinate or promise GPS-level accuracy. Cancel late callbacks on hidden
+   views, opt-out or unmount and request a new one-shot observation only when an active
+   map explicitly starts again. On Ver tutores, capture the approximate origin/radius
+   for Search-to-Results navigation without persisting device observations. Changing
+   the search area requires applying criteria again.
 5. Read the authorized location snapshot, subscribe, then reconcile after connection
    to close the subscribe/snapshot race. Coalesce invalidations, prevent stale reads
    from overwriting newer reads, and re-read after recovery. Update marker instances
@@ -191,7 +197,7 @@ Sources checked for this proposal:
 - [Advanced markers and map IDs](https://developers.google.com/maps/documentation/javascript/advanced-markers/start)
 - [Circle API](https://developers.google.com/maps/documentation/javascript/reference/polygon#Circle)
 - [Marker animation](https://developers.google.com/maps/documentation/javascript/examples/advanced-markers-animation)
-- [Browser position watching](https://developer.mozilla.org/en-US/docs/Web/API/Geolocation/watchPosition)
+- [Browser one-shot position](https://developer.mozilla.org/en-US/docs/Web/API/Geolocation/getCurrentPosition)
 - [Supabase database subscriptions](https://supabase.com/docs/guides/realtime/subscribing-to-database-changes)
 
 ## QA and limits

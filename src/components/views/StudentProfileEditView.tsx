@@ -695,7 +695,7 @@ export const StudentProfileEditView: React.FC<StudentProfileEditViewProps> = ({
                     4. Ubicación de Residencia en Cúcuta
                   </h3>
                   <p className="text-xs text-slate-500">
-                    Tu domicilio es un dato de referencia; el mapa muestra tu ubicación actual al permitir el acceso
+                    Tu domicilio es privado; el mapa reduce la lectura del dispositivo a una zona aproximada
                   </p>
                 </div>
               </div>
@@ -892,7 +892,7 @@ export const StudentProfileEditView: React.FC<StudentProfileEditViewProps> = ({
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-teal-600" />
                 <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider">
-                  Tu ubicación actual
+                  Tu zona aproximada
                 </h3>
               </div>
               <span className="text-[10px] bg-teal-50 text-teal-700 font-bold px-2 py-0.5 rounded-md border border-teal-200">
@@ -901,7 +901,7 @@ export const StudentProfileEditView: React.FC<StudentProfileEditViewProps> = ({
             </div>
 
             <p className="text-xs text-slate-500 leading-relaxed">
-              El navegador solicitará acceso a tu ubicación para centrar el mapa automáticamente. Su precisión depende del dispositivo; puedes detenerla y tu dirección guardada se conserva.
+              El navegador solicitará una lectura puntual para centrar una zona aproximada. La coordenada exacta no se muestra ni se guarda; puedes detener el acceso y tu dirección privada se conserva.
             </p>
 
             <div className="rounded-xl overflow-hidden border border-slate-200 shadow-inner">

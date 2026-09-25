@@ -1,4 +1,17 @@
 import type { WatchDevicePosition } from '../application/deviceLocation';
+import type { DevicePosition } from '../domain/contracts';
+import { approximateGeographicPosition, distanceKilometers } from '../domain/geography';
+
+/** Remove precise browser coordinates and expand accuracy to include the privacy rounding offset. */
+export function approximateDeviceObservation(observation: DevicePosition): DevicePosition {
+  const position = approximateGeographicPosition(observation.position);
+  const privacyOffsetMeters = distanceKilometers(observation.position, position) * 1000;
+  return {
+    position,
+    accuracyMeters: Math.ceil(Math.max(0, observation.accuracyMeters) + privacyOffsetMeters),
+    observedAt: observation.observedAt,
+  };
+}
 
 /** Browser adapter: single-shot approximate observation without continuous background GPS tracking. */
 export const watchBrowserPosition: WatchDevicePosition = (onPosition, onError) => {
@@ -10,11 +23,11 @@ export const watchBrowserPosition: WatchDevicePosition = (onPosition, onError) =
   navigator.geolocation.getCurrentPosition((position) => {
     if (!active) return;
     if (!Number.isFinite(new Date(position.timestamp).getTime())) { onError('unavailable'); return; }
-    onPosition({
+    onPosition(approximateDeviceObservation({
       position: { latitude: position.coords.latitude, longitude: position.coords.longitude },
       accuracyMeters: position.coords.accuracy,
       observedAt: new Date(position.timestamp).toISOString(),
-    });
+    }));
   }, (error) => {
     if (!active) return;
     onError(error.code === 1 ? 'denied' : error.code === 3 ? 'timeout' : 'unavailable');

@@ -14,7 +14,7 @@ export class LocationReadError extends Error {
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const TIMESTAMP_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/;
-const COORDINATE_DECIMALS = 1000;
+const COORDINATE_DECIMALS = 100;
 const ROUNDING_TOLERANCE = 1e-8;
 const PAGE_SIZE = 1000;
 const MAX_LOCATION_ROWS = 10000;

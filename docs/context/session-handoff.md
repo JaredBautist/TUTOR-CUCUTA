@@ -276,3 +276,16 @@ zones without continuous GPS tracking. The user reports the Google login, schedu
 PostGIS and hosted migrations complete; a read-only Auth settings probe independently
 confirmed that Google and email providers are enabled. `npm test` passed 85/85,
 TypeScript passed and the production build passed with the existing large-chunk warnings.
+
+
+## Approximate location privacy correction — 2026-09-25
+
+The user reported that device maps appeared to expose a current real-time location
+instead of an approximate zone. Root cause: production already used one-shot
+`getCurrentPosition`, but passed its exact coordinates to React/map state and labeled
+the marker as the current location. The browser adapter now rounds coordinates to two
+decimals before application state and expands the uncertainty circle by native
+accuracy plus the privacy-rounding offset. Manual map origins and public tutor rows
+are limited to the same precision. UI copy consistently says approximate zone; exact
+coordinates are neither rendered, persisted nor published. Targeted regressions cover
+rounding, labels, uncertainty and feed precision.

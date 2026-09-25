@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { createDeviceLocationSession } from '../src/features/maps/application/deviceLocation';
+import { approximateDeviceObservation } from '../src/features/maps/infrastructure/browserGeolocation';
 import type { DevicePosition } from '../src/features/maps/domain/contracts';
 
 function scenario() {
@@ -18,6 +19,17 @@ function scenario() {
   return { session, emit: (position: DevicePosition) => receive(position), fail: (code: 'denied' | 'timeout' | 'unavailable') => fail(code),
     tick: (value: number) => { time = value; session.checkFreshness(); }, counts: () => ({ starts, stops }) };
 }
+
+test('browser observations discard exact coordinates before entering map state', () => {
+  const approximate = approximateDeviceObservation({
+    position: { latitude: 7.896234, longitude: -72.509876 },
+    accuracyMeters: 12,
+    observedAt: '2026-09-25T12:00:00.000Z',
+  });
+  assert.deepEqual(approximate.position, { latitude: 7.9, longitude: -72.51 });
+  assert.ok(approximate.accuracyMeters > 400);
+  assert.equal(approximate.observedAt, '2026-09-25T12:00:00.000Z');
+});
 const observed: DevicePosition = { position: { latitude: 7.89, longitude: -72.5 }, accuracyMeters: 12, observedAt: new Date(100000).toISOString() };
 
 test('GM-07/08: tracking starts only on request and pauses when its map is hidden', () => {

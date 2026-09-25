@@ -25,7 +25,7 @@ const tutors = tutorIds.map((id, index) => ({
   bio: '', methodology_steps: [],
 }));
 let locations = tutorIds.map((tutor_id, index) => ({
-  tutor_id, latitude: [7.895, 7.889, 8.050][index], longitude: [-72.506, -72.514, -72.500][index],
+  tutor_id, latitude: [7.90, 7.89, 8.05][index], longitude: [-72.51, -72.51, -72.50][index],
   precision: 'approximate', updated_at: '2026-09-10T12:00:00.000Z',
 }));
 const requestLog = [];
@@ -337,11 +337,12 @@ try {
   await screenshot('tutorcucuta-maplibre-controlled-desktop.png');
 
   const firstPosition = { latitude: 7.896234, longitude: -72.509876 };
+  const firstApproximatePosition = { latitude: 7.9, longitude: -72.51 };
   await until(async () => (await activeWatchers()) === 1, 'Device watcher did not start');
   await evaluate(`window.__mapBrowserHarness.emitPosition(${firstPosition.latitude}, ${firstPosition.longitude}, 18)`);
-  await until(async () => (await mapState()).markers.some((marker) => marker.title === 'Tu ubicación actual'), 'Own-position marker missing');
-  await until(async () => await evaluate('window.__mapLibreTestMaps.some(map => !map.__testRemoved && Math.abs(map.getCenter().lat - 7.896234) < 0.00001 && Math.abs(map.getCenter().lng + 72.509876) < 0.00001)'), 'The first device fix must automatically center the actual map');
-  assert.ok((await mapState()).circles.some((circle) => circle.radius === 18), 'Observed accuracy circle missing');
+  await until(async () => (await mapState()).markers.some((marker) => marker.title === 'Tu zona aproximada'), 'Approximate own-zone marker missing');
+  await until(async () => await evaluate('window.__mapLibreTestMaps.some(map => !map.__testRemoved && Math.abs(map.getCenter().lat - 7.9) < 0.00001 && Math.abs(map.getCenter().lng + 72.51) < 0.00001)'), 'The first device fix must center the approximate zone');
+  assert.ok((await mapState()).circles.some((circle) => circle.radius > 400), 'Privacy-expanded accuracy circle missing');
   await setRadius(2.5);
   await radiusSettles(2500);
   await click('Ver tutores');
@@ -349,13 +350,13 @@ try {
   await until(async () => (await mapState())?.markers.some((marker) => marker.title === tutorNames[1]), 'Published tutor markers did not load');
   assert.doesNotMatch(await body(), new RegExp(tutorNames[2]), 'Applied radius must exclude the distant in-person tutor card');
   const appliedCircle = (await mapState()).circles.find((circle) => circle.radius === 2500);
-  assert.deepEqual(appliedCircle.center, { lat: firstPosition.latitude, lng: firstPosition.longitude }, 'Results must preserve the applied device search origin');
+  assert.deepEqual(appliedCircle.center, { lat: firstApproximatePosition.latitude, lng: firstApproximatePosition.longitude }, 'Results must preserve the applied approximate search origin');
   assert.equal(await activeWatchers(), 1, 'Results requests one new observation after the completed Search observation');
   await click(`Ver tutor ${tutorNames[1]}`, true);
   assert.ok(await evaluate(`(() => { const heading = [...document.querySelectorAll('h2')].find(element => element.innerText === ${JSON.stringify(tutorNames[1])}); return heading?.closest('[class*="cursor-pointer"]')?.classList.contains('border-teal-600'); })()`), 'Marker selection must select the matching tutor card');
   await until(async () => (await activeWatchers()) === 1, 'Results device watcher did not start');
   await evaluate('window.__mapBrowserHarness.emitPosition(7.920345, -72.490123, 25)');
-  await until(async () => (await mapState()).markers.some((marker) => marker.title === 'Tu ubicación actual' && marker.position.lat === 7.920345), 'Results own marker did not update');
+  await until(async () => (await mapState()).markers.some((marker) => marker.title === 'Tu zona aproximada' && marker.position.lat === 7.92), 'Results own approximate zone did not update');
   assert.deepEqual((await mapState()).circles.find((circle) => circle.radius === 2500).center, appliedCircle.center, 'Later observations must not shift the applied search circle');
   assert.ok(await evaluate(`!Object.values(localStorage).some(value => value.includes('7.896234') || value.includes('-72.509876') || value.includes('7.920345'))`), 'Exact observations must not enter browser persistence');
 
@@ -367,7 +368,7 @@ try {
   const resultsMapCount = (await mapState()).mapCount;
   const addedTutor = { ...tutors[0], id: '19a1b2c3-0000-4000-8000-000000000004', profiles: { full_name: 'Nueva docente publicada', avatar_url: null } };
   tutors.push(addedTutor);
-  locations.push({ ...locations[0], tutor_id: addedTutor.id, latitude: 7.896 });
+  locations.push({ ...locations[0], tutor_id: addedTutor.id, latitude: 7.90 });
   await evaluate('window.__mapBrowserHarness.invalidateLocations()');
   await until(async () => (await mapState())?.markers.some((marker) => marker.title === addedTutor.profiles.full_name), 'A newly published tutor must appear without reloading the page');
   locations = locations.filter((location) => location.tutor_id !== addedTutor.id);
@@ -375,15 +376,15 @@ try {
   await until(async () => !(await mapState())?.markers.some((marker) => marker.title === addedTutor.profiles.full_name), 'Withdrawing a teaching point must remove its marker');
   assert.doesNotMatch(await body(), new RegExp(addedTutor.profiles.full_name), 'Unlocated in-person tutor must leave applied results');
   assert.equal((await mapState()).mapCount, resultsMapCount, 'Feed updates must preserve the active map');
-  console.log('PASS controlled feed/device: real-coordinate fixtures, radius filtering, card selection, snapshot stability and feed update');
+  console.log('PASS controlled feed/device: approximate-zone fixtures, radius filtering, card selection, snapshot stability and feed update');
 
   await click('Mi Perfil');
   await until(async () => (await mapState())?.markers !== undefined && (await body()).includes('Guardar'), 'Student profile did not render');
   await until(async () => (await activeWatchers()) === 1, 'Profile must replace Results tracking with one watcher');
   await until(async () => (await activeWatchers()) === 1, 'Profile own-location watcher did not start');
   await evaluate('window.__mapBrowserHarness.emitPosition(7.897321, -72.510123, 12)');
-  await until(async () => (await mapState()).markers.some((marker) => marker.title === 'Tu ubicación actual' && marker.position.lat === 7.897321), 'Own profile position not displayed');
-  assert.deepEqual((await mapState()).circles.map((circle) => circle.radius), [12], 'Profile must show accuracy without inventing a search radius');
+  await until(async () => (await mapState()).markers.some((marker) => marker.title === 'Tu zona aproximada' && marker.position.lat === 7.9), 'Own profile approximate zone not displayed');
+  assert.ok((await mapState()).circles.every((circle) => circle.radius > 200), 'Profile must show the privacy-expanded margin without inventing a search radius');
   await click('Detener ubicación', true);
   await until(async () => (await activeWatchers()) === 0, 'Stop location did not release watcher');
   await click('Salir');
@@ -400,7 +401,7 @@ try {
   await radiusSettles(15000);
   assert.ok(await evaluate('[...document.querySelectorAll("button")].some(button => !button.disabled && /Guardar/.test(button.innerText))'), 'Authenticated teacher can save their private profile');
   await checkOverflow();
-  console.log('PASS profile and teacher maps: local own position, watcher stop, no invented profile radius and existing teacher bounds');
+  console.log('PASS profile and teacher maps: approximate own zone, observation stop, no invented profile radius and existing teacher bounds');
 
   await cdp('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
   await cdp('Page.reload');
@@ -420,7 +421,7 @@ try {
   await checkOverflow();
   assert.deepEqual(googleRequests, [], 'No Google Maps requests are allowed');
   await screenshot('tutorcucuta-maplibre-controlled-mobile.png');
-  console.log('PASS mobile: map/form visibility pauses and resumes geolocation, no horizontal overflow');
+  console.log('PASS mobile: map/form visibility pauses and resumes one-shot geolocation, no horizontal overflow');
 
   await cdp('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false });
   await cdp('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
@@ -433,7 +434,7 @@ try {
   await until(async () => (await activeWatchers()) === 1, 'Permission error scenario did not start');
   await evaluate('window.__mapBrowserHarness.emitError(1)');
   await until(async () => (await activeWatchers()) === 0, 'Denied location must release the watcher');
-  assert.ok((await mapState()).markers.every((marker) => marker.title !== 'Tu ubicación actual'), 'Denied permission must not fabricate own position');
+  assert.ok((await mapState()).markers.every((marker) => marker.title !== 'Tu zona aproximada'), 'Denied permission must not fabricate an own zone');
   await setRadius(9);
   await radiusSettles(9000);
   assert.equal(await activeWatchers(), 0, 'Denied permission must not automatically retry on render');
@@ -456,15 +457,15 @@ try {
   await radiusSettles(5000);
   await until(async () => (await body()).includes('Permiso de ubicación denegado'), 'Automatic native geolocation must report browser denial');
   assert.equal(await evaluate('navigator.permissions.query({ name: "geolocation" }).then(permission => permission.state)'), 'denied');
-  assert.ok((await mapState()).markers.every(marker => marker.title !== 'Tu ubicación actual'), 'No location before native permission');
+  assert.ok((await mapState()).markers.every(marker => marker.title !== 'Tu zona aproximada'), 'No location before native permission');
   await cdp('Browser.grantPermissions', { origin, permissions: ['geolocation'] });
   await cdp('Page.reload');
-  await until(async () => (await body()).includes('Tu ubicación · precisión'), 'A new visible map must automatically use a granted native permission');
-  await until(async () => (await mapState()).markers.some(marker => marker.title === 'Tu ubicación actual' && Math.abs(marker.position.lat - 7.901234) < 0.00001), 'Granting native permission must show the device observation');
-  await until(async () => await evaluate('window.__mapLibreTestMaps.some(map => !map.__testRemoved && Math.abs(map.getCenter().lat - 7.901234) < 0.00001)'), 'Native positioning must center the map');
+  await until(async () => (await body()).includes('Zona aproximada · margen'), 'A new visible map must automatically use a granted native permission');
+  await until(async () => (await mapState()).markers.some(marker => marker.title === 'Tu zona aproximada' && Math.abs(marker.position.lat - 7.9) < 0.00001), 'Granting native permission must show only the approximate zone');
+  await until(async () => await evaluate('window.__mapLibreTestMaps.some(map => !map.__testRemoved && Math.abs(map.getCenter().lat - 7.9) < 0.00001)'), 'Native positioning must center the approximate zone');
   await click('Detener ubicación', true);
   assert.deepEqual(runtimeErrors, []);
-  console.log('PASS native browser permission: automatic denial state, no unauthorized position, automatic observed position and centering with granted permission');
+  console.log('PASS native browser permission: automatic denial state, no unauthorized position, approximate zone and centering with granted permission');
 
 } catch (error) {
   await captureFailure?.();
