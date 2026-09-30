@@ -174,3 +174,7 @@ tutorcúcuta/
 ## 📄 Licencia
 
 Este proyecto fue desarrollado con fines académicos para la asignatura de **Tecnologías Emergentes** (Ingeniería de Software - FESC Cúcuta, 2026). Todos los derechos reservados.
+
+## 📚 Flujos y casos de uso
+
+Consulta la [guía de flujos y casos de uso](docs/flujos-y-casos-de-uso.md), con diagramas Mermaid de los portales, las solicitudes y las recomendaciones.

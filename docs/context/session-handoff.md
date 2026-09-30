@@ -302,3 +302,14 @@ set as the rendered cards. Missing in-person search areas show a direct instruct
 define an approximate zone and radius. Three focused SSR regressions were added.
 The full suite passed 90/90, TypeScript and production build passed, and clean-view
 plus marketplace browser suites passed. The existing large-chunk build warning remains.
+
+## Flow and use-case documentation — 2026-09-29
+
+Added `docs/flujos-y-casos-de-uso.md`, a Spanish functional guide with Mermaid
+access/student/tutor flows, a use-case overview, ten use-case contracts, request
+states and sequence, recommendation flow and privacy boundaries. Verified against
+current App wiring, marketplace contracts/adapters, polling hook and recommender.
+Explicitly documents absent structured request-topic propagation, no completed-class
+state, guardian declaration rather than independent verification, and the distinction
+between published zone updates and continuous GPS. Production validation remains a
+separate activity. No application or hosted data changes were made.
