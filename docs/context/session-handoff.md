@@ -313,3 +313,77 @@ Explicitly documents absent structured request-topic propagation, no completed-c
 state, guardian declaration rather than independent verification, and the distinction
 between published zone updates and continuous GPS. Production validation remains a
 separate activity. No application or hosted data changes were made.
+
+## Mobile-first frontend specification — 2026-09-29
+
+User requested frontend improvement specs prioritizing mobile users. Added
+`specs/mobile-first-frontend/` with requirements, design/contracts, dependency-ordered
+tasks and an ADR. Covers full weekly schedules, proposed booking times, editable
+search-note continuity, feedback/accessibility, session-only results navigation,
+student/tutor mobile layouts and measurable performance budgets. No implementation
+or hosted changes were made. Tasks remain pending; the existing API note field is
+used and proposed times must not imply free/busy knowledge or a reserved session.
+
+
+## Existing-email signup correction — 2026-09-29
+
+Prioritized ahead of mobile implementation. The Auth adapter now distinguishes
+confirmed duplicate signup (empty identities without a session or explicit duplicate
+codes) from a new confirmation. The form switches to login, preserves the email,
+clears the password and offers existing login/recovery options without claiming mail
+was sent. A synchronous in-flight guard prevents repeated submission events.
+Contract: `specs/existing-email-signup/requirements.md`. No public email registry,
+new database table, hosted migration or admin key in frontend code is introduced.
+Read-only hosted inspection confirmed the reported account was already confirmed;
+no production signup or email-send test was performed. This detects Supabase's native
+response after signup; it does not disable confirmation resends for pending accounts.
+Five adapter regressions and the controlled browser duplicate case failed before the
+fix and pass afterward. Full unit suite: 95/95; auth browser suite passed against a
+controlled backend. Deployment of this local correction has not been verified.
+
+Validation completed: TypeScript (`npm run lint`) and production build passed.
+The existing large-chunk build warning remains; no production deployment was performed.
+
+## Mobile-first frontend implementation — 2026-09-30
+
+Implemented the authorized `specs/mobile-first-frontend` contracts locally without
+changing Supabase APIs or records. Pure Colombia-time slot proposals and search-note
+composition drive the request form; full schedules appear in cards and tutor detail.
+Native modal focus/Escape handling, account-owned uncertain submission id/signature,
+editable errors and explicit offer refresh preserve acknowledgement semantics.
+Results filters/tab/scroll are retained only within the keyed account session.
+Shared touch/input/safe-area/reduced-motion styles, profile labels and resilient
+avatars improve both portals. Mobile Results defers its map component and retains
+an opened instance across tabs; MapLibre CSS is deferred with the engine. Existing
+one-shot approximate-location privacy is unchanged.
+
+Evidence and remaining limits: `specs/mobile-first-frontend/validation.md`.
+103 unit tests and the controlled auth, marketplace, clean-view and map browser
+suites passed; TypeScript and production build passed. Browser matrix includes six
+widths, measured targets, 200% text, schedule invalidation, context propagation,
+oversized note, uncertain-id retry and results scroll restoration. Lab comparisons
+use three cold runs with network/CPU throttling, raw timing/resources and screenshots.
+Initial compressed JS fell from about 159kB to 146kB; chunk warnings remain visible.
+Physical Android/iPhone keyboards, assistive-technology review and an authorized
+smoke test after deployment remain pending (T10). Local fixture results do not prove
+hosted delivery. No commit, push, deployment, migration or hosted data change occurred.
+
+## T10 local closure — 2026-09-30
+
+User requested T10, then explicitly chose to finish locally and handle external
+publication/device checks. Public read-only Chromium smoke found a working login
+at six widths with no overflow or uncaught exceptions, but assets differ from the
+local mobile build and public auth controls remain below 44px. This is not evidence
+that mobile changes are deployed. No hosted login, submission or mutation occurred.
+No iPhone was detected; ADB was unavailable, and no remote physical-device tool or
+Vercel CLI/project authentication was available in inspected standard paths.
+
+Added `tests/browser-hosted-smoke.mjs` and
+`specs/mobile-first-frontend/t10-release-check.md` with real-device steps and the
+public read-only report/captures. T10 local preparation is closed; physical Android,
+iPhone, assistive-technology and changed-version hosted checks remain pending.
+No Git publication or deployment was performed.
+
+Final local closure checks: `npm test` 103/103, `npm run lint`, `npm run build`,
+`node --check tests/browser-hosted-smoke.mjs` and `git diff --check` passed.
+The existing large-chunk warning remains. No physical-device result was fabricated.

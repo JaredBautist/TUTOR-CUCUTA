@@ -5,7 +5,7 @@ export function installMarketplaceFixture() {
  const read=(key,fallback)=>JSON.parse(localStorage.getItem(`marketplace-test-${key}`) || JSON.stringify(fallback));
  const save=(key,value)=>localStorage.setItem(`marketplace-test-${key}`,JSON.stringify(value));
  const current=()=>JSON.parse(localStorage.getItem('sb-catalog-auth-token') || '{}').user;
- window.__marketplaceFixture={failFavorite:false,failFavoriteRead:false,failRequest:false,failDocument:false,calls:[]};
+ window.__marketplaceFixture={failFavorite:false,failFavoriteRead:false,failRequest:false,failDocument:false,calls:[],requestInputs:[],holdRequest:false,releaseRequest:null};
  window.fetch=async(input,init={})=>{
   const url=new URL(typeof input==='string'?input:input.url || String(input));
   if(url.origin!=='https://catalog.invalid')return original(input,init);
@@ -34,6 +34,8 @@ export function installMarketplaceFixture() {
   }
   if(path.endsWith('/withdraw_tutor_offer_v1')){save('offer',{...offer,published:false,draft:{...offer.draft,published:false}});return reply(null);}
   if(path.endsWith('/create_tutoring_request_v1')){
+   harness.requestInputs.push(structuredClone(args.p_request));
+   if(harness.holdRequest)await new Promise(resolve=>{harness.releaseRequest=resolve;});
    if(harness.failRequest)return reply({code:'XX000',message:'Controlled failure'},503);
    const p=own().profile;
    if(p.age<18 && !p.guardianAuthorized)return reply({code:'P0001',message:'GUARDIAN_REQUIRED'},400);

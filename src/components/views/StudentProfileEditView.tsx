@@ -1,3 +1,4 @@
+import { ProfileImage } from '../common/ProfileImage';
 import React, { useState, useRef, useEffect } from 'react';
 import {
   ArrowLeft,
@@ -250,7 +251,7 @@ export const StudentProfileEditView: React.FC<StudentProfileEditViewProps> = ({
             <div className="relative">
               <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white text-slate-400 flex items-center justify-center shadow-md border-2 border-teal-600 overflow-hidden">
                 {avatarUrl ? (
-                  <img
+                  <ProfileImage
                     src={avatarUrl}
                     alt={name}
                     className="w-full h-full object-cover"
@@ -373,7 +374,7 @@ export const StudentProfileEditView: React.FC<StudentProfileEditViewProps> = ({
                   <div className="relative group shrink-0">
                     <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden border-2 border-teal-600 shadow-md bg-white text-slate-400 flex items-center justify-center">
                       {avatarUrl ? (
-                        <img
+                        <ProfileImage
                           src={avatarUrl}
                           alt={name}
                           className="w-full h-full object-cover"
@@ -468,8 +469,8 @@ export const StudentProfileEditView: React.FC<StudentProfileEditViewProps> = ({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <div className="space-y-1 sm:col-span-2">
-                  <label className="text-xs font-bold text-slate-700">Nombre Completo del Estudiante</label>
-                  <input
+                  <label className="text-xs font-bold text-slate-700" htmlFor="studentprofileeditview-field-1">Nombre Completo del Estudiante</label>
+                  <input id="studentprofileeditview-field-1"
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
@@ -479,8 +480,8 @@ export const StudentProfileEditView: React.FC<StudentProfileEditViewProps> = ({
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Edad</label>
-                  <input
+                  <label className="text-xs font-bold text-slate-700" htmlFor="studentprofileeditview-field-2">Edad</label>
+                  <input id="studentprofileeditview-field-2"
                     type="number"
                     min="10"
                     max="99"
@@ -492,10 +493,10 @@ export const StudentProfileEditView: React.FC<StudentProfileEditViewProps> = ({
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Teléfono / WhatsApp</label>
+                  <label className="text-xs font-bold text-slate-700" htmlFor="studentprofileeditview-field-3">Teléfono / WhatsApp</label>
                   <div className="relative">
                     <Phone className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                    <input
+                    <input id="studentprofileeditview-field-3"
                       type="text"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
@@ -506,10 +507,10 @@ export const StudentProfileEditView: React.FC<StudentProfileEditViewProps> = ({
                 </div>
 
                 <div className="space-y-1 sm:col-span-2">
-                  <label className="text-xs font-bold text-slate-700">Correo Electrónico</label>
+                  <label className="text-xs font-bold text-slate-700" htmlFor="studentprofileeditview-field-4">Correo Electrónico</label>
                   <div className="relative">
                     <Mail className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                    <input
+                    <input id="studentprofileeditview-field-4"
                       type="email"
                       value={email}
                       readOnly aria-label="Correo electrónico de tu cuenta"
@@ -540,8 +541,8 @@ export const StudentProfileEditView: React.FC<StudentProfileEditViewProps> = ({
               <div className="space-y-3.5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700">Grado Escolar / Nivel</label>
-                    <select
+                    <label className="text-xs font-bold text-slate-700" htmlFor="studentprofileeditview-field-5">Grado Escolar / Nivel</label>
+                    <select id="studentprofileeditview-field-5"
                       value={grade}
                       onChange={(e) => setGrade(e.target.value)}
                       className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all bg-slate-50/50 cursor-pointer"
@@ -553,8 +554,8 @@ export const StudentProfileEditView: React.FC<StudentProfileEditViewProps> = ({
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700">Institución Educativa en Cúcuta</label>
-                    <select
+                    <label className="text-xs font-bold text-slate-700" htmlFor="studentprofileeditview-field-6">Institución Educativa en Cúcuta</label>
+                    <select id="studentprofileeditview-field-6"
                       value={school}
                       onChange={(e) => setSchool(e.target.value)}
                       className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all bg-slate-50/50 cursor-pointer"
@@ -571,10 +572,10 @@ export const StudentProfileEditView: React.FC<StudentProfileEditViewProps> = ({
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Meta Académica Principal</label>
+                  <label className="text-xs font-bold text-slate-700" htmlFor="studentprofileeditview-field-7">Meta Académica Principal</label>
                   <div className="relative">
                     <Target className="w-3.5 h-3.5 text-teal-600 absolute left-3 top-3" />
-                    <input
+                    <input id="studentprofileeditview-field-7"
                       type="text"
                       value={academicGoal}
                       onChange={(e) => setAcademicGoal(e.target.value)}
@@ -585,10 +586,10 @@ export const StudentProfileEditView: React.FC<StudentProfileEditViewProps> = ({
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Temas o Dificultades Específicas</label>
+                  <label className="text-xs font-bold text-slate-700" htmlFor="studentprofileeditview-field-8">Temas o Dificultades Específicas</label>
                   <div className="relative">
                     <BookOpen className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-3" />
-                    <textarea
+                    <textarea id="studentprofileeditview-field-8"
                       rows={2}
                       value={difficultiesOrTopics}
                       onChange={(e) => setDifficultiesOrTopics(e.target.value)}
@@ -623,8 +624,8 @@ export const StudentProfileEditView: React.FC<StudentProfileEditViewProps> = ({
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
                 <div className="space-y-1 sm:col-span-2">
-                  <label className="text-xs font-bold text-slate-700">Nombre del Acudiente</label>
-                  <input
+                  <label className="text-xs font-bold text-slate-700" htmlFor="studentprofileeditview-field-9">Nombre del Acudiente</label>
+                  <input id="studentprofileeditview-field-9"
                     type="text"
                     value={guardianName}
                     onChange={(e) => setGuardianName(e.target.value)}
@@ -634,8 +635,8 @@ export const StudentProfileEditView: React.FC<StudentProfileEditViewProps> = ({
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Parentesco</label>
-                  <select
+                  <label className="text-xs font-bold text-slate-700" htmlFor="studentprofileeditview-field-10">Parentesco</label>
+                  <select id="studentprofileeditview-field-10"
                     value={guardianRelation}
                     onChange={(e) => setGuardianRelation(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all bg-slate-50/50 cursor-pointer"
@@ -651,10 +652,10 @@ export const StudentProfileEditView: React.FC<StudentProfileEditViewProps> = ({
                 </div>
 
                 <div className="space-y-1 sm:col-span-3">
-                  <label className="text-xs font-bold text-slate-700">Teléfono / WhatsApp del Acudiente</label>
+                  <label className="text-xs font-bold text-slate-700" htmlFor="studentprofileeditview-field-11">Teléfono / WhatsApp del Acudiente</label>
                   <div className="relative">
                     <Phone className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                    <input
+                    <input id="studentprofileeditview-field-11"
                       type="text"
                       value={guardianPhone}
                       onChange={(e) => setGuardianPhone(e.target.value)}
@@ -702,8 +703,8 @@ export const StudentProfileEditView: React.FC<StudentProfileEditViewProps> = ({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Barrio / Sector AMC</label>
-                  <select
+                  <label className="text-xs font-bold text-slate-700" htmlFor="studentprofileeditview-field-12">Barrio / Sector AMC</label>
+                  <select id="studentprofileeditview-field-12"
                     value={sector}
                     onChange={(e) => setSector(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all bg-slate-50/50 cursor-pointer"
@@ -719,8 +720,8 @@ export const StudentProfileEditView: React.FC<StudentProfileEditViewProps> = ({
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Dirección de Domicilio</label>
-                  <input
+                  <label className="text-xs font-bold text-slate-700" htmlFor="studentprofileeditview-field-13">Dirección de Domicilio</label>
+                  <input id="studentprofileeditview-field-13"
                     type="text"
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
@@ -730,8 +731,8 @@ export const StudentProfileEditView: React.FC<StudentProfileEditViewProps> = ({
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Modalidad Preferida</label>
-                  <select
+                  <label className="text-xs font-bold text-slate-700" htmlFor="studentprofileeditview-field-14">Modalidad Preferida</label>
+                  <select id="studentprofileeditview-field-14"
                     value={preferredModality}
                     onChange={(e) => setPreferredModality(e.target.value as any)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all bg-slate-50/50 cursor-pointer"
@@ -743,10 +744,10 @@ export const StudentProfileEditView: React.FC<StudentProfileEditViewProps> = ({
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Disponibilidad de Horarios</label>
+                  <label className="text-xs font-bold text-slate-700" htmlFor="studentprofileeditview-field-15">Disponibilidad de Horarios</label>
                   <div className="relative">
                     <Clock className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                    <input
+                    <input id="studentprofileeditview-field-15"
                       type="text"
                       value={preferredSchedule}
                       onChange={(e) => setPreferredSchedule(e.target.value)}
@@ -850,10 +851,10 @@ export const StudentProfileEditView: React.FC<StudentProfileEditViewProps> = ({
 
               {/* Bio / Student note */}
               <div className="space-y-1 pt-2 border-t border-slate-100">
-                <label className="text-xs font-bold text-slate-700">
+                <label className="text-xs font-bold text-slate-700" htmlFor="studentprofileeditview-field-16">
                   Nota o Presentación para los Docentes
                 </label>
-                <textarea
+                <textarea id="studentprofileeditview-field-16"
                   rows={3}
                   value={bioNote}
                   onChange={(e) => setBioNote(e.target.value)}
@@ -926,7 +927,7 @@ export const StudentProfileEditView: React.FC<StudentProfileEditViewProps> = ({
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-xl bg-white text-slate-400 flex items-center justify-center shrink-0 overflow-hidden border border-teal-600">
                 {avatarUrl ? (
-                  <img
+                  <ProfileImage
                     src={avatarUrl}
                     alt={name}
                     className="w-full h-full object-cover"

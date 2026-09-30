@@ -40,8 +40,13 @@ export function createAuthAdapter(client: SupabaseClient | null): AuthPort {
     },
     async signUp(email, password, role) {
       const result = await configured().auth.signUp({ ...validateCredentials(email, password, true), options: { data: { account_role: role }, emailRedirectTo: redirect() } });
+      if (result.error?.code === 'user_already_exists' || result.error?.code === 'email_exists') return 'existing-account';
       if (result.error) throw failure(result.error, 'No se pudo crear la cuenta. Inténtalo de nuevo.');
-      return result.data.session ? 'signed-in' : 'confirmation';
+      if (result.data.session) return 'signed-in';
+      // Confirmed duplicate signups can return an obfuscated user instead of an error.
+      const identities = result.data.user?.identities;
+      if (!Array.isArray(identities)) throw new AccountError('AUTH_FAILED', 'No se pudo confirmar el registro. Intenta iniciar sesión o vuelve a intentarlo.');
+      return identities.length === 0 ? 'existing-account' : 'confirmation';
     },
     async google(role) {
       // The role is an onboarding hint only; a stored account always takes precedence.

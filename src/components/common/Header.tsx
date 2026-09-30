@@ -1,3 +1,4 @@
+import { ProfileImage } from './ProfileImage';
 import React, { useState } from 'react';
 import { GraduationCap, LogOut, Menu, X, ChevronRight, User } from 'lucide-react';
 import { Role, ScreenId } from '../../types';
@@ -114,7 +115,7 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
             <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white group-hover:bg-teal-50 text-slate-400 group-hover:text-teal-700 flex items-center justify-center font-bold text-xs border-2 border-teal-600 shadow-xs shrink-0 transition-colors overflow-hidden">
               {currentAvatarUrl ? (
-                <img
+                <ProfileImage
                   src={currentAvatarUrl}
                   alt={currentDisplayName}
                   className="w-full h-full object-cover"
@@ -156,7 +157,7 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="flex items-center gap-2.5">
               <div className="w-10 h-10 rounded-full bg-white text-slate-400 border-2 border-teal-600 font-bold text-sm flex items-center justify-center overflow-hidden shrink-0">
                 {currentAvatarUrl ? (
-                  <img
+                  <ProfileImage
                     src={currentAvatarUrl}
                     alt={currentDisplayName}
                     className="w-full h-full object-cover"

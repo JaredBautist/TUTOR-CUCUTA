@@ -12,7 +12,7 @@ export function installAccountFixture({ signedIn = true } = {}) {
     localStorage.setItem('auth-fixture-initialized','true');
     if(signedIn) localStorage.setItem(key,JSON.stringify(session('student')));
   }
-  window.__authFixture = { session, calls:[], failSave:false, conflict:false, failRead:false, signupRole:null };
+  window.__authFixture = { session, calls:[], failSave:false, conflict:false, failRead:false, signupRole:null, existingSignup:false };
   const response = (body,status=200) => new Response(JSON.stringify(body),{status,headers:{'Content-Type':'application/json','x-supabase-api-version':'2024-01-01'}});
   const nativeFetch = window.fetch.bind(window);
   window.fetch = async (input,init={}) => {
@@ -27,7 +27,7 @@ export function installAccountFixture({ signedIn = true } = {}) {
         const role = request.email?.startsWith('tutor') || request.refresh_token?.endsWith('tutor') ? 'tutor':'student';
         return response(session(role));
       }
-      if(url.pathname.endsWith('/signup')) { harness.signupRole=request.data?.account_role; return response({user:user(harness.signupRole),session:null}); }
+      if(url.pathname.endsWith('/signup')) { harness.signupRole=request.data?.account_role; return response({user:{...user(harness.signupRole),identities:harness.existingSignup?[]:[{provider:'email'}]},session:null}); }
       if(url.pathname.endsWith('/recover') || url.pathname.endsWith('/logout')) return response({});
       if(url.pathname.endsWith('/user')) return response(JSON.parse(localStorage.getItem(key) || '{}').user || user('student'));
     }

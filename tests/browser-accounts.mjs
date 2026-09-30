@@ -82,6 +82,14 @@ try {
   await until(async ()=>(await body()).includes('Revisa tu correo'),'Confirmation not reported');
   assert.equal(await evaluate('window.__authFixture.signupRole'),'student');
   assert.doesNotMatch(await body(),/Buscar Tutores/);
+  await evaluate('window.__authFixture.existingSignup=true');
+  await fill('input[type=password]','test-password'); await click('Registrarme');
+  await until(async ()=>(await body()).includes('Este correo ya está registrado'),'Existing account guidance missing');
+  assert.doesNotMatch(await body(),/Revisa tu correo/);
+  assert.equal(await evaluate('document.querySelector("input[type=email]").value'),'student@example.invalid');
+  assert.equal(await evaluate('document.querySelector("input[type=password]").value'),'');
+  assert.ok((await body()).includes('Olvidé mi contraseña'));
+  await evaluate('window.__authFixture.existingSignup=false');
   await click('Iniciar sesión'); await login();
   await until(async ()=>(await body()).includes('Buscar Tutores'),'Login failed');
   await click('Mi Perfil');

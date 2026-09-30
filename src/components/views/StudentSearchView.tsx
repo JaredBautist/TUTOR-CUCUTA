@@ -217,7 +217,7 @@ export const StudentSearchView: React.FC<StudentSearchViewProps> = ({
             <div>
               <input
                 type="text"
-                value={topicInput}
+                aria-label="Tema específico a reforzar" value={topicInput}
                 onChange={(e) => setTopicInput(e.target.value)}
                 placeholder="Ej. Razonamiento cuantitativo y preparación Saber 11"
                 className="w-full text-xs sm:text-sm font-medium text-slate-900 bg-white border border-slate-300 rounded-lg px-3.5 py-2.5 focus:ring-2 focus:ring-teal-500 focus:outline-hidden min-h-[44px]"
@@ -241,10 +241,10 @@ export const StudentSearchView: React.FC<StudentSearchViewProps> = ({
 
             {/* Cuéntale al tutor qué necesitas */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 mb-1" htmlFor="studentsearchview-field-1">
                 Cuéntale al tutor qué necesitas
               </label>
-              <textarea
+              <textarea id="studentsearchview-field-1"
                 rows={3}
                 value={studentNote}
                 onChange={(e) => setStudentNote(e.target.value)}

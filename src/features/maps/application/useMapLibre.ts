@@ -28,6 +28,7 @@ export function useMapLibre(container: RefObject<HTMLDivElement | null>, snapsho
     Promise.all([
       import('maplibre-gl'),
       import('maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url'),
+      import('maplibre-gl/dist/maplibre-gl.css'),
     ]).then(([sdk, { default: workerUrl }]) => {
       if (cancelled || !container.current) return;
       // Vite must bundle the v6 worker and its shared module for development and production.

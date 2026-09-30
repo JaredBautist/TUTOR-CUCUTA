@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import type { AccountRole } from '../../features/accounts/domain/profile';
 import type { SessionController, SessionState } from '../../features/accounts/application/sessionController';
 interface Props { role: AccountRole; controller: SessionController; state: SessionState }
@@ -8,6 +8,7 @@ export function AccountAccessForm({ role, controller, state }: Props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
+  const inFlight = useRef(false);
   const [error, setError] = useState(() => {
     const url = new URL(window.location.href);
     return url.searchParams.has('error') || url.searchParams.has('code') || new URLSearchParams(url.hash.slice(1)).has('error') ? 'El enlace de acceso no es válido o ha caducado. Inténtalo de nuevo.' : '';
@@ -25,11 +26,12 @@ export function AccountAccessForm({ role, controller, state }: Props) {
   }, []);
 
   const run = async (action: () => Promise<void>) => {
-    if (busy) return;
+    if (inFlight.current) return;
+    inFlight.current = true;
     setBusy(true); setError(''); setNotice('');
     try { await action(); }
     catch (failure) { setError(failure instanceof Error ? failure.message : 'No se pudo completar la operación. Revisa tu conexión.'); }
-    finally { setBusy(false); }
+    finally { inFlight.current = false; setBusy(false); }
   };
   const submit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -41,6 +43,10 @@ export function AccountAccessForm({ role, controller, state }: Props) {
         await controller.chooseRole(role);
       } else if (mode === 'signup') {
         const result = await controller.auth.signUp(email, password, role); setPassword('');
+        if (result === 'existing-account') {
+          setMode('login');
+          setNotice('Este correo ya está registrado. Inicia sesión, continúa con Google si lo usaste al registrarte o recupera tu contraseña. No necesitas crear otra cuenta.');
+        }
         if (result === 'confirmation') setNotice('Revisa tu correo para confirmar la cuenta. Después podrás iniciar sesión; no necesitas registrarte otra vez.');
       } else if (mode === 'reset') {
         await controller.auth.requestPasswordReset(email);

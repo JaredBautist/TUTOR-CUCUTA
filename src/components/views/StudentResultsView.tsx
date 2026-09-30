@@ -1,13 +1,17 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useLayoutEffect, useRef, lazy, Suspense, type MutableRefObject } from 'react';
 import { Bookmark, CheckCircle2, ChevronDown, ChevronUp, SlidersHorizontal, List, Map, Search, ArrowUpDown, X } from 'lucide-react';
 import { Tutor, SearchFilters } from '../../types';
-import { UnifiedCucutaMap } from '../common/UnifiedCucutaMap';
+import { WeeklyAvailability } from '../marketplace/WeeklyAvailability';
+import { ProfileImage } from '../common/ProfileImage';
+import type { ResultsSession } from '../../features/recommender/application/resultsSession';
+const UnifiedCucutaMap = lazy(() => import('../common/UnifiedCucutaMap').then(module => ({default:module.UnifiedCucutaMap})));
 import type { LocationFeedStatus, SearchArea } from '../../features/maps/domain/contracts';
 import { getOriginPosition } from '../../features/maps/domain/geography';
 import { recommendTutors } from '../../features/recommender/domain/recommender';
 import { weeklyAvailabilitySummary } from '../../features/marketplace/domain/contracts';
 
 interface StudentResultsViewProps {
+  sessionState?: MutableRefObject<ResultsSession | undefined>;
   tutors: Tutor[];
   filters: SearchFilters;
   savedTutors?: string[];
@@ -23,6 +27,7 @@ interface StudentResultsViewProps {
 
 export const StudentResultsView: React.FC<StudentResultsViewProps> = ({
   tutors,
+  sessionState,
   filters,
   savedTutors = [],
   favoritesDisabled = false,
@@ -34,12 +39,31 @@ export const StudentResultsView: React.FC<StudentResultsViewProps> = ({
   locationFeedStatus,
   onRetryLocations,
 }) => {
-  const [expandedReasons, setExpandedReasons] = useState<Record<string, boolean>>({});
-  const [selectedTutorId, setSelectedTutorId] = useState<string>(() => tutors[0]?.id || '');
-  const [mobileMode, setMobileMode] = useState<'list' | 'map'>('list');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState<'name' | 'match' | 'price-asc' | 'distance-asc' | 'experience-desc'>('match');
-  const [filterTab, setFilterTab] = useState<'all' | 'saved'>('all');
+  const [expandedReasons, setExpandedReasons] = useState<Record<string, boolean>>(sessionState?.current?.expandedReasons ?? {});
+  const [selectedTutorId, setSelectedTutorId] = useState<string>(() => sessionState?.current?.selectedTutorId ?? tutors[0]?.id ?? '');
+  const [mobileMode, setMobileMode] = useState<'list' | 'map'>(sessionState?.current?.mobileMode ?? 'list');
+  const [mapRequested, setMapRequested] = useState(mobileMode === 'map');
+  const [searchTerm, setSearchTerm] = useState(sessionState?.current?.searchTerm ?? '');
+  const [sortBy, setSortBy] = useState<'name' | 'match' | 'price-asc' | 'distance-asc' | 'experience-desc'>(sessionState?.current?.sortBy ?? 'match');
+  const [filterTab, setFilterTab] = useState<'all' | 'saved'>(sessionState?.current?.filterTab ?? 'all');
+
+  const [desktop, setDesktop] = useState(() => typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches);
+  useEffect(() => {
+    const media = window.matchMedia('(min-width: 1024px)');
+    const update = () => setDesktop(media.matches);
+    media.addEventListener('change', update);
+    return () => media.removeEventListener('change', update);
+  }, []);
+  const restoredScroll = useRef(sessionState?.current?.scrollY ?? 0);
+  useLayoutEffect(() => {
+    window.scrollTo(0, restoredScroll.current);
+  }, [sessionState]);
+  useLayoutEffect(() => {
+    if (!sessionState) return;
+    const save = () => { sessionState.current = {expandedReasons, selectedTutorId, mobileMode, searchTerm, sortBy, filterTab, scrollY:window.scrollY}; };
+    save(); window.addEventListener('scroll', save, {passive:true});
+    return () => window.removeEventListener('scroll', save);
+  }, [sessionState, expandedReasons, selectedTutorId, mobileMode, searchTerm, sortBy, filterTab]);
 
   const origin = useMemo(() => searchArea ? getOriginPosition(searchArea.origin) : undefined, [searchArea]);
 
@@ -160,7 +184,7 @@ export const StudentResultsView: React.FC<StudentResultsViewProps> = ({
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              value={searchTerm}
+              aria-label="Buscar en los resultados" value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Buscar por nombre, materia o barrio (ej. UFPS, Álgebra, Caobos)..."
               className="w-full bg-white border border-slate-200 rounded-xl pl-9 pr-8 py-2 text-xs text-slate-900 focus:ring-2 focus:ring-teal-500 focus:outline-hidden"
@@ -238,7 +262,7 @@ export const StudentResultsView: React.FC<StudentResultsViewProps> = ({
 
           <button
             type="button"
-            onClick={() => setMobileMode('map')}
+            onClick={() => { setMapRequested(true); setMobileMode('map'); }}
             className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
               mobileMode === 'map'
                 ? 'bg-white text-slate-900 shadow-sm'
@@ -307,7 +331,7 @@ export const StudentResultsView: React.FC<StudentResultsViewProps> = ({
                   {/* Top Tutor Info Row */}
                   <div className="flex items-start gap-3 sm:gap-4">
                     {tutor.avatar ? (
-                      <img src={tutor.avatar} alt={tutor.name} className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl object-cover border border-slate-200 shadow-xs shrink-0" />
+                      <ProfileImage src={tutor.avatar} alt={tutor.name} className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl object-cover border border-slate-200 shadow-xs shrink-0" />
                     ) : (
                       <span aria-label={`Perfil de ${tutor.name}`} className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-teal-50 text-teal-800 font-bold flex items-center justify-center shrink-0">
                         {tutor.name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]).join('') || 'T'}
@@ -388,6 +412,7 @@ export const StudentResultsView: React.FC<StudentResultsViewProps> = ({
                     </div>
                   </div>
 
+                  <WeeklyAvailability slots={tutor.availability}/>
                   {/* Subjects Tags */}
                   <div className="flex flex-wrap gap-1 mt-2.5">
                     {tutor.subjects.slice(0, 4).map((subj) => (
@@ -478,7 +503,7 @@ export const StudentResultsView: React.FC<StudentResultsViewProps> = ({
 
             {/* The Unified Map Component */}
             <div className="w-full">
-              <UnifiedCucutaMap
+              {(desktop || mapRequested) && <Suspense fallback={<p role="status" className="p-8">Cargando mapa…</p>}><UnifiedCucutaMap
                 mode="results"
                 tutors={filteredTutors}
                 radiusKm={searchArea?.radiusKm ?? filters.radiusKm}
@@ -488,15 +513,15 @@ export const StudentResultsView: React.FC<StudentResultsViewProps> = ({
                 selectedTutorId={selectedTutorObj?.id}
                 onSelectTutor={(id) => setSelectedTutorId(id)}
                 height="h-[300px] sm:h-[380px] lg:h-[420px]"
-              />
+              /></Suspense>}
             </div>
 
             {/* Selected Tutor Mini Card on Map mode */}
             {selectedTutorObj && (
-              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 flex items-center justify-between gap-3">
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-2.5 min-w-0">
                   {selectedTutorObj.avatar ? (
-                    <img src={selectedTutorObj.avatar} alt={selectedTutorObj.name} className="w-10 h-10 rounded-lg object-cover border border-slate-200 shrink-0" />
+                    <ProfileImage src={selectedTutorObj.avatar} alt={selectedTutorObj.name} className="w-10 h-10 rounded-lg object-cover border border-slate-200 shrink-0" />
                   ) : (
                     <span className="w-10 h-10 rounded-lg bg-teal-50 text-teal-800 font-bold flex items-center justify-center shrink-0">
                       {selectedTutorObj.name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]).join('') || 'T'}

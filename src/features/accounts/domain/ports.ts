@@ -2,7 +2,7 @@ import type { AccountIdentity, AccountRole, OwnAccount, ProfileFields } from './
 export interface AuthPort {
   subscribe(listener: (identity: AccountIdentity | null, recovery: boolean) => void): () => void;
   signIn(email: string, password: string): Promise<void>;
-  signUp(email: string, password: string, role: AccountRole): Promise<'confirmation' | 'signed-in'>;
+  signUp(email: string, password: string, role: AccountRole): Promise<'confirmation' | 'signed-in' | 'existing-account'>;
   google(role: AccountRole): Promise<void>;
   requestPasswordReset(email: string): Promise<void>;
   updatePassword(password: string): Promise<void>;

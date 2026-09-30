@@ -1,0 +1,777 @@
+{
+  "browser": "Chrome/153.0.8010.52",
+  "viewport": "390x844",
+  "network": "1.6Mbps down, 750Kbps up, 150ms latency",
+  "cpuSlowdown": 4,
+  "backend": "isolated JS fixtures, no hosted requests",
+  "measurements": [
+    {
+      "run": 1,
+      "login": {
+        "lcp": 1888,
+        "cls": 0,
+        "jsBytes": 146471
+      },
+      "results": {
+        "readyMs": 1119,
+        "lcp": 1936,
+        "cls": 0,
+        "mapRequests": 0
+      },
+      "map": {
+        "observedMs": 3523,
+        "requests": 10,
+        "jsBytes": 445542,
+        "ready": true
+      },
+      "tabReactionMs": [
+        68.1999999997206,
+        123.39999999990687,
+        65.6999999997206,
+        83.79999999981374,
+        64.39999999990687,
+        109.89999999990687,
+        95,
+        358.60000000009313,
+        86,
+        241,
+        84.1999999997206,
+        113.1999999997206,
+        81.20000000018626,
+        116.29999999981374,
+        70.10000000009313,
+        97,
+        65.5,
+        115.79999999981374,
+        94.6999999997206,
+        112.1999999997206
+      ],
+      "filterReactionMs": [
+        35.89999999990687,
+        42.40000000037253,
+        43.89999999990687,
+        34,
+        32.59999999962747,
+        33.10000000009313,
+        32.700000000186265,
+        33.89999999990687,
+        33.799999999813735,
+        33,
+        32.60000000009313,
+        33.299999999813735,
+        33.700000000186265,
+        33,
+        33.299999999813735,
+        33.3000000002794,
+        33.60000000009313,
+        33.299999999813735,
+        33.39999999990687,
+        33.3000000002794
+      ],
+      "slotReactionMs": [
+        11.700000000186265,
+        28.09999999962747,
+        32.60000000009313,
+        33.39999999990687,
+        33.40000000037253,
+        34.1999999997206,
+        32.700000000186265,
+        33.10000000009313,
+        34.09999999962747,
+        33.5,
+        32.700000000186265,
+        33.799999999813735,
+        33.60000000009313,
+        32.89999999990687,
+        33,
+        33.10000000009313,
+        33.39999999990687,
+        33.8000000002794,
+        32.6999999997206,
+        33.700000000186265
+      ],
+      "resources": [
+        {
+          "url": "https://fonts.googleapis.com/css2",
+          "type": "link",
+          "startMs": 180.39999999990687,
+          "durationMs": 176.5,
+          "encodedBytes": 814
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/index-BpzL8A6D.js",
+          "type": "script",
+          "startMs": 181.10000000009313,
+          "durationMs": 983.8999999999069,
+          "encodedBytes": 146471
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/index-BnYhZvJO.css",
+          "type": "link",
+          "startMs": 181.20000000018626,
+          "durationMs": 331.29999999981374,
+          "encodedBytes": 16328
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/StudentSearchView-BVnbGZD6.js",
+          "type": "script",
+          "startMs": 1252.3000000002794,
+          "durationMs": 234.5,
+          "encodedBytes": 4314
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/UnifiedCucutaMap-DT0oenjc.js",
+          "type": "script",
+          "startMs": 1253.5,
+          "durationMs": 256.8000000002794,
+          "encodedBytes": 7762
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/user-check-D88zWysu.js",
+          "type": "script",
+          "startMs": 1254.6000000000931,
+          "durationMs": 174.10000000009313,
+          "encodedBytes": 305
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/file-text-DW-RBLYY.js",
+          "type": "script",
+          "startMs": 1254.8000000002794,
+          "durationMs": 181,
+          "encodedBytes": 323
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/map-DxH0hpa-.js",
+          "type": "script",
+          "startMs": 1255.5,
+          "durationMs": 187.70000000018626,
+          "encodedBytes": 378
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/rotate-ccw-BqRi90Tg.js",
+          "type": "script",
+          "startMs": 1256.5,
+          "durationMs": 194.20000000018626,
+          "encodedBytes": 288
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/arrow-right-POaiGwy9.js",
+          "type": "script",
+          "startMs": 1257.3000000002794,
+          "durationMs": 328.29999999981374,
+          "encodedBytes": 266
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/StudentResultsView-D_eZkUuK.js",
+          "type": "script",
+          "startMs": 1978.3000000002794,
+          "durationMs": 206.6999999997206,
+          "encodedBytes": 6902
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/list-LYV25XRG.js",
+          "type": "script",
+          "startMs": 1979.1000000000931,
+          "durationMs": 154.29999999981374,
+          "encodedBytes": 296
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/bookmark-uC-_Q7pX.js",
+          "type": "script",
+          "startMs": 1980.1000000000931,
+          "durationMs": 168.70000000018626,
+          "encodedBytes": 272
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/circle-check-BTuw4B4E.js",
+          "type": "script",
+          "startMs": 1981,
+          "durationMs": 175.20000000018626,
+          "encodedBytes": 272
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/maplibre-gl-DvulA2N7.css",
+          "type": "link",
+          "startMs": 3468.7000000001863,
+          "durationMs": 268.10000000009313,
+          "encodedBytes": 10576
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/maplibre-gl-Dtk2uwpQ.js",
+          "type": "script",
+          "startMs": 3473.7000000001863,
+          "durationMs": 1651.6999999997206,
+          "encodedBytes": 287731
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/maplibre-gl-worker-G2Jax5a-.js",
+          "type": "script",
+          "startMs": 3474.899999999907,
+          "durationMs": 160.10000000009313,
+          "encodedBytes": 91
+        },
+        {
+          "url": "https://tiles.openfreemap.org/styles/liberty",
+          "type": "fetch",
+          "startMs": 5278.399999999907,
+          "durationMs": 454.70000000018626,
+          "encodedBytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/maplibre-gl-worker-PcuQ6pji.js",
+          "type": "other",
+          "startMs": 5424,
+          "durationMs": 870.3999999999069,
+          "encodedBytes": 147144
+        },
+        {
+          "url": "https://tiles.openfreemap.org/planet",
+          "type": "fetch",
+          "startMs": 5946.300000000279,
+          "durationMs": 183.6999999997206,
+          "encodedBytes": 0
+        },
+        {
+          "url": "https://tiles.openfreemap.org/sprites/ofm_f384/ofm.json",
+          "type": "fetch",
+          "startMs": 5947.600000000093,
+          "durationMs": 219.5,
+          "encodedBytes": 0
+        },
+        {
+          "url": "https://tiles.openfreemap.org/sprites/ofm_f384/ofm.png",
+          "type": "fetch",
+          "startMs": 5960.399999999907,
+          "durationMs": 513.9000000003725,
+          "encodedBytes": 0
+        },
+        {
+          "url": "https://tiles.openfreemap.org/fonts/Noto%20Sans%20Italic/0-255.pbf",
+          "type": "fetch",
+          "startMs": 6546.300000000279,
+          "durationMs": 611.5999999996275,
+          "encodedBytes": 0
+        },
+        {
+          "url": "https://tiles.openfreemap.org/fonts/Noto%20Sans%20Regular/0-255.pbf",
+          "type": "fetch",
+          "startMs": 6547.800000000279,
+          "durationMs": 579.3999999999069,
+          "encodedBytes": 0
+        }
+      ]
+    },
+    {
+      "run": 2,
+      "login": {
+        "lcp": 1292,
+        "cls": 0,
+        "jsBytes": 146471
+      },
+      "results": {
+        "readyMs": 1071,
+        "lcp": 1980,
+        "cls": 0,
+        "mapRequests": 0
+      },
+      "map": {
+        "observedMs": 3520,
+        "requests": 10,
+        "jsBytes": 445542,
+        "ready": true
+      },
+      "tabReactionMs": [
+        56.09999999962747,
+        114.89999999990687,
+        37.5,
+        67.6999999997206,
+        64.8000000002794,
+        60.10000000009313,
+        83.29999999981374,
+        106.20000000018626,
+        162.40000000037253,
+        335.89999999990687,
+        84.39999999990687,
+        110.10000000009313,
+        78.60000000009313,
+        104.6999999997206,
+        60.5,
+        104.8000000002794,
+        64.89999999990687,
+        103.90000000037253,
+        56.39999999990687,
+        105.29999999981374
+      ],
+      "filterReactionMs": [
+        42.6999999997206,
+        39.90000000037253,
+        33,
+        34.39999999990687,
+        47.89999999990687,
+        34.60000000009313,
+        31.299999999813735,
+        33.200000000186265,
+        33.60000000009313,
+        33.5,
+        29.5,
+        33.5,
+        32.90000000037253,
+        33.799999999813735,
+        33,
+        33.39999999990687,
+        33.89999999990687,
+        32.60000000009313,
+        33.3000000002794,
+        34.1999999997206
+      ],
+      "slotReactionMs": [
+        18.600000000093132,
+        29.399999999906868,
+        34,
+        33,
+        32.10000000009313,
+        33,
+        33.299999999813735,
+        33.700000000186265,
+        32.700000000186265,
+        33.6999999997206,
+        33.10000000009313,
+        33.60000000009313,
+        33.5,
+        33.10000000009313,
+        32.89999999990687,
+        33.60000000009313,
+        33.39999999990687,
+        33.1999999997206,
+        33,
+        33.89999999990687
+      ],
+      "resources": [
+        {
+          "url": "https://fonts.googleapis.com/css2",
+          "type": "link",
+          "startMs": 181.20000000018626,
+          "durationMs": 160.29999999981374,
+          "encodedBytes": 814
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/index-BpzL8A6D.js",
+          "type": "script",
+          "startMs": 183.10000000009313,
+          "durationMs": 981.8999999999069,
+          "encodedBytes": 146471
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/index-BnYhZvJO.css",
+          "type": "link",
+          "startMs": 183.20000000018626,
+          "durationMs": 329,
+          "encodedBytes": 16328
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/StudentSearchView-BVnbGZD6.js",
+          "type": "script",
+          "startMs": 1220.6000000000931,
+          "durationMs": 229.10000000009313,
+          "encodedBytes": 4314
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/UnifiedCucutaMap-DT0oenjc.js",
+          "type": "script",
+          "startMs": 1221.5,
+          "durationMs": 251.70000000018626,
+          "encodedBytes": 7762
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/user-check-D88zWysu.js",
+          "type": "script",
+          "startMs": 1221.6000000000931,
+          "durationMs": 170.10000000009313,
+          "encodedBytes": 305
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/file-text-DW-RBLYY.js",
+          "type": "script",
+          "startMs": 1222.6000000000931,
+          "durationMs": 175.6999999997206,
+          "encodedBytes": 323
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/map-DxH0hpa-.js",
+          "type": "script",
+          "startMs": 1223.3999999999069,
+          "durationMs": 183.20000000018626,
+          "encodedBytes": 378
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/rotate-ccw-BqRi90Tg.js",
+          "type": "script",
+          "startMs": 1224.1000000000931,
+          "durationMs": 190.1999999997206,
+          "encodedBytes": 288
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/arrow-right-POaiGwy9.js",
+          "type": "script",
+          "startMs": 1224.7999999998137,
+          "durationMs": 323.90000000037253,
+          "encodedBytes": 266
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/StudentResultsView-D_eZkUuK.js",
+          "type": "script",
+          "startMs": 1640.5,
+          "durationMs": 207.10000000009313,
+          "encodedBytes": 6902
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/list-LYV25XRG.js",
+          "type": "script",
+          "startMs": 1641.5,
+          "durationMs": 163.60000000009313,
+          "encodedBytes": 296
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/bookmark-uC-_Q7pX.js",
+          "type": "script",
+          "startMs": 1642.1000000000931,
+          "durationMs": 169.39999999990687,
+          "encodedBytes": 272
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/circle-check-BTuw4B4E.js",
+          "type": "script",
+          "startMs": 1642.6000000000931,
+          "durationMs": 176.29999999981374,
+          "encodedBytes": 272
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/maplibre-gl-DvulA2N7.css",
+          "type": "link",
+          "startMs": 3033.7000000001863,
+          "durationMs": 269.1999999997206,
+          "encodedBytes": 10576
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/maplibre-gl-Dtk2uwpQ.js",
+          "type": "script",
+          "startMs": 3037.5,
+          "durationMs": 1652.7999999998137,
+          "encodedBytes": 287731
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/maplibre-gl-worker-G2Jax5a-.js",
+          "type": "script",
+          "startMs": 3038.5,
+          "durationMs": 168.70000000018626,
+          "encodedBytes": 91
+        },
+        {
+          "url": "https://tiles.openfreemap.org/styles/liberty",
+          "type": "fetch",
+          "startMs": 4778.299999999814,
+          "durationMs": 204.60000000009313,
+          "encodedBytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/maplibre-gl-worker-PcuQ6pji.js",
+          "type": "other",
+          "startMs": 4937,
+          "durationMs": 1050.7999999998137,
+          "encodedBytes": 147144
+        },
+        {
+          "url": "https://tiles.openfreemap.org/planet",
+          "type": "fetch",
+          "startMs": 5112.200000000186,
+          "durationMs": 186.09999999962747,
+          "encodedBytes": 0
+        },
+        {
+          "url": "https://tiles.openfreemap.org/sprites/ofm_f384/ofm.json",
+          "type": "fetch",
+          "startMs": 5113.200000000186,
+          "durationMs": 221.89999999990687,
+          "encodedBytes": 0
+        },
+        {
+          "url": "https://tiles.openfreemap.org/sprites/ofm_f384/ofm.png",
+          "type": "fetch",
+          "startMs": 5129.399999999907,
+          "durationMs": 685.7000000001863,
+          "encodedBytes": 0
+        },
+        {
+          "url": "https://tiles.openfreemap.org/fonts/Noto%20Sans%20Italic/0-255.pbf",
+          "type": "fetch",
+          "startMs": 6138.600000000093,
+          "durationMs": 613.7999999998137,
+          "encodedBytes": 0
+        },
+        {
+          "url": "https://tiles.openfreemap.org/fonts/Noto%20Sans%20Regular/0-255.pbf",
+          "type": "fetch",
+          "startMs": 6139.799999999814,
+          "durationMs": 583.6000000000931,
+          "encodedBytes": 0
+        }
+      ]
+    },
+    {
+      "run": 3,
+      "login": {
+        "lcp": 1264,
+        "cls": 0,
+        "jsBytes": 146471
+      },
+      "results": {
+        "readyMs": 1112,
+        "lcp": 1620,
+        "cls": 0,
+        "mapRequests": 0
+      },
+      "map": {
+        "observedMs": 3520,
+        "requests": 10,
+        "jsBytes": 445542,
+        "ready": true
+      },
+      "tabReactionMs": [
+        47.39999999990687,
+        98.60000000009313,
+        52.09999999962747,
+        82.89999999990687,
+        60.3000000002794,
+        73.60000000009313,
+        70.70000000018626,
+        93.09999999962747,
+        142.20000000018626,
+        344.5,
+        68.10000000009313,
+        121.39999999990687,
+        88,
+        124.29999999981374,
+        59.299999999813735,
+        104.39999999990687,
+        71.3000000002794,
+        100.29999999981374,
+        61.700000000186265,
+        105.3000000002794
+      ],
+      "filterReactionMs": [
+        39.10000000009313,
+        36.89999999990687,
+        51.8000000002794,
+        50,
+        33.1999999997206,
+        33.39999999990687,
+        33.700000000186265,
+        30.899999999906868,
+        32.3000000002794,
+        33.09999999962747,
+        33.5,
+        33.90000000037253,
+        34.09999999962747,
+        32.700000000186265,
+        32.299999999813735,
+        36.10000000009313,
+        31,
+        29.200000000186265,
+        34.09999999962747,
+        33.5
+      ],
+      "slotReactionMs": [
+        21,
+        19.600000000093132,
+        33.799999999813735,
+        33,
+        33.90000000037253,
+        32.799999999813735,
+        34.10000000009313,
+        33.1999999997206,
+        33,
+        33.5,
+        33.10000000009313,
+        34.10000000009313,
+        32.39999999990687,
+        33.10000000009313,
+        33.799999999813735,
+        33.3000000002794,
+        32.89999999990687,
+        33.5,
+        33.39999999990687,
+        33.60000000009313
+      ],
+      "resources": [
+        {
+          "url": "https://fonts.googleapis.com/css2",
+          "type": "link",
+          "startMs": 181.29999999981374,
+          "durationMs": 177,
+          "encodedBytes": 814
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/index-BpzL8A6D.js",
+          "type": "script",
+          "startMs": 182.39999999990687,
+          "durationMs": 982.8999999999069,
+          "encodedBytes": 146471
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/index-BnYhZvJO.css",
+          "type": "link",
+          "startMs": 182.5,
+          "durationMs": 330.60000000009313,
+          "encodedBytes": 16328
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/StudentSearchView-BVnbGZD6.js",
+          "type": "script",
+          "startMs": 1221.1000000000931,
+          "durationMs": 229.29999999981374,
+          "encodedBytes": 4314
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/UnifiedCucutaMap-DT0oenjc.js",
+          "type": "script",
+          "startMs": 1222.3999999999069,
+          "durationMs": 250.5,
+          "encodedBytes": 7762
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/user-check-D88zWysu.js",
+          "type": "script",
+          "startMs": 1222.8999999999069,
+          "durationMs": 168.89999999990687,
+          "encodedBytes": 305
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/file-text-DW-RBLYY.js",
+          "type": "script",
+          "startMs": 1223.7999999998137,
+          "durationMs": 174.10000000009313,
+          "encodedBytes": 323
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/map-DxH0hpa-.js",
+          "type": "script",
+          "startMs": 1224.7999999998137,
+          "durationMs": 181.3000000002794,
+          "encodedBytes": 378
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/rotate-ccw-BqRi90Tg.js",
+          "type": "script",
+          "startMs": 1225.7000000001863,
+          "durationMs": 195.1999999997206,
+          "encodedBytes": 288
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/arrow-right-POaiGwy9.js",
+          "type": "script",
+          "startMs": 1226.7000000001863,
+          "durationMs": 322.39999999990687,
+          "encodedBytes": 266
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/StudentResultsView-D_eZkUuK.js",
+          "type": "script",
+          "startMs": 1710.8999999999069,
+          "durationMs": 211.3000000002794,
+          "encodedBytes": 6902
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/list-LYV25XRG.js",
+          "type": "script",
+          "startMs": 1711.7999999998137,
+          "durationMs": 167.60000000009313,
+          "encodedBytes": 296
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/bookmark-uC-_Q7pX.js",
+          "type": "script",
+          "startMs": 1712.1000000000931,
+          "durationMs": 173.6999999997206,
+          "encodedBytes": 272
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/circle-check-BTuw4B4E.js",
+          "type": "script",
+          "startMs": 1713.8999999999069,
+          "durationMs": 180.3000000002794,
+          "encodedBytes": 272
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/maplibre-gl-DvulA2N7.css",
+          "type": "link",
+          "startMs": 3136.899999999907,
+          "durationMs": 271.10000000009313,
+          "encodedBytes": 10576
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/maplibre-gl-Dtk2uwpQ.js",
+          "type": "script",
+          "startMs": 3141.399999999907,
+          "durationMs": 1653.5,
+          "encodedBytes": 287731
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/maplibre-gl-worker-G2Jax5a-.js",
+          "type": "script",
+          "startMs": 3141.899999999907,
+          "durationMs": 162.8000000002794,
+          "encodedBytes": 91
+        },
+        {
+          "url": "https://tiles.openfreemap.org/styles/liberty",
+          "type": "fetch",
+          "startMs": 4890.5,
+          "durationMs": 205.39999999990687,
+          "encodedBytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/maplibre-gl-worker-PcuQ6pji.js",
+          "type": "other",
+          "startMs": 5048.200000000186,
+          "durationMs": 1051.8999999999069,
+          "encodedBytes": 147144
+        },
+        {
+          "url": "https://tiles.openfreemap.org/planet",
+          "type": "fetch",
+          "startMs": 5211.899999999907,
+          "durationMs": 183.89999999990687,
+          "encodedBytes": 0
+        },
+        {
+          "url": "https://tiles.openfreemap.org/sprites/ofm_f384/ofm.json",
+          "type": "fetch",
+          "startMs": 5213.799999999814,
+          "durationMs": 219.20000000018626,
+          "encodedBytes": 0
+        },
+        {
+          "url": "https://tiles.openfreemap.org/sprites/ofm_f384/ofm.png",
+          "type": "fetch",
+          "startMs": 5228.700000000186,
+          "durationMs": 683.5,
+          "encodedBytes": 0
+        },
+        {
+          "url": "https://tiles.openfreemap.org/fonts/Noto%20Sans%20Italic/0-255.pbf",
+          "type": "fetch",
+          "startMs": 6235.600000000093,
+          "durationMs": 614.2999999998137,
+          "encodedBytes": 0
+        },
+        {
+          "url": "https://tiles.openfreemap.org/fonts/Noto%20Sans%20Regular/0-255.pbf",
+          "type": "fetch",
+          "startMs": 6236.600000000093,
+          "durationMs": 584.1999999997206,
+          "encodedBytes": 0
+        }
+      ]
+    }
+  ]
+}

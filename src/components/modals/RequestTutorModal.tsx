@@ -1,224 +1,104 @@
-import React, { useState, useRef } from 'react';
-import { X, MapPin, DollarSign } from 'lucide-react';
+import { useEffect, useLayoutEffect, useState, useRef, type FormEvent, type MutableRefObject } from 'react';
+import { X } from 'lucide-react';
 import { requestProfileError } from '../../features/marketplace/domain/contracts';
-import { Tutor, StudentRequest, StudentProfile } from '../../types';
+import { proposeBookingSlots } from '../../features/marketplace/domain/bookingSlots';
+import { bookingDefaults, composeBookingNote, BOOKING_NOTE_LIMIT, type BookingSearchContext } from '../../features/marketplace/application/bookingContext';
+import { WeeklyAvailability } from '../marketplace/WeeklyAvailability';
+import type { Tutor, StudentRequest, StudentProfile } from '../../types';
 
+export interface BookingAttempt { signature:string; id:string }
 interface RequestTutorModalProps {
-  tutor: Tutor;
-  isOpen: boolean;
-  onClose: () => void;
-  onConfirm: (newRequest?: Partial<StudentRequest>) => Promise<void> | void;
-  defaultSubject?: string;
-  studentProfile?: StudentProfile;
-  submissionEnabled?: boolean;
+  tutor:Tutor; isOpen:boolean; onClose:()=>void;
+  onConfirm:(request?:Partial<StudentRequest>)=>Promise<void>|void;
+  defaultSubject?:string; searchContext?:BookingSearchContext; studentProfile?:StudentProfile;
+  submissionEnabled?:boolean; attemptRef?:MutableRefObject<BookingAttempt|undefined>;
+  onCheckRequests?:()=>void; onRefreshOffer?:()=>Promise<void>;
 }
-
-export const RequestTutorModal: React.FC<RequestTutorModalProps> = ({
-  tutor,
-  isOpen,
-  onClose,
-  onConfirm,
-  defaultSubject = '',
-  studentProfile,
-  submissionEnabled = false,
-}) => {
-  const [studentName] = useState(studentProfile?.name || '');
-  const [subject, setSubject] = useState(tutor.subjects.includes(defaultSubject)?defaultSubject:'');
-  const [modality, setModality] = useState<'presencial' | 'virtual' | ''>(tutor.modalities[0] || '');
-  const [selectedDay, setSelectedDay] = useState('');
-  const [selectedTime, setSelectedTime] = useState('');
-  const [duration, setDuration] = useState(1);
-  const [note, setNote] = useState('');
-  const [submitting,setSubmitting]=useState(false);const [submitError,setSubmitError]=useState('');
-  const inFlight=useRef(false);const submission=useRef<{signature:string;id:string} | undefined>(undefined);
-  if (!isOpen) return null;
-
-  const totalCost = tutor.ratePerHour * duration;
+/** Accessible proposal form. The server validates the current offer; this is not a reservation. */
+export function RequestTutorModal({tutor,isOpen,onClose,onConfirm,defaultSubject='',searchContext,studentProfile,submissionEnabled=false,attemptRef,onCheckRequests,onRefreshOffer}:RequestTutorModalProps) {
+  const context=searchContext ?? {subject:defaultSubject,modality:'any',specificTopic:'',studentNote:''};
+  const defaults=bookingDefaults(tutor,context);
+  const [subject,setSubject]=useState(defaults.subject);
+  const [modality,setModality]=useState(defaults.modality);
+  const [selectedDay,setSelectedDay]=useState('');
+  const [selectedTime,setSelectedTime]=useState('');
+  const [duration,setDuration]=useState(60);
+  const [note,setNote]=useState(()=>composeBookingNote(context).text);
+  const [pending,setPending]=useState(false);
+  const [error,setError]=useState('');
+  const [selectionNotice,setSelectionNotice]=useState('');
+  const [checkedRequests,setCheckedRequests]=useState(false);
+  const [now,setNow]=useState(()=>new Date().toISOString());
+  const dialog=useRef<HTMLDialogElement>(null);
+  const inFlight=useRef(false);
+  const localAttempt=useRef<BookingAttempt | undefined>(undefined);
+  const submission=attemptRef ?? localAttempt;
+  useLayoutEffect(()=>{
+    const element=dialog.current;
+    const opener=document.activeElement;
+    if(isOpen && element && !element.open)element.showModal();
+    return()=>{element?.close();if(opener instanceof HTMLElement && opener.isConnected)opener.focus({preventScroll:true});};
+  },[isOpen]);
+  useEffect(()=>{if(pending)dialog.current?.focus();},[pending]);
+  useEffect(()=>{const timer=window.setInterval(()=>setNow(new Date().toISOString()),30_000);return()=>clearInterval(timer);},[]);
+  const proposals=proposeBookingSlots({slots:tutor.availability || [],date:selectedDay,durationMinutes:duration as 60|90|120|150|180,nowIso:now});
+  const slots=proposals.ok?proposals.slots:[];
+  const selectedSlot=slots.find(slot=>slot.label===selectedTime);
+  useEffect(()=>{
+    if(selectedTime && !selectedSlot){setSelectedTime('');setSelectionNotice('El horario elegido ya no encaja. Selecciona otra hora.');}
+  },[selectedTime,selectedSlot]);
   const profileError=requestProfileError(studentProfile);
-  const canSubmit = submissionEnabled && Boolean(studentProfile?.id) && !profileError && !submitting;
-
-  const handleSubmit = async (event: React.FormEvent) => {
+  const noteTooLong=note.length>BOOKING_NOTE_LIMIT;
+  const valid=Boolean(submissionEnabled && studentProfile?.id && !profileError && subject && tutor.subjects.includes(subject) && modality && tutor.modalities.includes(modality) && selectedSlot && !noteTooLong);
+  const close=()=>{if(!inFlight.current)onClose();};
+  async function submit(event:FormEvent) {
     event.preventDefault();
-    if (!canSubmit || inFlight.current || !selectedDay || !selectedTime || !subject || !modality) return;
-    const startsAt=`${selectedDay}T${selectedTime}:00-05:00`;
-    const signature=JSON.stringify([tutor.id,subject,modality,startsAt,duration,note]);
-    if(submission.current && submission.current.signature!==signature) {
-      setSubmitError('Si el envío anterior falló, consulta Mis Solicitudes antes de cambiarlo y crear otro. Cierra y abre el formulario para un nuevo envío.');return;
-    }
+    if(!valid || inFlight.current || !selectedSlot || !modality)return;
+    const fresh=proposeBookingSlots({slots:tutor.availability || [],date:selectedDay,durationMinutes:duration as 60,nowIso:new Date().toISOString()});
+    if(!fresh.ok || !fresh.slots.some(slot=>slot.startsAt===selectedSlot.startsAt)){setNow(new Date().toISOString());return;}
+    const signature=JSON.stringify([tutor.id,subject,modality,selectedSlot.startsAt,duration,note]);
+    if(submission.current && submission.current.signature!==signature){setError('Consulta Mis Solicitudes antes de iniciar un nuevo intento con datos diferentes.');return;}
     submission.current ??= {signature,id:crypto.randomUUID()};
-    inFlight.current=true;setSubmitting(true);setSubmitError('');
-    try {await onConfirm({id:submission.current.id,subject,modality,startsAt,durationHours:duration,studentNote:note});}
-    catch(error){setSubmitError(error instanceof Error?error.message:'No se pudo confirmar el envío.');}
-    finally{inFlight.current=false;setSubmitting(false);}
-  };
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
-      <div role="dialog" aria-modal="true" aria-labelledby="request-tutor-title" className="bg-white rounded-t-3xl sm:rounded-2xl max-w-lg w-full p-5 sm:p-6 shadow-2xl border border-slate-200 relative max-h-[92vh] overflow-y-auto animate-in slide-in-from-bottom sm:slide-in-from-bottom-2 duration-200">
-        <button
-          type="button"
-          onClick={onClose} disabled={submitting}
-          aria-label="Cerrar solicitud"
-          className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 rounded-full transition-colors cursor-pointer"
-        >
-          <X className="w-5 h-5" />
-        </button>
-
-        <form onSubmit={handleSubmit} className="space-y-4 pt-1">
-          <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-teal-600 bg-teal-50 px-2 py-0.5 rounded">
-              Nueva Solicitud Académica
-            </span>
-            <h2 id="request-tutor-title" className="text-lg sm:text-xl font-bold text-slate-900 mt-1">
-              Solicitar tutoría con {tutor.name}
-            </h2>
-            <p className="text-xs text-slate-500">
-              {[tutor.title, tutor.institution].filter(Boolean).join(' · ')}
-            </p>
-          </div>
-
-          {!canSubmit && (
-            <p role="status" className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900">
-              {profileError || (submitting ? 'Guardando solicitud…' : 'Inicia sesión para enviar una solicitud.')}
-            </p>
-          )}
-
-          {submitError && <p role="alert" className="p-3 text-xs text-red-700 bg-red-50 rounded-xl">{submitError}</p>}
-          {/* Quick Details Pill Box */}
-          <div className="grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs">
-            <div className="flex items-center gap-2 text-slate-700 truncate">
-              <MapPin className="w-4 h-4 text-slate-400 shrink-0" />
-              <span className="truncate">{tutor.sector || 'Sector sin registrar'}</span>
-            </div>
-            <div className="flex items-center gap-2 text-slate-700 truncate">
-              <DollarSign className="w-4 h-4 text-emerald-600 shrink-0" />
-              <span className="font-semibold text-emerald-700 truncate">
-                ${tutor.ratePerHour.toLocaleString('es-CO')} / h
-              </span>
-            </div>
-          </div>
-
-          {/* Student Name & Modality */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Nombre del estudiante</label>
-              <input
-                type="text"
-                value={studentName}
-                readOnly
-                required
-                placeholder="Nombre del estudiante"
-                className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs sm:text-sm text-slate-800 focus:ring-2 focus:ring-teal-500 focus:outline-hidden min-h-[42px]"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Modalidad preferida</label>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setModality('presencial')}
-                  disabled={!tutor.modalities.includes('presencial')}
-                  className={`flex-1 py-2 px-2.5 rounded-lg text-xs font-semibold border transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${modality === 'presencial'
-                      ? 'bg-slate-900 text-white border-slate-900'
-                      : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
-                    }`}
-                >
-                  Presencial AMC
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setModality('virtual')}
-                  disabled={!tutor.modalities.includes('virtual')}
-                  className={`flex-1 py-2 px-2.5 rounded-lg text-xs font-semibold border transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${modality === 'virtual'
-                      ? 'bg-slate-900 text-white border-slate-900'
-                      : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
-                    }`}
-                >
-                  Virtual en vivo
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <label htmlFor="request-subject" className="block text-xs font-semibold text-slate-700 mb-1">Materia</label>
-            <select
-              id="request-subject"
-              value={subject}
-              required
-              onChange={(e) => setSubject(e.target.value)}
-              className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2.5 text-xs sm:text-sm text-slate-800 focus:ring-2 focus:ring-teal-500 min-h-[44px]"
-            >
-              <option value="">Selecciona una materia</option>
-              {subject && !tutor.subjects.includes(subject) && <option value={subject}>{subject}</option>}
-              {tutor.subjects.map(tutorSubject => <option key={tutorSubject} value={tutorSubject}>{tutorSubject}</option>)}
-            </select>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <label className="text-xs font-semibold">Fecha propuesta · Colombia<input type="date" required value={selectedDay} onChange={event=>setSelectedDay(event.target.value)} className="block w-full border border-slate-300 rounded-lg p-2.5 mt-1" /></label>
-            <label className="text-xs font-semibold">Hora de inicio · Colombia<input type="time" required value={selectedTime} onChange={event=>setSelectedTime(event.target.value)} className="block w-full border border-slate-300 rounded-lg p-2.5 mt-1" /></label>
-          </div>
-          {/* Duration */}
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="text-xs font-semibold text-slate-700">Duración de la sesión</label>
-              <span className="text-xs font-bold text-slate-900">{duration} horas ({duration * 60} min)</span>
-            </div>
-            <input
-              type="range"
-              min="1"
-              max="3"
-              step="0.5"
-              value={duration}
-              onChange={(e) => setDuration(parseFloat(e.target.value))}
-              className="w-full accent-teal-600 cursor-pointer h-2"
-            />
-          </div>
-
-          {/* Note */}
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
-              Mensaje o tema específico a preparar
-            </label>
-            <textarea
-              rows={2}
-              maxLength={2000} value={note}
-              onChange={(e) => setNote(e.target.value)}
-              className="w-full bg-white border border-slate-300 rounded-lg p-2.5 text-xs text-slate-800 focus:ring-2 focus:ring-teal-500 focus:outline-hidden"
-            />
-          </div>
-
-          {/* Total Price Summary */}
-          <div className="flex items-center justify-between p-3 bg-teal-50/70 border border-teal-200/80 rounded-xl text-sm">
-            <div>
-              <span className="text-xs text-teal-800 block">Total estimado de la sesión:</span>
-              <span className="text-base sm:text-lg font-bold text-teal-950 font-mono">
-                ${totalCost.toLocaleString('es-CO')} COP
-              </span>
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 pt-2">
-            <button
-              type="button"
-              onClick={onClose} disabled={submitting}
-              className="w-full sm:w-auto px-4 py-2.5 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-colors min-h-[44px]"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              disabled={!canSubmit}
-              className="disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto px-5 py-3 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow transition-all hover:shadow-md min-h-[44px]"
-            >
-              {canSubmit ? 'Confirmar y enviar solicitud' : 'Envío no disponible'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-};
+    inFlight.current=true;setPending(true);setError('');
+    try{await onConfirm({id:submission.current.id,subject,modality,startsAt:selectedSlot.startsAt,durationHours:duration/60,studentNote:note});submission.current=undefined;}
+    catch(cause){setError(cause instanceof Error?cause.message:'No se pudo confirmar el envío. Consulta Mis Solicitudes antes de crear otro.');}
+    finally{inFlight.current=false;setPending(false);}
+  }
+  if(!isOpen)return null;
+  const field='block w-full mt-1 rounded-lg border border-slate-300 bg-white p-3 text-sm text-slate-900';
+  return <dialog ref={dialog} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="request-tutor-title" onKeyDown={event=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();close();}}} onCancel={event=>{event.preventDefault();close();}}
+    className="booking-dialog fixed m-auto w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-2xl backdrop:bg-slate-900/60">
+    <button type="button" aria-label="Cerrar solicitud" disabled={pending} onClick={close} className="absolute right-3 top-3 rounded-full p-3 text-slate-600"><X size={20}/></button>
+    <form onSubmit={submit} aria-busy={pending} className="space-y-4">
+      <header className="pr-10"><p className="text-xs font-semibold text-teal-800">Nueva Solicitud Académica</p><h2 id="request-tutor-title" className="mt-1 text-xl font-bold">Solicitar tutoría con {tutor.name}</h2><p className="text-sm text-slate-600">{tutor.title}</p></header>
+      {profileError && <p role="alert" className="rounded-xl bg-amber-50 p-3 text-sm text-amber-900">{profileError}</p>}
+      {!submissionEnabled && <p role="status">Inicia sesión para enviar una solicitud.</p>}
+      {pending && <p role="status" className="text-sm text-teal-800">Guardando… espera para cerrar o volver a enviar la solicitud.</p>}
+      {error && <div role="alert" className="rounded-xl bg-red-50 p-3 text-sm text-red-800">{error}</div>}
+      {submission.current && !pending && <div className="space-y-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm">
+        <p>El intento anterior puede haber sido recibido. Consúltalo antes de crear otro; no se enviará automáticamente.</p>
+        {onCheckRequests && <button type="button" onClick={onCheckRequests} className="block underline">Consultar Mis Solicitudes</button>}
+        <label className="flex items-center gap-2"><input type="checkbox" checked={checkedRequests} onChange={event=>setCheckedRequests(event.target.checked)}/>Ya comprobé que no existe esa solicitud.</label>
+        <button type="button" disabled={!checkedRequests} onClick={()=>{submission.current=undefined;setCheckedRequests(false);setError('');}} className="underline disabled:opacity-50">Iniciar un nuevo intento</button>
+      </div>}
+      <fieldset disabled={pending} className="space-y-4 min-w-0">
+        <label className="block text-sm font-semibold">Nombre del estudiante<input readOnly value={studentProfile?.name || ''} className={field}/></label>
+        <label className="block text-sm font-semibold" htmlFor="request-subject">Materia<select id="request-subject" required value={subject} onChange={event=>setSubject(event.target.value)} className={field}><option value="">Selecciona una materia</option>{tutor.subjects.map(value=><option key={value}>{value}</option>)}</select></label>
+        <label className="block text-sm font-semibold">Modalidad preferida<select required value={modality} onChange={event=>setModality(event.target.value as typeof modality)} className={field}><option value="">Selecciona una modalidad</option>{tutor.modalities.map(value=><option key={value} value={value}>{value==='virtual'?'Virtual':'Presencial AMC'}</option>)}</select></label>
+        <WeeklyAvailability slots={tutor.availability}/>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <label className="text-sm font-semibold">Fecha propuesta · Colombia<input type="date" required value={selectedDay} onChange={event=>setSelectedDay(event.target.value)} className={field}/></label>
+          <label className="text-sm font-semibold">Duración de la sesión<select id="request-duration" value={duration} onChange={event=>setDuration(Number(event.target.value))} className={field}>{[60,90,120,150,180].map(value=><option key={value} value={value}>{value/60} horas ({value} min)</option>)}</select></label>
+        </div>
+        <label className="block text-sm font-semibold">Hora de inicio · Colombia<select id="request-time" required value={selectedTime} onChange={event=>{setSelectedTime(event.target.value);setSelectionNotice('');}} aria-describedby="request-time-help request-time-status" className={field}><option value="">Selecciona una hora</option>{slots.map(slot=><option key={slot.startsAt} value={slot.label}>{slot.label}</option>)}</select></label>
+        <p id="request-time-help" className="text-xs text-slate-600">Disponibilidad declarada, sujeta a confirmación del tutor. Estas horas no están reservadas.</p>
+        <p id="request-time-status" role="status" className="text-sm text-teal-800">{selectionNotice || (selectedDay && !slots.length?'No hay horas compatibles para esta fecha y duración. Prueba otra fecha.':'')}</p>
+        {onRefreshOffer && <button type="button" className="text-sm underline text-teal-800" onClick={async()=>{if(inFlight.current)return;inFlight.current=true;setPending(true);try{await onRefreshOffer();setNow(new Date().toISOString());setError('');}catch(cause){setError(cause instanceof Error?cause.message:'No se pudo actualizar la oferta.');}finally{inFlight.current=false;setPending(false);}}}>Actualizar oferta y horarios</button>}
+        <label htmlFor="request-note" className="block text-sm font-semibold">Mensaje o tema específico a preparar<textarea id="request-note" rows={3} value={note} onChange={event=>setNote(event.target.value)} aria-invalid={noteTooLong} aria-describedby="request-note-limit" className={field}/></label>
+        <p id="request-note-limit" role={noteTooLong?'alert':undefined} className={`text-xs ${noteTooLong?'text-red-700':'text-slate-600'}`}>{note.length} / {BOOKING_NOTE_LIMIT} caracteres{noteTooLong?' · Reduce el mensaje antes de enviar.':''}</p>
+      </fieldset>
+      <div className="rounded-xl border border-teal-200 bg-teal-50 p-3"><p className="text-xs text-teal-800">Total estimado de la sesión:</p><strong className="text-lg text-teal-950">${(tutor.ratePerHour*duration/60).toLocaleString('es-CO')} COP</strong></div>
+      <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end"><button type="button" onClick={close} disabled={pending} className="rounded-xl border border-slate-300 px-4 py-3 text-sm">Cancelar</button><button type="submit" disabled={!valid || pending} className="rounded-xl bg-slate-900 px-5 py-3 text-sm font-bold text-white disabled:opacity-50">{pending?'Guardando…':'Confirmar y enviar solicitud'}</button></div>
+    </form>
+  </dialog>;
+}

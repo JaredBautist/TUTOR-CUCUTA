@@ -127,6 +127,7 @@ try {
   await cdp('Page.reload');
   await pause(400);
   await until(async () => (await body()).includes('Buscar Tutores'), 'Reload failed');
+  await until(async()=>await evaluate(`Boolean([...document.querySelectorAll('button')].find(b=>b.innerText.includes('Virtual')))`),'Search controls not ready');
   await evaluate(`(() => { const button=[...document.querySelectorAll('button')].find(b=>b.innerText.includes('Virtual'));button.click(); })()`);
   await click('Ver tutores');
   await until(async () => (await body()).includes('Carlos Ramírez'), 'Real tutor missing');
@@ -155,6 +156,7 @@ try {
   assert.ok(await evaluate('document.documentElement.scrollWidth <= window.innerWidth'), 'Mobile horizontal overflow');
   await screenshot('/tmp/tutorcucuta-clean-results-mobile.png');
   await click('Ver mapa interactivo');
+  await until(async () => (await body()).includes('Sin ubicaciones registradas'), 'Deferred map not ready');
   assert.match(await body(), /Sin ubicaciones registradas/);
   assert.doesNotMatch(await body(), /Tu ubicación|2\.4 km|8 min/);
   await click('Lista de tutores (0)');

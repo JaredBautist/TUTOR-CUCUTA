@@ -1,0 +1,609 @@
+{
+  "browser": "Chrome/153.0.8010.52",
+  "viewport": "390x844",
+  "network": "1.6Mbps down, 750Kbps up, 150ms latency",
+  "cpuSlowdown": 4,
+  "backend": "isolated JS fixtures, no hosted requests",
+  "measurements": [
+    {
+      "run": 1,
+      "login": {
+        "lcp": 2300,
+        "cls": 0,
+        "jsBytes": 158728
+      },
+      "results": {
+        "readyMs": 1082,
+        "lcp": 2080,
+        "cls": 0,
+        "mapRequests": 0
+      },
+      "map": {
+        "observedMs": 3511,
+        "requests": 9,
+        "jsBytes": 434966,
+        "ready": true
+      },
+      "tabReactionMs": [
+        61,
+        146.60000000009313,
+        127.20000000018626,
+        367.89999999990687,
+        101.10000000009313,
+        170.70000000018626,
+        130.20000000018626,
+        179,
+        97.3000000002794,
+        111.5,
+        81.6999999997206,
+        153.10000000009313,
+        96.10000000009313,
+        110.70000000018626,
+        98.29999999981374,
+        194.70000000018626,
+        130.10000000009313,
+        116.1999999997206,
+        64,
+        151.6999999997206
+      ],
+      "filterReactionMs": [
+        40.1999999997206,
+        39,
+        52.90000000037253,
+        46.8000000002794,
+        50.39999999990687,
+        45.799999999813735,
+        37.8000000002794,
+        31.799999999813735,
+        33.89999999990687,
+        33.40000000037253,
+        33.09999999962747,
+        33.10000000009313,
+        33.60000000009313,
+        32.799999999813735,
+        38.3000000002794,
+        23.699999999720603,
+        32.90000000037253,
+        33.89999999990687,
+        32.60000000009313,
+        34.39999999990687
+      ],
+      "slotReactionMs": [
+        27.5,
+        33.39999999990687,
+        35.799999999813735,
+        45.700000000186265,
+        35.5,
+        37.89999999990687,
+        42.799999999813735,
+        36.60000000009313,
+        33.39999999990687,
+        49.200000000186265,
+        37.60000000009313,
+        57.90000000037253,
+        35.6999999997206,
+        37.10000000009313,
+        36.200000000186265,
+        27.399999999906868,
+        31.799999999813735,
+        33.700000000186265,
+        34.6999999997206,
+        33
+      ],
+      "resources": [
+        {
+          "url": "https://fonts.googleapis.com/css2",
+          "type": "link",
+          "startMs": 180.20000000018626,
+          "durationMs": 240.10000000009313,
+          "encodedBytes": 814
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/index-BQmMiJSX.js",
+          "type": "script",
+          "startMs": 180.60000000009313,
+          "durationMs": 1094.3999999999069,
+          "encodedBytes": 158728
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/index-DcrNPBjx.css",
+          "type": "link",
+          "startMs": 180.70000000018626,
+          "durationMs": 434.10000000009313,
+          "encodedBytes": 26418
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/StudentSearchView-EtgnTntT.js",
+          "type": "script",
+          "startMs": 1370.8999999999069,
+          "durationMs": 181.5,
+          "encodedBytes": 4186
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/file-text-BP1i38id.js",
+          "type": "script",
+          "startMs": 1371.8999999999069,
+          "durationMs": 167.60000000009313,
+          "encodedBytes": 324
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/StudentResultsView-CnNHUvTA.js",
+          "type": "script",
+          "startMs": 2119.600000000093,
+          "durationMs": 197.89999999990687,
+          "encodedBytes": 6201
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/bookmark-B17Fl9S5.js",
+          "type": "script",
+          "startMs": 2121.100000000093,
+          "durationMs": 167.70000000018626,
+          "encodedBytes": 272
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/maplibre-gl-Dtk2uwpQ.js",
+          "type": "script",
+          "startMs": 3295.5,
+          "durationMs": 1594.3999999999069,
+          "encodedBytes": 287731
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/maplibre-gl-worker-G2Jax5a-.js",
+          "type": "script",
+          "startMs": 3295.7000000001863,
+          "durationMs": 163.1999999997206,
+          "encodedBytes": 91
+        },
+        {
+          "url": "https://tiles.openfreemap.org/styles/liberty",
+          "type": "fetch",
+          "startMs": 5051.200000000186,
+          "durationMs": 506.6999999997206,
+          "encodedBytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/maplibre-gl-worker-PcuQ6pji.js",
+          "type": "other",
+          "startMs": 5187.200000000186,
+          "durationMs": 812.6000000000931,
+          "encodedBytes": 147144
+        },
+        {
+          "url": "https://tiles.openfreemap.org/planet",
+          "type": "fetch",
+          "startMs": 5770.399999999907,
+          "durationMs": 184.70000000018626,
+          "encodedBytes": 0
+        },
+        {
+          "url": "https://tiles.openfreemap.org/sprites/ofm_f384/ofm.json",
+          "type": "fetch",
+          "startMs": 5771.899999999907,
+          "durationMs": 220.40000000037253,
+          "encodedBytes": 0
+        },
+        {
+          "url": "https://tiles.openfreemap.org/sprites/ofm_f384/ofm.png",
+          "type": "fetch",
+          "startMs": 5786.300000000279,
+          "durationMs": 453.79999999981374,
+          "encodedBytes": 0
+        },
+        {
+          "url": "https://tiles.openfreemap.org/fonts/Noto%20Sans%20Italic/0-255.pbf",
+          "type": "fetch",
+          "startMs": 6336.200000000186,
+          "durationMs": 616.1999999997206,
+          "encodedBytes": 0
+        },
+        {
+          "url": "https://tiles.openfreemap.org/fonts/Noto%20Sans%20Regular/0-255.pbf",
+          "type": "fetch",
+          "startMs": 6337.200000000186,
+          "durationMs": 585.6999999997206,
+          "encodedBytes": 0
+        }
+      ]
+    },
+    {
+      "run": 2,
+      "login": {
+        "lcp": 1400,
+        "cls": 0,
+        "jsBytes": 158728
+      },
+      "results": {
+        "readyMs": 1068,
+        "lcp": 2148,
+        "cls": 0,
+        "mapRequests": 0
+      },
+      "map": {
+        "observedMs": 3515,
+        "requests": 9,
+        "jsBytes": 434966,
+        "ready": true
+      },
+      "tabReactionMs": [
+        41.200000000186265,
+        104.8000000002794,
+        89.70000000018626,
+        95.70000000018626,
+        149.1999999997206,
+        342,
+        84,
+        134.20000000018626,
+        75.20000000018626,
+        113.5,
+        84.60000000009313,
+        99.8000000002794,
+        73.70000000018626,
+        99.29999999981374,
+        64.90000000037253,
+        109,
+        61.299999999813735,
+        97.79999999981374,
+        57.5,
+        103.09999999962747
+      ],
+      "filterReactionMs": [
+        35.6999999997206,
+        38.200000000186265,
+        30.100000000093132,
+        33.89999999990687,
+        32.299999999813735,
+        33.10000000009313,
+        33.799999999813735,
+        33.10000000009313,
+        33.3000000002794,
+        33.1999999997206,
+        33.5,
+        33.5,
+        33.3000000002794,
+        33.1999999997206,
+        33.200000000186265,
+        33.39999999990687,
+        33.5,
+        33.89999999990687,
+        33.3000000002794,
+        32.6999999997206
+      ],
+      "slotReactionMs": [
+        21.899999999906868,
+        20.799999999813735,
+        32.8000000002794,
+        35.6999999997206,
+        32,
+        31.5,
+        33.5,
+        37.5,
+        29.700000000186265,
+        33.1999999997206,
+        33.10000000009313,
+        33.10000000009313,
+        33.39999999990687,
+        33.3000000002794,
+        33.59999999962747,
+        33.10000000009313,
+        33.3000000002794,
+        33.59999999962747,
+        33.5,
+        32.90000000037253
+      ],
+      "resources": [
+        {
+          "url": "https://fonts.googleapis.com/css2",
+          "type": "link",
+          "startMs": 191.29999999981374,
+          "durationMs": 1553.3999999999069,
+          "encodedBytes": 814
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/index-BQmMiJSX.js",
+          "type": "script",
+          "startMs": 191.89999999990687,
+          "durationMs": 1086.7999999998137,
+          "encodedBytes": 158728
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/index-DcrNPBjx.css",
+          "type": "link",
+          "startMs": 192,
+          "durationMs": 418.29999999981374,
+          "encodedBytes": 26418
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/StudentSearchView-EtgnTntT.js",
+          "type": "script",
+          "startMs": 1797,
+          "durationMs": 179,
+          "encodedBytes": 4186
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/file-text-BP1i38id.js",
+          "type": "script",
+          "startMs": 1797.1000000000931,
+          "durationMs": 165.79999999981374,
+          "encodedBytes": 324
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/StudentResultsView-CnNHUvTA.js",
+          "type": "script",
+          "startMs": 2214.100000000093,
+          "durationMs": 196.29999999981374,
+          "encodedBytes": 6201
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/bookmark-B17Fl9S5.js",
+          "type": "script",
+          "startMs": 2215.2999999998137,
+          "durationMs": 167.60000000009313,
+          "encodedBytes": 272
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/maplibre-gl-Dtk2uwpQ.js",
+          "type": "script",
+          "startMs": 3331.7999999998137,
+          "durationMs": 1599.3000000002794,
+          "encodedBytes": 287731
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/maplibre-gl-worker-G2Jax5a-.js",
+          "type": "script",
+          "startMs": 3332.5,
+          "durationMs": 159,
+          "encodedBytes": 91
+        },
+        {
+          "url": "https://tiles.openfreemap.org/styles/liberty",
+          "type": "fetch",
+          "startMs": 5024.399999999907,
+          "durationMs": 206.20000000018626,
+          "encodedBytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/maplibre-gl-worker-PcuQ6pji.js",
+          "type": "other",
+          "startMs": 5183.899999999907,
+          "durationMs": 1051.7999999998137,
+          "encodedBytes": 147144
+        },
+        {
+          "url": "https://tiles.openfreemap.org/planet",
+          "type": "fetch",
+          "startMs": 5346.899999999907,
+          "durationMs": 183.89999999990687,
+          "encodedBytes": 0
+        },
+        {
+          "url": "https://tiles.openfreemap.org/sprites/ofm_f384/ofm.json",
+          "type": "fetch",
+          "startMs": 5348.399999999907,
+          "durationMs": 219.5,
+          "encodedBytes": 0
+        },
+        {
+          "url": "https://tiles.openfreemap.org/sprites/ofm_f384/ofm.png",
+          "type": "fetch",
+          "startMs": 5363.5,
+          "durationMs": 684.6000000000931,
+          "encodedBytes": 0
+        },
+        {
+          "url": "https://tiles.openfreemap.org/fonts/Noto%20Sans%20Italic/0-255.pbf",
+          "type": "fetch",
+          "startMs": 6397.299999999814,
+          "durationMs": 610.6000000000931,
+          "encodedBytes": 0
+        },
+        {
+          "url": "https://tiles.openfreemap.org/fonts/Noto%20Sans%20Regular/0-255.pbf",
+          "type": "fetch",
+          "startMs": 6398.199999999721,
+          "durationMs": 580.2000000001863,
+          "encodedBytes": 0
+        }
+      ]
+    },
+    {
+      "run": 3,
+      "login": {
+        "lcp": 1368,
+        "cls": 0,
+        "jsBytes": 158728
+      },
+      "results": {
+        "readyMs": 1043,
+        "lcp": 1672,
+        "cls": 0,
+        "mapRequests": 0
+      },
+      "map": {
+        "observedMs": 3509,
+        "requests": 9,
+        "jsBytes": 434966,
+        "ready": true
+      },
+      "tabReactionMs": [
+        47.700000000186265,
+        111.79999999981374,
+        78.6999999997206,
+        104.3000000002794,
+        125,
+        349.5,
+        85.5,
+        97,
+        86.20000000018626,
+        127.39999999990687,
+        80.3000000002794,
+        100,
+        62.39999999990687,
+        79.60000000009313,
+        49,
+        95.29999999981374,
+        69.20000000018626,
+        104.59999999962747,
+        50.89999999990687,
+        108.09999999962747
+      ],
+      "filterReactionMs": [
+        55.200000000186265,
+        42.60000000009313,
+        28,
+        26.699999999720603,
+        32.3000000002794,
+        33.39999999990687,
+        33,
+        33.700000000186265,
+        33.39999999990687,
+        33.89999999990687,
+        28.5,
+        33.60000000009313,
+        33.5,
+        33.39999999990687,
+        32.89999999990687,
+        33.60000000009313,
+        33,
+        33.39999999990687,
+        33.39999999990687,
+        33.39999999990687
+      ],
+      "slotReactionMs": [
+        24.5,
+        48,
+        45.10000000009313,
+        30.899999999906868,
+        33.5,
+        32.89999999990687,
+        33.3000000002794,
+        33.39999999990687,
+        33,
+        33.799999999813735,
+        33,
+        33.5,
+        33.5,
+        33.5,
+        33.3000000002794,
+        33.299999999813735,
+        32.700000000186265,
+        33.5,
+        33.5,
+        33.299999999813735
+      ],
+      "resources": [
+        {
+          "url": "https://fonts.googleapis.com/css2",
+          "type": "link",
+          "startMs": 177,
+          "durationMs": 274.70000000018626,
+          "encodedBytes": 814
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/index-BQmMiJSX.js",
+          "type": "script",
+          "startMs": 178.5,
+          "durationMs": 1088,
+          "encodedBytes": 158728
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/index-DcrNPBjx.css",
+          "type": "link",
+          "startMs": 179.40000000037253,
+          "durationMs": 427.5,
+          "encodedBytes": 26418
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/StudentSearchView-EtgnTntT.js",
+          "type": "script",
+          "startMs": 1324.3000000002794,
+          "durationMs": 181.89999999990687,
+          "encodedBytes": 4186
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/file-text-BP1i38id.js",
+          "type": "script",
+          "startMs": 1325.1000000000931,
+          "durationMs": 168.10000000009313,
+          "encodedBytes": 324
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/StudentResultsView-CnNHUvTA.js",
+          "type": "script",
+          "startMs": 1696.6000000000931,
+          "durationMs": 192.70000000018626,
+          "encodedBytes": 6201
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/bookmark-B17Fl9S5.js",
+          "type": "script",
+          "startMs": 1698.1000000000931,
+          "durationMs": 162.39999999990687,
+          "encodedBytes": 272
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/maplibre-gl-Dtk2uwpQ.js",
+          "type": "script",
+          "startMs": 2801.2000000001863,
+          "durationMs": 1600.5,
+          "encodedBytes": 287731
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/maplibre-gl-worker-G2Jax5a-.js",
+          "type": "script",
+          "startMs": 2802.100000000093,
+          "durationMs": 160.89999999990687,
+          "encodedBytes": 91
+        },
+        {
+          "url": "https://tiles.openfreemap.org/styles/liberty",
+          "type": "fetch",
+          "startMs": 4491.9000000003725,
+          "durationMs": 209.59999999962747,
+          "encodedBytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:4188/assets/maplibre-gl-worker-PcuQ6pji.js",
+          "type": "other",
+          "startMs": 4648.200000000186,
+          "durationMs": 1050.8999999999069,
+          "encodedBytes": 147144
+        },
+        {
+          "url": "https://tiles.openfreemap.org/planet",
+          "type": "fetch",
+          "startMs": 4813.600000000093,
+          "durationMs": 203.8000000002794,
+          "encodedBytes": 0
+        },
+        {
+          "url": "https://tiles.openfreemap.org/sprites/ofm_f384/ofm.json",
+          "type": "fetch",
+          "startMs": 4814.700000000186,
+          "durationMs": 216.70000000018626,
+          "encodedBytes": 0
+        },
+        {
+          "url": "https://tiles.openfreemap.org/sprites/ofm_f384/ofm.png",
+          "type": "fetch",
+          "startMs": 4829.4000000003725,
+          "durationMs": 689.5999999996275,
+          "encodedBytes": 0
+        },
+        {
+          "url": "https://tiles.openfreemap.org/fonts/Noto%20Sans%20Italic/0-255.pbf",
+          "type": "fetch",
+          "startMs": 5852.600000000093,
+          "durationMs": 611.3000000002794,
+          "encodedBytes": 0
+        },
+        {
+          "url": "https://tiles.openfreemap.org/fonts/Noto%20Sans%20Regular/0-255.pbf",
+          "type": "fetch",
+          "startMs": 5853.4000000003725,
+          "durationMs": 573.5999999996275,
+          "encodedBytes": 0
+        }
+      ]
+    }
+  ]
+}

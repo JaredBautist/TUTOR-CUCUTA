@@ -1,1 +1,23 @@
 @import "tailwindcss";
+
+/* Shared mobile ergonomics preserve the existing light palette and desktop rhythm. */
+:root { color-scheme: light; }
+button, [role="button"], summary { min-height: 44px; min-width: 44px; }
+input, select, textarea { min-width: 0; max-width: 100%; }
+:focus-visible { outline: 2px solid #0f766e; outline-offset: 3px; }
+.safe-bottom { padding-bottom: max(.375rem, env(safe-area-inset-bottom)); }
+.booking-dialog { max-height: calc(100dvh - 2rem); overflow-y: auto; overscroll-behavior: contain; }
+@media (max-width: 767px) {
+  input:not([type="checkbox"]):not([type="radio"]), select, textarea { font-size: 16px; min-height: 44px; }
+  input[type="range"] { min-height: 44px; }
+  main { min-width: 0; padding-bottom: calc(4rem + env(safe-area-inset-bottom)); }
+  .booking-dialog { max-height: calc(100dvh - 1rem); padding-bottom: max(1.25rem, env(safe-area-inset-bottom)); }
+  label:has(input[type="checkbox"]), label:has(input[type="radio"]) { min-height: 44px; }
+  html { scroll-padding-bottom: 6rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+/* Small text on light surfaces needs a stronger contrast than decorative icons. */
+:where(label, span, p, div).text-slate-400 { color: #64748b; }
+:where(label, span, p, div, a).text-teal-600 { color: #0f766e; }

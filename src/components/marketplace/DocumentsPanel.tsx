@@ -43,8 +43,8 @@ export function DocumentsPanel({tutorId,editable=false}:{tutorId:string;editable
    <button type="button" disabled={busy} onClick={()=>void run(async()=>{const url=await marketplace.documentUrl(document);if(active.current)setPreview({document,url});})} className="inline-flex items-center gap-1 text-xs text-teal-800 p-2 border rounded-lg"><Eye size={16}/>Ver soporte</button>
    {editable && <button type="button" disabled={busy} onClick={()=>void run(async()=>{const warning=await marketplace.removeDocument(document);if(active.current){setNotice(warning || 'Documento retirado.');setDocuments(rows=>rows.filter(row=>row.id!==document.id));}})} className="inline-flex items-center gap-1 text-xs text-red-700 p-2"><Trash2 size={16}/>Retirar</button>}
   </article>)}</div>
-  {preview && <dialog ref={dialog} onClose={()=>setPreview(undefined)} className="fixed inset-0 m-auto w-[95vw] max-w-4xl max-h-[90vh] rounded-2xl border border-slate-200 bg-white p-4 backdrop:bg-slate-900/50">
-   <div className="flex justify-between gap-4 mb-3"><h3 className="font-bold">{preview.document.name}</h3><button type="button" aria-label="Cerrar documento" onClick={()=>dialog.current?.close()}><X/></button></div>
+  {preview && <dialog aria-label="Documento aportado por el tutor" ref={dialog} onClose={()=>setPreview(undefined)} className="fixed inset-0 m-auto w-[95vw] max-w-4xl max-h-[90vh] rounded-2xl border border-slate-200 bg-white p-4 backdrop:bg-slate-900/50">
+   <div className="flex justify-between gap-4 mb-3"><h3 className="font-bold min-w-0 break-words">{preview.document.name}</h3><button type="button" className="shrink-0 min-w-11 min-h-11 flex items-center justify-center" aria-label="Cerrar documento" onClick={()=>dialog.current?.close()}><X/></button></div>
    {preview.document.fileType==='pdf' ? <iframe src={preview.url} title={preview.document.name} className="w-full h-[65vh]"/> : <img src={preview.url} alt={preview.document.name} className="max-h-[70vh] mx-auto object-contain"/>}
    <p className="text-xs text-slate-500 mt-2">Documento aportado por el tutor. Autenticidad no verificada.</p>
   </dialog>}

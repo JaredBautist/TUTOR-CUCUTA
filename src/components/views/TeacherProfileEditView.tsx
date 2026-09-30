@@ -1,3 +1,4 @@
+import { ProfileImage } from '../common/ProfileImage';
 import React, { useState, useRef, useEffect } from 'react';
 import { ArrowLeft, Save, Upload, Plus, X, Map, User, Camera, RotateCcw, Link as LinkIcon } from 'lucide-react';
 import type { TeacherDraft } from '../../features/accounts/application/profileMapping';
@@ -217,7 +218,7 @@ export const TeacherProfileEditView: React.FC<TeacherProfileEditViewProps> = ({
                 {/* Avatar Preview */}
                 <div className="relative group shrink-0">
                   <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden border-2 border-teal-600 shadow-md bg-white">
-                    {avatar ? <img
+                    {avatar ? <ProfileImage
                       src={avatar}
                       alt={fullName}
                       className="w-full h-full object-cover"
@@ -308,8 +309,8 @@ export const TeacherProfileEditView: React.FC<TeacherProfileEditViewProps> = ({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Nombre completo</label>
-                <input
+                <label className="block font-semibold text-slate-700 mb-1" htmlFor="teacherprofileeditview-field-1">Nombre completo</label>
+                <input id="teacherprofileeditview-field-1"
                   type="text"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
@@ -318,8 +319,8 @@ export const TeacherProfileEditView: React.FC<TeacherProfileEditViewProps> = ({
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Título universitario</label>
-                <input
+                <label className="block font-semibold text-slate-700 mb-1" htmlFor="teacherprofileeditview-field-2">Título universitario</label>
+                <input id="teacherprofileeditview-field-2"
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
@@ -328,8 +329,8 @@ export const TeacherProfileEditView: React.FC<TeacherProfileEditViewProps> = ({
               </div>
 
               <div className="sm:col-span-2">
-                <label className="block font-semibold text-slate-700 mb-1">Universidad o institución</label>
-                <input
+                <label className="block font-semibold text-slate-700 mb-1" htmlFor="teacherprofileeditview-field-3">Universidad o institución</label>
+                <input id="teacherprofileeditview-field-3"
                   type="text"
                   value={institution}
                   onChange={(e) => setInstitution(e.target.value)}
@@ -338,8 +339,8 @@ export const TeacherProfileEditView: React.FC<TeacherProfileEditViewProps> = ({
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Años de experiencia</label>
-                <input
+                <label className="block font-semibold text-slate-700 mb-1" htmlFor="teacherprofileeditview-field-4">Años de experiencia</label>
+                <input id="teacherprofileeditview-field-4"
                   type="number"
                   min="0"
                   max="80"
@@ -350,8 +351,8 @@ export const TeacherProfileEditView: React.FC<TeacherProfileEditViewProps> = ({
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Tarifa por hora académica (COP)</label>
-                <input
+                <label className="block font-semibold text-slate-700 mb-1" htmlFor="teacherprofileeditview-field-5">Tarifa por hora académica (COP)</label>
+                <input id="teacherprofileeditview-field-5"
                   type="number"
                   step="any"
                   min="10000"
@@ -364,10 +365,10 @@ export const TeacherProfileEditView: React.FC<TeacherProfileEditViewProps> = ({
             </div>
 
             <div>
-              <label className="block font-semibold text-slate-700 mb-1 text-xs">
+              <label className="block font-semibold text-slate-700 mb-1 text-xs" htmlFor="teacherprofileeditview-field-6">
                 Biografía y enfoque pedagógico
               </label>
-              <textarea
+              <textarea id="teacherprofileeditview-field-6"
                 rows={3}
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}

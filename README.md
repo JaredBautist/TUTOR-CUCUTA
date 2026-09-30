@@ -8,7 +8,7 @@
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38B2AC?logo=tailwind-css&logoColor=white&style=for-the-badge)
 ![Supabase](https://img.shields.io/badge/Supabase-Database%20%26%20Auth-3ECF8E?logo=supabase&logoColor=white&style=for-the-badge)
 ![MapLibre](https://img.shields.io/badge/MapLibre-GL%20JS-blue?logo=maplibre&logoColor=white&style=for-the-badge)
-![Tests](https://img.shields.io/badge/Tests-90%20Passing-success?style=for-the-badge)
+![Tests](https://img.shields.io/badge/Tests-103%20Passing-success?style=for-the-badge)
 
 **Conectando estudiantes y tutores particulares en Cúcuta y su Área Metropolitana mediante geolocalización, filtrado multicriterio y recomendación algorítmica explicable.** 🚀
 
@@ -116,7 +116,7 @@ Abre en tu navegador: [http://127.0.0.1:3000](http://127.0.0.1:3000)
 El proyecto cuenta con una sólida suite de pruebas automatizadas que validan reglas de negocio, cálculo geográfico, recomendaciones y seguridad RLS:
 
 ```bash
-# Ejecutar todas las pruebas unitarias y de integración (90 tests)
+# Ejecutar todas las pruebas unitarias y de integración (103 tests)
 npm test
 
 # Validar tipado y linter sin errores
@@ -178,3 +178,10 @@ Este proyecto fue desarrollado con fines académicos para la asignatura de **Tec
 ## 📚 Flujos y casos de uso
 
 Consulta la [guía de flujos y casos de uso](docs/flujos-y-casos-de-uso.md), con diagramas Mermaid de los portales, las solicitudes y las recomendaciones.
+
+### Frontend y prioridad móvil
+
+La [especificación mobile-first](specs/mobile-first-frontend/requirements.md) define
+las próximas mejoras de horarios, reserva, accesibilidad y rendimiento. Incluye
+[diseño](specs/mobile-first-frontend/design.md), [tareas](specs/mobile-first-frontend/tasks.md)
+y [decisiones](specs/mobile-first-frontend/adr-001-scope.md). Estado: implementado localmente; consulta la [validación y pendientes de dispositivos/despliegue](specs/mobile-first-frontend/validation.md).

@@ -1,7 +1,7 @@
 import { createFavoritesRepository } from './features/favorites/infrastructure/supabaseFavorites';
 import { useFavorites } from './features/favorites/application/useFavorites';
 import { supabase } from './utils/supabase';
-import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
+import { useState, useEffect, useMemo, useRef, lazy, Suspense } from 'react';
 import { Role, ScreenId, SearchFilters, Tutor, StudentRequest, StudentProfile } from './types';
 import { initialSearchFilters } from './data/searchDefaults';
 import { useAccountSession } from './features/accounts/application/useAccountSession';
@@ -15,9 +15,11 @@ import { useRequests } from './features/marketplace/application/useRequests';
 import { isSupabaseConfigured } from './utils/supabase';
 import { Header } from './components/common/Header';
 import { LandingLoginView } from './components/views/LandingLoginView';
-import { StudentRequestsView } from './components/views/StudentRequestsView';
-import { TeacherDashboardView } from './components/views/TeacherDashboardView';
-import { TeacherRequestDetailView } from './components/views/TeacherRequestDetailView';
+const StudentRequestsView = lazy(() => import('./components/views/StudentRequestsView').then(module => ({default:module.StudentRequestsView})));
+const TeacherDashboardView = lazy(() => import('./components/views/TeacherDashboardView').then(module => ({default:module.TeacherDashboardView})));
+const TeacherRequestDetailView = lazy(() => import('./components/views/TeacherRequestDetailView').then(module => ({default:module.TeacherRequestDetailView})));
+import type { ResultsSession } from './features/recommender/application/resultsSession';
+import type { BookingAttempt } from './components/modals/RequestTutorModal';
 import { RequestTutorModal } from './components/modals/RequestTutorModal';
 import { MobileBottomNav } from './components/common/MobileBottomNav';
 import type { SearchArea } from './features/maps/domain/contracts';
@@ -46,6 +48,8 @@ export default function App() {
 
 function AuthenticatedApp({ account, controller, onLogout }: { account: OwnAccount; controller: SessionController; onLogout: () => void }) {
   const role = account.role;
+  const resultsSession = useRef<ResultsSession | undefined>(undefined);
+  const bookingAttempt = useRef<BookingAttempt | undefined>(undefined);
   const [currentScreen, setCurrentScreen] = useState<ScreenId>(role === 'student' ? 'student-search' : 'teacher-dashboard');
   const [filters, setFilters] = useState<SearchFilters>(() => structuredClone(initialSearchFilters));
   const [tutors, setTutors] = useState<Tutor[]>([]);
@@ -173,6 +177,7 @@ function AuthenticatedApp({ account, controller, onLogout }: { account: OwnAccou
         <Suspense fallback={<p role="status" className="p-12 text-center text-slate-600">Cargando vista…</p>}>
         {favorites.error && <div role="alert" className="mx-auto max-w-5xl p-4 text-red-800 bg-red-50">{favorites.error} <button type="button" className="underline" onClick={() => void favorites.refresh()}>Actualizar favoritos</button></div>}
         {favorites.busy && <p role="status" className="sr-only">Guardando favorito…</p>}
+        {requestState.loading && <p role="status" className="p-4 text-sm text-slate-600">Cargando solicitudes…</p>}
         {requestState.error && <div role="alert" className="mx-auto max-w-5xl p-4 text-red-800 bg-red-50">{requestState.error} <button type="button" className="underline" onClick={()=>void requestState.refresh()}>Actualizar solicitudes</button></div>}
         {account.notice && <p role="status" className="mx-auto max-w-5xl p-4 text-amber-900 bg-amber-50">{account.notice}</p>}
         {actionMessage && <p role="status" className="mx-auto max-w-5xl p-4 text-amber-900 bg-amber-50">{actionMessage}</p>}
@@ -180,7 +185,7 @@ function AuthenticatedApp({ account, controller, onLogout }: { account: OwnAccou
           <StudentSearchView filters={filters} studentProfile={studentProfile}
             initialArea={searchArea} tutors={visibleTutors} locationFeedStatus={locationFeed.status}
             onRetryLocations={locationFeed.retry}
-            onUpdateFilters={handleUpdateFilters} onSearch={(area) => { setSearchArea(area); navigate('student-results'); }} />
+            onUpdateFilters={handleUpdateFilters} onSearch={(area) => { resultsSession.current = undefined; setSearchArea(area); navigate('student-results'); }} />
         )}
         {currentScreen === 'student-results' && (
           catalogLoading ? <p role="status" className="p-12 text-center text-slate-600">Cargando tutores…</p> :
@@ -188,7 +193,7 @@ function AuthenticatedApp({ account, controller, onLogout }: { account: OwnAccou
             <p className="mb-4 text-slate-700">{catalogError}</p>
             <button type="button" onClick={() => { setCatalogLoading(true); setReloadCount((count) => count + 1); }} className="rounded-xl bg-teal-700 px-5 py-3 text-white font-semibold">Reintentar</button>
           </div> :
-          <StudentResultsView tutors={searchTutors} filters={filters} savedTutors={savedTutors}
+          <StudentResultsView sessionState={resultsSession} tutors={searchTutors} filters={filters} savedTutors={savedTutors}
             searchArea={searchArea} locationFeedStatus={locationFeed.status} onRetryLocations={locationFeed.retry}
             favoritesDisabled={favorites.disabled} onToggleSaveTutor={handleToggleSaveTutor} onSelectTutor={handleSelectTutor}
             onRequestTutor={(tutor: Tutor) => setBookingTutorId(tutor.id)}
@@ -199,7 +204,7 @@ function AuthenticatedApp({ account, controller, onLogout }: { account: OwnAccou
             onRequestTutor={(tutor: Tutor) => setBookingTutorId(tutor.id)}
             favoritesDisabled={favorites.disabled} isSaved={savedTutors.includes(selectedTutor.id)} onToggleSave={() => handleToggleSaveTutor(selectedTutor.id)} />
         ) : emptySelection('student-results', 'tutor'))}
-        {currentScreen === 'student-requests' && (
+        {currentScreen === 'student-requests' && !requestState.loading && !(requestState.error && !requests.length) && (
           <StudentRequestsView requests={localStudentRequests} actionsEnabled={!requestState.busy && !requestState.loading && !requestState.error}
             onBackToSearch={() => navigate('student-search')} onCancelRequest={handleCancelRequest}
             onEditProfile={() => navigate('student-profile-edit')} />
@@ -209,13 +214,13 @@ function AuthenticatedApp({ account, controller, onLogout }: { account: OwnAccou
             onSaveProfile={handleSaveStudentProfile} onNavigateToSearch={() => navigate('student-search')}
             onNavigateToRequests={() => navigate('student-requests')} />
         )}
-        {currentScreen === 'teacher-dashboard' && (
+        {currentScreen === 'teacher-dashboard' && !requestState.loading && !(requestState.error && !requests.length) && (
           <TeacherDashboardView requests={teacherRequests} actionsEnabled={!requestState.busy && !requestState.loading && !requestState.error}
             onSelectRequest={(request: StudentRequest) => { setSelectedRequestId(request.id); navigate('teacher-request-detail'); }}
             onAcceptRequest={(id) => handleUpdateRequestStatus(id, 'accepted')} onRejectRequest={(id) => handleUpdateRequestStatus(id, 'rejected')}
             onEditProfile={() => navigate('teacher-profile-edit')} teacherName={String(account.profile.name || '')} />
         )}
-        {currentScreen === 'teacher-request-detail' && (selectedRequest ? (
+        {currentScreen === 'teacher-request-detail' && !requestState.loading && !(requestState.error && !requests.length) && (selectedRequest ? (
           <TeacherRequestDetailView request={selectedRequest} actionsEnabled={!requestState.busy && !requestState.loading && !requestState.error}
             onBack={() => navigate('teacher-dashboard')} onAccept={(id) => handleUpdateRequestStatus(id, 'accepted')} onReject={(id) => handleUpdateRequestStatus(id, 'rejected')} />
         ) : emptySelection('teacher-dashboard', 'solicitud'))}
@@ -227,7 +232,9 @@ function AuthenticatedApp({ account, controller, onLogout }: { account: OwnAccou
       {bookingTutor && (
         <RequestTutorModal tutor={bookingTutor} isOpen submissionEnabled={Boolean(studentProfile.id && studentProfile.name.trim())}
           onClose={() => setBookingTutorId(undefined)} onConfirm={handleCreateRequest}
-          defaultSubject={filters.subject} studentProfile={studentProfile} />
+          searchContext={filters} studentProfile={studentProfile} attemptRef={bookingAttempt}
+          onCheckRequests={() => navigate('student-requests')}
+          onRefreshOffer={async () => { const refreshed = await marketplace.catalog(); setTutors(refreshed); if (!refreshed.some(tutor => tutor.id === bookingTutor.id)) { setActionMessage('La oferta ya no está disponible. Consulta otros tutores.'); setBookingTutorId(undefined); } }} />
       )}
       {currentScreen !== 'landing' && (
         <MobileBottomNav currentScreen={currentScreen} currentRole={role} onNavigate={navigate}

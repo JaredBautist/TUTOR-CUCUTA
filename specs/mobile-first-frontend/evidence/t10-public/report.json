@@ -1,0 +1,85 @@
+{
+  "timestamp": "2026-09-30T16:09:21.922Z",
+  "url": "https://tutor-cucuta.vercel.app/",
+  "browser": "Chrome/153.0.8010.52",
+  "scope": "Public unauthenticated read-only smoke; emulated viewports, not physical devices. No form submitted.",
+  "assets": [
+    "https://tutor-cucuta.vercel.app/assets/index-DqC9XXWX.js",
+    "https://tutor-cucuta.vercel.app/assets/index-CONQrz8X.css"
+  ],
+  "matrix": [
+    {
+      "width": 320,
+      "scrollWidth": 320,
+      "email": true,
+      "password": true,
+      "google": true,
+      "smallButtons": [
+        "Iniciar sesión",
+        "Crear cuenta",
+        "Olvidé mi contraseña"
+      ]
+    },
+    {
+      "width": 360,
+      "scrollWidth": 360,
+      "email": true,
+      "password": true,
+      "google": true,
+      "smallButtons": [
+        "Iniciar sesión",
+        "Crear cuenta",
+        "Olvidé mi contraseña"
+      ]
+    },
+    {
+      "width": 390,
+      "scrollWidth": 390,
+      "email": true,
+      "password": true,
+      "google": true,
+      "smallButtons": [
+        "Iniciar sesión",
+        "Crear cuenta",
+        "Olvidé mi contraseña"
+      ]
+    },
+    {
+      "width": 430,
+      "scrollWidth": 430,
+      "email": true,
+      "password": true,
+      "google": true,
+      "smallButtons": [
+        "Iniciar sesión",
+        "Crear cuenta",
+        "Olvidé mi contraseña"
+      ]
+    },
+    {
+      "width": 768,
+      "scrollWidth": 753,
+      "email": true,
+      "password": true,
+      "google": true,
+      "smallButtons": [
+        "Iniciar sesión",
+        "Crear cuenta",
+        "Olvidé mi contraseña"
+      ]
+    },
+    {
+      "width": 1280,
+      "scrollWidth": 1265,
+      "email": true,
+      "password": true,
+      "google": true,
+      "smallButtons": [
+        "Iniciar sesión",
+        "Crear cuenta",
+        "Olvidé mi contraseña"
+      ]
+    }
+  ],
+  "uncaughtExceptions": []
+}

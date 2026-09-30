@@ -1,4 +1,6 @@
 import React from 'react';
+import { WeeklyAvailability } from '../marketplace/WeeklyAvailability';
+import { ProfileImage } from '../common/ProfileImage';
 import { ArrowLeft, Bookmark, FileText, MapPin } from 'lucide-react';
 import { Tutor } from '../../types';
 import { UnifiedCucutaMap } from '../common/UnifiedCucutaMap';
@@ -47,12 +49,13 @@ export const TutorProfileView: React.FC<TutorProfileViewProps> = ({
         </button>}
       </div>
 
+      <WeeklyAvailability slots={tutor.availability}/>
       {/* Header Profile Summary Card */}
       <div className="bg-white rounded-2xl border border-slate-200/90 p-4 sm:p-6 shadow-xs">
         <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
           <div className="flex items-center sm:items-start gap-3 sm:gap-0 w-full sm:w-auto">
             {tutor.avatar ? (
-              <img src={tutor.avatar} alt={tutor.name} className="w-20 h-20 sm:w-28 sm:h-28 rounded-2xl object-cover border-2 border-slate-100 shadow-sm shrink-0" />
+              <ProfileImage src={tutor.avatar} alt={tutor.name} className="w-20 h-20 sm:w-28 sm:h-28 rounded-2xl object-cover border-2 border-slate-100 shadow-sm shrink-0" />
             ) : (
               <span aria-label={`Perfil de ${tutor.name}`} className="w-20 h-20 sm:w-28 sm:h-28 rounded-2xl bg-teal-50 text-teal-800 text-2xl font-bold flex items-center justify-center shrink-0">
                 {tutor.name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]).join('') || 'T'}

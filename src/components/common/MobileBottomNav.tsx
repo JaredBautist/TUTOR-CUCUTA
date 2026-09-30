@@ -1,3 +1,4 @@
+import { ProfileImage } from './ProfileImage';
 import React from 'react';
 import { ScreenId, Role } from '../../types';
 import { Search, Users, Inbox, UserPen, LogOut } from 'lucide-react';
@@ -117,7 +118,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
               <div className={`p-0.5 rounded-full ${currentScreen === 'student-profile-edit' ? 'ring-2 ring-teal-600' : ''}`}>
                 {studentAvatarUrl ? (
                   <div className="w-5 h-5 rounded-full overflow-hidden shrink-0">
-                    <img
+                    <ProfileImage
                       src={studentAvatarUrl}
                       alt="Perfil"
                       className="w-full h-full object-cover"
@@ -169,7 +170,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
               <div className={`p-0.5 rounded-full ${currentScreen === 'teacher-profile-edit' ? 'ring-2 ring-teal-600' : ''}`}>
                 {teacherAvatarUrl ? (
                   <div className="w-5 h-5 rounded-full overflow-hidden shrink-0">
-                    <img
+                    <ProfileImage
                       src={teacherAvatarUrl}
                       alt="Perfil Docente"
                       className="w-full h-full object-cover"
