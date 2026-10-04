@@ -1,6 +1,8 @@
 # Mobile-first frontend — Tasks and verification
 
-Status: T01–T09 implemented and automatically validated locally. T10 local preparation complete; physical-device and deployment checks pending.
+Status: T01–T09 implemented and automatically validated locally. Production deployment
+confirmed on 2026-10-04; T10 remains partial pending complete hosted journeys and
+physical-device evidence. See [current release evidence](../../docs/pilot-readiness-2026-10-04.md).
 Order tasks by dependencies; keep the existing visual identity throughout.
 
 | ID | Task | Depends on | Acceptance / evidence |
@@ -50,4 +52,5 @@ and keep that validation pending. Update handoff and Graphify after verified wor
 | --- | --- | --- | --- |
 | 2026-09-30 / local worktree on 5370fcf | T01–T09 | Chromium 153, controlled backend, six widths | [Validation, measurements and captures](validation.md). |
 | 2026-09-30 | T10 local preparation | Local closure plus read-only older public login smoke | [Release checklist and access findings](t10-release-check.md). |
-| Pending | T10 external verification | Physical Android/iPhone; deployed changed frontend | User will publish and perform device checks; no completion claimed. |
+| 2026-10-04 / 0de1b5b | T10 publication and access checks | Successful Vercel Production deployment; public Chromium smoke and authenticated Supabase API probes | [Release evidence](../../docs/pilot-readiness-2026-10-04.md); six widths passed, not physical-device evidence. |
+| Pending | T10 external verification | Physical Android/iPhone; complete authenticated deployed journeys | Physical checks remain open; no completion claimed. |

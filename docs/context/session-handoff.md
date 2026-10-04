@@ -387,3 +387,52 @@ No Git publication or deployment was performed.
 Final local closure checks: `npm test` 103/103, `npm run lint`, `npm run build`,
 `node --check tests/browser-hosted-smoke.mjs` and `git diff --check` passed.
 The existing large-chunk warning remains. No physical-device result was fabricated.
+
+## T10 release verification and pilot preparation — 2026-10-04
+
+User authorized closing T10 and a small pilot. See
+[current evidence and pilot protocol](../pilot-readiness-2026-10-04.md).
+GitHub confirms successful Vercel Production deployment 6764382991 for commit
+0de1b5bc54d65442bfc164170f63db908bd76166; local/remote main agree. This supersedes
+the earlier assumption that the mobile work had not been pushed or deployed.
+Public alias passed six-width anonymous smoke with no overflow, runtime exceptions
+or undersized visible buttons. Evidence is versioned in
+`specs/mobile-first-frontend/evidence/t10-public-20261004/`.
+
+Read-only Supabase protection probes passed; both authorized demo accounts signed in
+and read their own role/requests, with four offers visible to the student. No business
+records changed; sessions signed out locally. Fresh 103/103 tests, TypeScript and
+build passed, existing chunk warnings remain. Physical Android/iPhone and deployed
+authenticated UI journeys remain unverified for this revision. Device availability
+was requested; no physical access confirmed. A seven-day, four-tutor/four-adult-student
+pilot protocol and success/incident ledger are prepared, but no participants were
+enrolled or contacted and the pilot is not yet active. No push/deployment was needed
+or performed. Do not mark T10 or real-world viability complete from these checks.
+
+## Dedicated deployed UI QA — 2026-10-04
+
+At the user's explicit request, a dedicated QA agent exercised the real Vercel UI
+with authorized demonstration accounts in Chromium/CDP. Evidence and exact limits:
+[QA report](../t10-dedicated-qa-2026-10-04.md).
+
+Verified student search with subject/level/virtual modality/budget, factual reasons,
+complete weekly availability, result filter and 200px scroll restoration after
+profile return. Booking preserves search topic/notes; 60-minute Tuesday proposals
+span 18:00–20:00 starts in half-hour steps, and changing to 180 minutes clears an
+invalid 20:00 selection, leaving 18:00. Focus returns after Escape when the trigger
+was focused. Denied GPS remains optional and the map operates. Tutor login, editor
+and existing request detail are accessible at 320/390px without page overflow or
+undersized measured action targets; cancelled request actions are disabled.
+
+No profile, offer, request or favorite was changed. Incomplete student name/age
+prevents submission, so current request delivery/transitions remain untested.
+Physical Android/iPhone keyboard, assistive-technology and pilot participation
+remain pending. Do not convert emulated Chromium evidence into physical-device
+or completed tutoring claims. No application behavior changed during this QA.
+
+Confirmed presentation defect: `App.tsx:233` sets `submissionEnabled` from account
+ID AND non-empty student name; `RequestTutorModal.tsx:75` interprets false as
+"Inicia sesión". Thus an authenticated account with an incomplete name sees both
+the valid profile-completion warning and an incorrect sign-in instruction. Captured
+on the public build; report as a UX/state-message defect, not an authentication
+failure. No fix was implemented during this testing-only pass.

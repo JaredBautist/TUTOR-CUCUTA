@@ -1,5 +1,10 @@
 # T10 — Local closure and external release checks
 
+Update 2026-10-04: the mobile commit has a successful Production deployment and the
+public login passes six-width smoke checks. See [current evidence and pilot gates](../../docs/pilot-readiness-2026-10-04.md).
+The observations below are the historical September 30 baseline. Physical-device
+checks remain pending; do not interpret the old publication status as current.
+
 Date: 2026-09-30. Status: local preparation complete; physical-device and changed
 hosted-version verification remain pending. The user chose to finish locally and
 will handle publication/device checks. Do not mark all of T10 complete from this file.

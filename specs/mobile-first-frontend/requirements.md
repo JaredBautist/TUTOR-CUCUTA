@@ -1,6 +1,8 @@
 # Mobile-first frontend — Requirements
 
-Status: implemented locally; automated checks passed. Physical-device and deployed validation pending.
+Status: implemented; local automated checks passed and Production deployment confirmed
+on 2026-10-04. Complete hosted journeys and physical-device validation remain pending;
+see [release evidence](../../docs/pilot-readiness-2026-10-04.md).
 Requested: 2026-09-29. Owner: TutorCúcuta engineering.
 
 ## Objective and scope
