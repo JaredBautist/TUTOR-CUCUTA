@@ -13,5 +13,6 @@ credenciales.html
 graphify-out/
 .graphify/
 
-# Supabase
-supabase/
+# Supabase local runtime state; migrations and configuration are versioned.
+supabase/.temp/
+supabase/.branches/

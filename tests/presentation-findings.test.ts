@@ -2,12 +2,13 @@ import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { test } from 'node:test';
 import { build } from 'esbuild';
-import type { SearchFilters, StudentRequest, Tutor } from '../src/types';
+import type { SearchFilters, StudentProfile, StudentRequest, Tutor } from '../src/types';
 
 interface PresentationViews {
   results: (tutors: Tutor[], filters: SearchFilters, savedTutors?: string[]) => string;
   profile: (tutor: Tutor) => string;
   requests: (request: StudentRequest) => string;
+  bookingModal: (props: Record<string, unknown>) => string;
 }
 
 async function loadViews(): Promise<PresentationViews> {
@@ -21,6 +22,7 @@ async function loadViews(): Promise<PresentationViews> {
         import { TeacherDashboardView } from './src/components/views/TeacherDashboardView';
         import { TeacherRequestDetailView } from './src/components/views/TeacherRequestDetailView';
         import { StudentRequestsView } from './src/components/views/StudentRequestsView';
+        import { RequestTutorModal } from './src/components/modals/RequestTutorModal';
         const noop = () => {};
         export const results = (tutors, filters, savedTutors = []) => renderToStaticMarkup(
           <StudentResultsView tutors={tutors} filters={filters} savedTutors={savedTutors}
@@ -37,6 +39,9 @@ async function loadViews(): Promise<PresentationViews> {
           renderToStaticMarkup(<StudentRequestsView requests={[request]} onBackToSearch={noop}
             onCancelRequest={noop} />),
         ].join('');
+        export const bookingModal = (props) => renderToStaticMarkup(
+          <RequestTutorModal isOpen={true} onClose={noop} onConfirm={noop} {...props} />
+        );
       `,
       resolveDir: process.cwd(),
       loader: 'tsx',
@@ -103,4 +108,46 @@ test('presentation: result counters use eligible tutors and guide a missing sear
   assert.match(html, /Favoritos \(0\)/);
   assert.doesNotMatch(html, /Todos \(1\)|Favoritos \(1\)/);
   assert.match(html, /Define tu zona de búsqueda/);
+});
+
+test('presentation: authenticated student with incomplete profile does not see login instruction', () => {
+  const incompleteStudent: StudentProfile = {
+    id: 'student-incomplete-id',
+    name: '',
+    avatarInitials: '',
+    age: 20,
+    grade: '11',
+    school: 'Colegio',
+    sector: 'Centro',
+    address: 'Calle 10',
+    phone: '+573001234567',
+    email: 'student@example.com',
+    guardianName: '',
+    guardianPhone: '',
+    guardianRelation: '',
+    guardianAuthorized: false,
+    academicGoal: '',
+    difficultiesOrTopics: '',
+    learningStyles: [],
+    preferredModality: 'presencial',
+    preferredSchedule: '',
+    bioNote: '',
+  };
+  const html = views.bookingModal({
+    tutor,
+    studentProfile: incompleteStudent,
+    submissionEnabled: false,
+  });
+  assert.match(html, /Completa tu nombre y edad en Mi perfil antes de solicitar\./);
+  assert.doesNotMatch(html, /Inicia sesión para enviar una solicitud\./);
+});
+
+test('presentation: unauthenticated visitor sees login instruction without profile completion prompt', () => {
+  const html = views.bookingModal({
+    tutor,
+    studentProfile: undefined,
+    submissionEnabled: false,
+  });
+  assert.match(html, /Inicia sesión para enviar una solicitud\./);
+  assert.doesNotMatch(html, /Completa tu nombre/);
 });

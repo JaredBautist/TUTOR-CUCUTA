@@ -430,9 +430,108 @@ Physical Android/iPhone keyboard, assistive-technology and pilot participation
 remain pending. Do not convert emulated Chromium evidence into physical-device
 or completed tutoring claims. No application behavior changed during this QA.
 
-Confirmed presentation defect: `App.tsx:233` sets `submissionEnabled` from account
-ID AND non-empty student name; `RequestTutorModal.tsx:75` interprets false as
-"Inicia sesión". Thus an authenticated account with an incomplete name sees both
-the valid profile-completion warning and an incorrect sign-in instruction. Captured
-on the public build; report as a UX/state-message defect, not an authentication
-failure. No fix was implemented during this testing-only pass.
+Confirmed presentation defect (resolved 2026-10-23): `App.tsx:233` previously set `submissionEnabled`
+from account ID AND non-empty student name, while `RequestTutorModal.tsx:75` interpreted
+`!submissionEnabled` as an unauthenticated state ("Inicia sesión"). Resolved by evaluating
+`isAuthenticated = Boolean(studentProfile?.id)` inside the modal, calculating `profileError`
+strictly when authenticated, and passing `submissionEnabled = Boolean(studentProfile.id)` from `App.tsx`.
+Now authenticated students with incomplete profiles see solely the profile completion alert, while
+unauthenticated visitors see the login prompt without profile alerts. Validated with two automated
+regression tests (105/105 unit tests pass, `npm run lint` clean, `npm run build` passing, and clean-view
+plus marketplace browser suites passing).
+
+
+## Production foundations — 2026-11-17
+
+Supabase connectivity restored; all three anonymous protection probes passed.
+Recovered historical Supabase sources from Git revision `56b3b31^`, replacing the
+broad root ignore rule with nested temporary-file exclusions. No hosted SQL ran.
+Added `.github/workflows/ci.yml` with Node22 quality/unit/build, disposable PostgreSQL
+and controlled Chromium account/clean-view/marketplace checks. CI is prepared,
+not yet published or executed on GitHub. See `specs/production-readiness/validation.md`.
+Fresh 105 unit tests, TypeScript, build, both database suites and all three browser
+suites passed. Read-only hosted verification passed eight demo sign-ins/profiles,
+four offers and six recommendation scenarios. No business writes or physical-device
+tests performed. Existing booking-message edits preserved; no commit/push.
+
+
+## Search compatibility — 2026-11-17
+
+User approved percentage as satisfaction of selected criteria, replacing relative
+savings/overlap/proximity weights. Contract: specs/search-compatibility/requirements.md.
+Eligible candidates satisfy all selected criteria and show100%; unused criteria do
+not penalize. No selected scoring criteria yields0 and guidance. Existing eligibility,
+ANY weekly overlap and both in-person radii remain; virtual ignores distance.
+Tie order: price, selected overlap, distance, stable ID. UI explains search compliance,
+not teaching quality or reserved hours. Fresh107 unit tests and clean-view browser
+suite passed; no hosted write or push performed.
+
+
+## Full demo lifecycle verification — 2026-11-17
+
+User authorized full testing with demo tutors/students. Reused existing eight
+identities: hosted verification passed four offers and six scenarios with100%
+criterion compliance. Real hosted adapter lifecycle passed favorite save/read,
+request creation/pending, participant isolation, denied student acceptance, teacher
+acceptance, contact release, cancellation and contact revocation. Adult student's
+temporary contact/profile and original favorite list restored and read back; all
+test sessions signed out, cancelled request remains history. No guardian fabrication.
+Report: docs/demo-full-validation-2026-11-17.md. Utility: scripts/verify-demo-lifecycle.ts
+requires explicit --apply. Local107 tests, TypeScript/build pass. Controlled browser
+initially failed a modality-selection step; distinguish from real hosted success.
+No physical-device evidence, messages, new accounts, push or deployment.
+
+Controlled marketplace browser final run passed after replacing empty-screen and
+modal-race assumptions with readiness waits. Two earlier automation failures are
+retained in the report. TypeScript passed after the harness/operator changes.
+
+
+## Persistent client presentation demo — 2026-11-17
+
+User clarified that data must remain populated for a client presentation. Operator
+script scripts/prepare-presentation-demo.ts explicitly --apply reuses four tagged
+tutors/four students, fills adult Santiago/Mariana contacts from an existing controlled
+demo tutor contact, keeps favorites, and persists pending/accepted/rejected/cancelled
+request scenarios. Scenario UUIDs/payloads live in private external0600 ledger.
+Second application passed and reused the same scenarios. Existing states changed
+during presentations are preserved. Minor guardian guard remains, no consent invented.
+Camilo has a valid fictional study PDF clearly disclaimed as non-credential; signed
+student fetch returned200 and PDF content. No duplicate identities or messages.
+Adult profile contact fields now intentionally differ from original provisioning
+dataset; do not call the old exact-profile verifier proof of regression without
+accounting for this user-approved persistent demo configuration.
+Presenter guide: docs/presentation-demo.md. Credentials stay in the private external
+CREDENCIALES_ENTREGA.md, never repository or Graphify. New score code remains local
+until publication; hosted seed changes do not deploy app code.
+
+
+## Ten-per-role presentation expansion — 2026-11-17
+
+User requested10 tutors and10 students for presentation/teacher acceptance. Added
+six tagged fictional identities per role to the existing four; all20 sign-ins and
+roles verified. Ten tutor inbox scenarios were created and read by both participants,
+all pending at preparation. Independent student catalog read confirmed ten owned
+published offers. The eight adult students participate; two original minors remain
+protected without fabricated guardian authorization. New profiles use the existing
+operator-controlled demo contact. Existing profiles and published offers preserved.
+Utility scripts/expand-presentation-demo.ts requires --apply and external0600 ledger
+plus operator lock; retries reuse payloads, preserve changed states and do not reset
+passwords. Credentials for all20 updated in private external CREDENCIALES_ENTREGA.md.
+Presenter guide docs/presentation-demo.md updated. New expansion acceptance test and
+existing suite108/108 passed; production build passed. No messages or deployment.
+
+
+## Login usability refinement — 2026-11-17
+
+User explicitly requested design-taste-frontend and ui-ux-pro-max. Contract/evidence
+in specs/login-usability/. Kept teal brand/light split layout and existing Supabase
+behavior. Added password reveal with labels/pressed state, explicit email/password
+labels, inline native-invalid errors, top server alert focus, CapsLock hint, progress
+announcement and recovery-to-login action. Role buttons expose selected state.
+Improved text sizes/contrast, removed emoji/pulsing chrome and moved diagram caption
+below coverage.108 unit tests and controlled browser auth passed, including target
+measurements320/390/768/1440 and200% text. TypeScript/build passed. Taste lint0fails/
+0warns; final render inspector0fails/1intentional teal colour-sprawl warning.
+Six final screenshots/contact sheets visually inspected; evidence versioned.
+No hosted authentication/account mutations or deployment. Physical keyboards and
+full assistive-technology acceptance remain pending. Existing unrelated work kept.

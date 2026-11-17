@@ -138,7 +138,7 @@ test('Recommender: produces deterministic scores and structured template-based r
 
   const { score, reasons } = scoreAndExplainCandidate(tutor, filters, 2.5);
 
-  assert.equal(score, 40, 'Price contributes 10, neutral schedule 15 and proximity 15');
+  assert.equal(score, 100, 'Every selected requirement is satisfied');
   assert.ok(reasons.length >= 3, 'Should generate multiple clear template reasons');
   assert.ok(reasons.some((r) => r.includes('Enseña la materia solicitada: Física')));
   assert.ok(reasons.some((r) => r.includes('presupuesto')));
@@ -211,7 +211,7 @@ test('Academic evaluation: hard constraints beat price and missing criteria are 
   const ranked=recommendTutors([base,{...base,id:'wrong-subject',subjects:['Cálculo II'],ratePerHour:1000},{...base,id:'wrong-level',levels:['Básica primaria'],ratePerHour:1000},{...base,id:'over-budget',ratePerHour:40001}],filters);
   assert.deepEqual(ranked.map(t=>t.id),['eligible']);
   const neutral=recommendTutors([base],defaultFilters)[0];
-  assert.equal(neutral.matchScore,50);
+  assert.equal(neutral.matchScore,0);
   assert.ok(neutral.matchReasons.some(reason=>reason.includes('sin presupuesto seleccionado')));
   assert.ok(neutral.matchReasons.some(reason=>reason.includes('Sin horario')));
 });
@@ -227,4 +227,19 @@ test('Academic evaluation: every price/schedule tradeoff remains bounded and det
     const dominated=ranked.filter(other=>other.ratePerHour>=candidate.ratePerHour && Number(other.id.split('-')[1])<=Number(candidate.id.split('-')[1]));
     assert.ok(dominated.every(other=>other.matchScore!<=candidate.matchScore!));
   }
+});
+
+
+test('Compatibility: budget boundary and partial weekly overlap satisfy selected criteria fully', () => {
+ const filters={...defaultFilters,subject:'Matemáticas',educationLevel:'Universidad',modality:'virtual' as const,maxBudget:30000,availableDays:['L','MIÉ'],timeSlot:'Tarde'};
+ const candidate=createTutor({modalities:['virtual'],availability:[{day:1,start:'14:00',end:'15:00'}]});
+ assert.equal(recommendTutors([candidate],filters)[0].matchScore,100);
+ assert.equal(recommendTutors([{...candidate,ratePerHour:30001}],filters).length,0);
+});
+
+test('Compatibility: in-person radius boundary is full compliance; beyond radius is excluded', () => {
+ const candidate=createTutor({modalities:['presencial']});
+ const filters={...defaultFilters,modality:'presencial' as const,radiusKm:5};
+ assert.equal(scoreAndExplainCandidate(candidate,filters,5).score,100);
+ assert.ok(scoreAndExplainCandidate(candidate,filters,5.1).score<100);
 });

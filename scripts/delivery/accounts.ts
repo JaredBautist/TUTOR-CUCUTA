@@ -4,7 +4,7 @@ import type {SearchFilters,Tutor} from '../../src/types';
 import {initialSearchFilters} from '../../src/data/searchDefaults';
 
 export const DELIVERY_SET='academic-2026-09-17';
-interface DeliveryAccount {key:string;email:string;role:AccountRole;profile:ProfileFields;offer?:Omit<OfferDraft,'phone'|'version'|'published'>}
+export interface DeliveryAccount {key:string;email:string;role:AccountRole;profile:ProfileFields;offer?:Omit<OfferDraft,'phone'|'version'|'published'>}
 const tutor=(key:string,name:string,title:string,rate:number,subjects:string[],sector:string,modalities:OfferDraft['modalities'],position:OfferDraft['position'],day:number,start:string,end:string):DeliveryAccount=>({
  key,email:`${key}@demo.tutorcucuta.example`,role:'tutor',
  profile:{...emptyProfile('tutor'),name,title,experienceYears:4,ratePerHour:rate,subjects,coverageRadiusKm:5,

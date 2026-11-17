@@ -153,7 +153,7 @@ export const StudentResultsView: React.FC<StudentResultsViewProps> = ({
         </div>
 
         <p className="text-xs text-slate-500">{searchArea
-          ? 'Materia, nivel, presupuesto, modalidad y horario seleccionado aplicados. Distancias aproximadas en línea recta; la puntuación no certifica calidad docente.'
+          ? 'El porcentaje indica cumplimiento de los criterios seleccionados; 100 % significa que cumple todos. El horario requiere confirmación. Distancias aproximadas; no certifica calidad docente.'
           : missingSearchArea
             ? 'Define una zona y un radio desde Buscar tutores para consultar opciones presenciales.'
             : 'Aplica una búsqueda para filtrar por modalidad y horario.'}</p>

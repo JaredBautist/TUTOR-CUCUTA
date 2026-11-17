@@ -177,6 +177,7 @@ async function main(){
       const matches=recommendTutors(tutors,scenario.filters,scenario.origin);
       assert.deepEqual(matches.map(t=>t.id).sort(),[...scenario.expected].sort());
       assert.ok(matches.every(t=>t.matchReasons.length>=3));
+      assert.ok(matches.every(t=>t.matchScore===100),'Eligible demo tutors must satisfy all selected criteria');
       console.log(`PASS hosted search: ${scenario.name} -> ${matches.map(t=>t.name).join(', ') || 'no matches'}`);
      }
     }

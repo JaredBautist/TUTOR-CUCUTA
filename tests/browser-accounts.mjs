@@ -55,7 +55,7 @@ try {
   };
   const body = () => evaluate('document.body?.innerText || ""');
   const click = async (label) => {
-    const clicked = await evaluate(`(() => { const button = [...document.querySelectorAll('button')].find(b => b.getBoundingClientRect().width && b.innerText.trim() === ${JSON.stringify(label)}); if (!button) return false; button.click(); return true; })()`);
+    const clicked = await evaluate(`(() => { const button = [...document.querySelectorAll('button')].find(b => b.getBoundingClientRect().width && (b.innerText.trim() === ${JSON.stringify(label)} || b.getAttribute('aria-label') === ${JSON.stringify(label)})); if (!button) return false; button.click(); return true; })()`);
     assert.ok(clicked, `Visible button missing: ${label}`);
     await pause(120);
     await until(async () => !(await body()).includes('Cargando vista…'), 'Screen module did not load');
@@ -76,8 +76,32 @@ try {
   await cdp('Page.navigate', { url: 'http://127.0.0.1:4175' });
   await until(async ()=>(await body()).includes('Continuar con Google'),'Access screen missing');
   assert.doesNotMatch(await body(),/Buscar Tutores|Legacy private draft/);
+  for(const width of [320,390,768,1440]) {
+    await cdp('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:width<768});await pause(100);
+    assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth'),`Access overflow at ${width}`);
+    assert.ok(await evaluate(`[...document.querySelectorAll('button')].filter(button=>button.getBoundingClientRect().width).every(button=>{const bounds=button.getBoundingClientRect();return bounds.width>=43.5 && bounds.height>=43.5;})`),`Access target below44px at ${width}`);
+  }
+  await cdp('Emulation.setDeviceMetricsOverride',{width:390,height:900,deviceScaleFactor:1,mobile:true});
+  await evaluate('document.documentElement.style.fontSize="200%"');await pause(100);
+  assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth'),'Access overflows at200% text');
+  await evaluate('document.documentElement.style.fontSize=""');
+  await cdp('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
+  assert.equal(await evaluate(`document.querySelector('button[aria-pressed="true"]').innerText.trim()`),'Soy estudiante');
+  await fill('input[type=password]','visible-test-password');
+  await click('Mostrar contraseña');
+  assert.equal(await evaluate('document.querySelector("#access-password").type'),'text');
+  assert.equal(await evaluate('document.querySelector("#access-password").value'),'visible-test-password');
+  assert.equal(await evaluate('document.querySelector("button[aria-controls=access-password]").getAttribute("aria-pressed")'),'true');
+  await click('Ocultar contraseña');
+  await evaluate('document.querySelector("form").requestSubmit()');
+  await until(()=>evaluate('document.querySelector("#access-email").getAttribute("aria-invalid")==="true"'),'Missing email error');
+  await click('Olvidé mi contraseña');
+  assert.equal(await evaluate('Boolean(document.querySelector("#access-password"))'),false);
+  await click('Volver a iniciar sesión');
   await login('student','wrong-password');
   await until(async ()=>(await body()).includes('no son correctos'),'Invalid login not reported');
+  assert.equal(await evaluate('document.activeElement.id'),'access-error');
+  assert.equal(await evaluate('document.querySelector("#access-email").getAttribute("aria-invalid")'),'false');
   await click('Crear cuenta'); await fill('input[type=password]','test-password'); await click('Registrarme');
   await until(async ()=>(await body()).includes('Revisa tu correo'),'Confirmation not reported');
   assert.equal(await evaluate('window.__authFixture.signupRole'),'student');

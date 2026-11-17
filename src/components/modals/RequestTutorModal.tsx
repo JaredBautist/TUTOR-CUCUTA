@@ -47,9 +47,10 @@ export function RequestTutorModal({tutor,isOpen,onClose,onConfirm,defaultSubject
   useEffect(()=>{
     if(selectedTime && !selectedSlot){setSelectedTime('');setSelectionNotice('El horario elegido ya no encaja. Selecciona otra hora.');}
   },[selectedTime,selectedSlot]);
-  const profileError=requestProfileError(studentProfile);
+  const isAuthenticated=Boolean(studentProfile?.id);
+  const profileError=isAuthenticated?requestProfileError(studentProfile):undefined;
   const noteTooLong=note.length>BOOKING_NOTE_LIMIT;
-  const valid=Boolean(submissionEnabled && studentProfile?.id && !profileError && subject && tutor.subjects.includes(subject) && modality && tutor.modalities.includes(modality) && selectedSlot && !noteTooLong);
+  const valid=Boolean(submissionEnabled && isAuthenticated && !profileError && subject && tutor.subjects.includes(subject) && modality && tutor.modalities.includes(modality) && selectedSlot && !noteTooLong);
   const close=()=>{if(!inFlight.current)onClose();};
   async function submit(event:FormEvent) {
     event.preventDefault();
@@ -72,7 +73,7 @@ export function RequestTutorModal({tutor,isOpen,onClose,onConfirm,defaultSubject
     <form onSubmit={submit} aria-busy={pending} className="space-y-4">
       <header className="pr-10"><p className="text-xs font-semibold text-teal-800">Nueva Solicitud Académica</p><h2 id="request-tutor-title" className="mt-1 text-xl font-bold">Solicitar tutoría con {tutor.name}</h2><p className="text-sm text-slate-600">{tutor.title}</p></header>
       {profileError && <p role="alert" className="rounded-xl bg-amber-50 p-3 text-sm text-amber-900">{profileError}</p>}
-      {!submissionEnabled && <p role="status">Inicia sesión para enviar una solicitud.</p>}
+      {!isAuthenticated && <p role="status">Inicia sesión para enviar una solicitud.</p>}
       {pending && <p role="status" className="text-sm text-teal-800">Guardando… espera para cerrar o volver a enviar la solicitud.</p>}
       {error && <div role="alert" className="rounded-xl bg-red-50 p-3 text-sm text-red-800">{error}</div>}
       {submission.current && !pending && <div className="space-y-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm">

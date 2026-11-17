@@ -31,28 +31,33 @@ export function isCandidateEligible(tutor:Tutor,filters:SearchFilters,origin?:Ge
  if(!isSubjectEligible(tutor.subjects,filters.subject) || !isLevelEligible(tutor.levels,filters.educationLevel) || !isBudgetEligible(tutor.ratePerHour,filters.maxBudget) || !scheduleOverlap(tutor,filters).eligible)return {eligible:false};
  return isModalityAndDistanceEligible(tutor,filters.modality,origin,filters.radiusKm);
 }
-/** Normalized price/overlap/proximity weights, never experience or document bonuses. */
+/** Percentage of selected criteria satisfied; not relative preference or teaching quality. */
 export function scoreAndExplainCandidate(tutor:Tutor,filters:SearchFilters,distanceKm?:number):{score:number;reasons:string[]} {
  const virtual=filters.modality==='virtual' || (filters.modality==='any' && tutor.modalities.includes('virtual'));
- const price=filters.maxBudget>0?Math.max(0,Math.min(1,1-tutor.ratePerHour/filters.maxBudget)):0.5;
+ const checks:boolean[]=[];
+ if(filters.subject.trim())checks.push(isSubjectEligible(tutor.subjects,filters.subject));
+ if(filters.educationLevel.trim() && !matchesLabel(filters.educationLevel,'todos'))checks.push(isLevelEligible(tutor.levels,filters.educationLevel));
+ if(filters.modality!=='any')checks.push(tutor.modalities.includes(filters.modality));
+ if(filters.maxBudget>0)checks.push(isBudgetEligible(tutor.ratePerHour,filters.maxBudget));
  const overlap=scheduleOverlap(tutor,filters);
- const reasons=[filters.maxBudget>0?`Tarifa de $${tutor.ratePerHour.toLocaleString('es-CO')}/h dentro de tu presupuesto máximo ($${filters.maxBudget.toLocaleString('es-CO')}/h)`:`Tarifa de $${tutor.ratePerHour.toLocaleString('es-CO')}/h; sin presupuesto seleccionado, valoración neutral.`];
+ const reasons=[filters.maxBudget>0?`Tarifa de $${tutor.ratePerHour.toLocaleString('es-CO')}/h dentro de tu presupuesto máximo ($${filters.maxBudget.toLocaleString('es-CO')}/h)`:`Tarifa de $${tutor.ratePerHour.toLocaleString('es-CO')}/h; sin presupuesto seleccionado; no participa en el porcentaje.`];
  if(filters.subject.trim())reasons.push(`Enseña la materia solicitada: ${filters.subject}`);
- if(filters.educationLevel.trim())reasons.push(`Atiende el nivel educativo: ${filters.educationLevel}`);
+ if(filters.educationLevel.trim() && !matchesLabel(filters.educationLevel,'todos'))reasons.push(`Atiende el nivel educativo: ${filters.educationLevel}`);
  reasons.push(overlap.selected?`Coinciden ${overlap.minutes} minutos semanales con tus días y franja seleccionados.`:'Sin horario de búsqueda seleccionado; compatibilidad horaria aún por elegir.');
- let weighted=0.4*price+0.3*overlap.ratio;let totalWeight=0.7;
+ if(overlap.selected)checks.push(overlap.eligible);
  if(virtual)reasons.push('Disponible en modalidad virtual: la distancia no participa en esta recomendación.');
  else {
   const radius=Math.min(filters.radiusKm,tutor.coverageRadiusKm || filters.radiusKm);
-  weighted+=0.3*(distanceKm===undefined?0:Math.max(0,1-distanceKm/radius));totalWeight=1;
+  checks.push(Number.isFinite(distanceKm) && distanceKm!>=0 && radius>0 && Boolean(tutor.coverageRadiusKm && tutor.coverageRadiusKm>0) && distanceKm!<=radius);
   if(distanceKm!==undefined)reasons.push(`Zona aproximada a ${distanceKm.toFixed(1)} km, dentro de tu radio (${filters.radiusKm} km) y de la cobertura del tutor (${tutor.coverageRadiusKm} km).`);
  }
- return {score:Math.round(weighted/totalWeight*100),reasons};
+ if(!checks.length)reasons.push('Selecciona criterios para evaluar la compatibilidad con tu búsqueda.');
+ return {score:checks.length?Math.round(checks.filter(Boolean).length/checks.length*100):0,reasons};
 }
 export function recommendTutors(tutors:Tutor[],filters:SearchFilters,origin?:GeographicPosition):Tutor[] {
  return tutors.flatMap(tutor=>{
   const result=isCandidateEligible(tutor,filters,origin);if(!result.eligible)return [];
   const rank=scoreAndExplainCandidate(tutor,filters,result.distanceKm);
   return [{...tutor,matchScore:rank.score,matchReasons:rank.reasons,distanceKm:result.distanceKm}];
- }).sort((a,b)=>b.matchScore-a.matchScore || a.ratePerHour-b.ratePerHour || a.id.localeCompare(b.id));
+ }).sort((a,b)=>b.matchScore-a.matchScore || a.ratePerHour-b.ratePerHour || scheduleOverlap(b,filters).minutes-scheduleOverlap(a,filters).minutes || (a.distanceKm ?? Infinity)-(b.distanceKm ?? Infinity) || a.id.localeCompare(b.id));
 }

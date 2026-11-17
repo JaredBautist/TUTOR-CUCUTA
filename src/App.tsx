@@ -230,7 +230,7 @@ function AuthenticatedApp({ account, controller, onLogout }: { account: OwnAccou
         </Suspense>
       </main>
       {bookingTutor && (
-        <RequestTutorModal tutor={bookingTutor} isOpen submissionEnabled={Boolean(studentProfile.id && studentProfile.name.trim())}
+        <RequestTutorModal tutor={bookingTutor} isOpen submissionEnabled={Boolean(studentProfile.id)}
           onClose={() => setBookingTutorId(undefined)} onConfirm={handleCreateRequest}
           searchContext={filters} studentProfile={studentProfile} attemptRef={bookingAttempt}
           onCheckRequests={() => navigate('student-requests')}

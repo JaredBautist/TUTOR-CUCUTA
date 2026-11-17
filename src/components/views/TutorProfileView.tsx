@@ -225,6 +225,7 @@ export const TutorProfileView: React.FC<TutorProfileViewProps> = ({
           {tutor.matchScore !== undefined && tutor.matchReasons.length > 0 && (
             <div className="bg-white rounded-xl p-4 sm:p-5 border border-slate-200/90 shadow-xs space-y-2.5">
               <h2 className="text-xs font-bold text-slate-700">Coincidencia: {tutor.matchScore}%</h2>
+              <p className="text-xs text-slate-600">Cumplimiento de los criterios seleccionados. No certifica calidad docente; el horario requiere confirmación.</p>
               <ul className="space-y-1.5 text-xs text-slate-600">
                 {tutor.matchReasons.map((reason, index) => <li key={index}>{reason}</li>)}
               </ul>

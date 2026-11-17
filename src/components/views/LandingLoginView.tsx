@@ -1,5 +1,5 @@
 import React from 'react';
-import { GraduationCap, ShieldCheck, User, Briefcase, MapPin } from 'lucide-react';
+import { GraduationCap, ShieldCheck, User, Briefcase, MapPin, Laptop, ClipboardList, Users } from 'lucide-react';
 import { Role } from '../../types';
 
 interface LandingLoginViewProps {
@@ -25,14 +25,14 @@ export const LandingLoginView: React.FC<LandingLoginViewProps> = ({
             <div className="text-base sm:text-lg font-bold tracking-tight text-slate-900 leading-tight">
               Tutor<span className="text-teal-600">Cúcuta</span>
             </div>
-            <div className="text-[9px] sm:text-[10px] font-semibold tracking-wider uppercase text-slate-400">
-              {role === 'student' ? 'PORTAL ESTUDIANTE' : 'PORTAL DOCENTE / TUTOR'}
+            <div className="text-sm font-medium text-slate-600">
+              {role === 'student' ? 'Portal estudiante' : 'Portal docente'}
             </div>
           </div>
         </div>
 
-        <div className="text-xs text-slate-500 hidden sm:flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+        <div className="text-sm text-slate-600 hidden sm:flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-emerald-500" />
           <span>Proyecto para el Área Metropolitana de Cúcuta</span>
         </div>
       </header>
@@ -43,11 +43,7 @@ export const LandingLoginView: React.FC<LandingLoginViewProps> = ({
           {/* Left Column: Form & Role Selector */}
           <div className="lg:col-span-6 space-y-5 sm:space-y-6">
             <div>
-              <div className="inline-flex items-center gap-2 text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-teal-700 bg-teal-50 border border-teal-200/70 px-2.5 py-1 rounded-full mb-3">
-                <span className="w-1.5 h-1.5 rounded-full bg-teal-600" />
-                PLATAFORMA DE TUTORÍAS PARTICULARES
-              </div>
-              <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
                 Tutor<span className="text-teal-600">Cúcuta</span>
               </h1>
               <p className="text-sm sm:text-base text-slate-600 mt-2">
@@ -57,35 +53,36 @@ export const LandingLoginView: React.FC<LandingLoginViewProps> = ({
 
             {/* Role Switcher Box */}
             <div className="space-y-2">
-              <label className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
-                SELECCIONA TU ROL DE ACCESO
-              </label>
-              <div className="grid grid-cols-2 p-1 bg-slate-100 rounded-xl border border-slate-200/90 text-xs sm:text-sm font-semibold">
+              <p id="access-role-label" className="text-sm font-semibold text-slate-700">
+                ¿Cómo quieres usar TutorCúcuta?
+              </p>
+              <div role="group" aria-labelledby="access-role-label" className="grid grid-cols-2 gap-2 p-1 bg-slate-100 rounded-xl border border-slate-200/90 text-sm font-semibold">
                 <button
                   type="button"
+                  aria-pressed={role === 'student'}
                   onClick={() => onRoleChange('student')}
-                  className={`flex items-center justify-center gap-2 py-2.5 px-3 sm:px-4 rounded-lg transition-all min-h-[44px] cursor-pointer ${
+                  className={`flex items-center justify-center gap-2 py-2.5 px-3 sm:px-4 rounded-lg transition-colors min-h-[44px] cursor-pointer ${
                     role === 'student'
-                      ? 'bg-teal-700 text-white shadow-sm'
+                      ? 'bg-teal-700 text-white'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
                   }`}
                 >
-                  <User className="w-4 h-4 shrink-0" />
+                  <User aria-hidden="true" className="w-4 h-4 shrink-0" />
                   <span>Soy estudiante</span>
                 </button>
 
                 <button
                   type="button"
+                  aria-pressed={role === 'tutor'}
                   onClick={() => onRoleChange('tutor')}
-                  className={`flex items-center justify-center gap-2 py-2.5 px-3 sm:px-4 rounded-lg transition-all min-h-[44px] cursor-pointer ${
+                  className={`flex items-center justify-center gap-2 py-2.5 px-3 sm:px-4 rounded-lg transition-colors min-h-[44px] cursor-pointer ${
                     role === 'tutor'
-                      ? 'bg-teal-700 text-white shadow-sm'
+                      ? 'bg-teal-700 text-white'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
                   }`}
                 >
-                  <Briefcase className="w-4 h-4 shrink-0" />
+                  <Briefcase aria-hidden="true" className="w-4 h-4 shrink-0" />
                   <span>Soy tutor</span>
-                  <span className="w-1.5 h-1.5 rounded-full bg-teal-400 ml-0.5" />
                 </button>
               </div>
             </div>
@@ -95,9 +92,9 @@ export const LandingLoginView: React.FC<LandingLoginViewProps> = ({
               <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
                 {role === 'tutor'
                   ? 'Comparte tus conocimientos como tutor'
-                  : 'Encuentra el tutor adecuado para lo que necesitas aprender'}
+                  : 'Encuentra tu próximo tutor'}
               </h2>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              <p className="text-sm sm:text-sm text-slate-600 leading-relaxed">
                 {role === 'tutor'
                   ? 'Crea tu cuenta y completa tu perfil profesional para ofrecer acompañamiento académico.'
                   : 'Configura tus preferencias y consulta el catálogo de tutores.'}
@@ -108,8 +105,8 @@ export const LandingLoginView: React.FC<LandingLoginViewProps> = ({
 
             {/* Student notice for minors */}
             {role === 'student' && (
-              <div className="p-3 bg-blue-50/70 border border-blue-200/70 rounded-xl flex items-start gap-2.5 text-xs text-blue-900">
-                <ShieldCheck className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+              <div className="p-3 bg-teal-50 border border-teal-200 rounded-xl flex items-start gap-2.5 text-sm text-teal-900">
+                <ShieldCheck className="w-4 h-4 text-teal-800 shrink-0 mt-0.5" />
                 <span>
                   <strong>Nota:</strong> Las solicitudes de menores de edad deberán estar asociadas con un acudiente.
                 </span>
@@ -120,23 +117,23 @@ export const LandingLoginView: React.FC<LandingLoginViewProps> = ({
           {/* Right Column: Connection Radar & Benefit Cards */}
           <div className="lg:col-span-6 space-y-4">
             {/* Visual Geospatial Radar Box */}
-            <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 sm:p-6 relative overflow-hidden">
+            <div className="bg-white rounded-2xl border border-slate-200/90 p-4 sm:p-6 relative overflow-hidden">
               {/* Header inside card */}
               <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-3 sm:mb-4">
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-teal-500 animate-ping" />
-                  <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-800">
-                    ACOMPAÑAMIENTO ACADÉMICO EN EL AMC
+                  <span className="w-2 h-2 rounded-full bg-teal-500" />
+                  <span className="text-sm font-semibold text-slate-800">
+                    Acompañamiento en el AMC
                   </span>
                 </div>
-                <span className="text-[10px] sm:text-xs text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full font-medium">
+                <span className="text-sm text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full font-medium">
                   Área Metropolitana
                 </span>
               </div>
 
               {/* Radar Graphic SVG */}
               <div className="relative w-full h-[220px] sm:h-[270px] bg-slate-50/50 rounded-xl border border-slate-100 flex items-center justify-center overflow-hidden">
-                <svg viewBox="0 0 480 320" className="w-full h-full">
+                <svg viewBox="0 0 480 320" role="img" aria-label="Ilustración conceptual del área de cobertura; no muestra ubicaciones personales" className="w-full h-full">
                   <defs>
                     <radialGradient id="radarSweep" cx="50%" cy="50%" r="50%">
                       <stop offset="0%" stopColor="#0d9488" stopOpacity="0.15" />
@@ -163,65 +160,67 @@ export const LandingLoginView: React.FC<LandingLoginViewProps> = ({
 
                   {/* Sector labels */}
                   <circle cx="210" cy="115" r="3" fill="#64748b" />
-                  <text x="218" y="118" fill="#475569" fontSize="9" fontWeight="600">La Riviera</text>
+                  <text x="218" y="118" fill="#475569" fontSize="14" fontWeight="600">La Riviera</text>
 
                   <circle cx="340" cy="85" r="3" fill="#64748b" />
-                  <text x="348" y="88" fill="#475569" fontSize="9" fontWeight="600">Los Caobos</text>
+                  <text x="348" y="88" fill="#475569" fontSize="14" fontWeight="600">Los Caobos</text>
 
                   <circle cx="170" cy="225" r="3.5" fill="#0284c7" />
-                  <text x="130" y="228" fill="#0369a1" fontSize="9" fontWeight="500">Sector UFPS</text>
+                  <text x="130" y="228" fill="#0369a1" fontSize="14" fontWeight="500">Sector UFPS</text>
 
                   <circle cx="350" cy="230" r="3.5" fill="#0f766e" />
-                  <text x="358" y="233" fill="#0f766e" fontSize="9" fontWeight="600">Los Patios</text>
+                  <text x="358" y="233" fill="#0f766e" fontSize="14" fontWeight="600">Los Patios</text>
 
                   <circle cx="380" cy="275" r="3" fill="#64748b" />
-                  <text x="388" y="278" fill="#64748b" fontSize="9">Villa del Rosario</text>
+                  <text x="350" y="298" fill="#64748b" fontSize="14">Villa del Rosario</text>
 
                   {/* Conceptual connection diagram, without personal locations. */}
                   <circle cx="240" cy="160" r="12" fill="#0f2942" />
                   <circle cx="240" cy="160" r="6" fill="#38bdf8" />
-                  <text x="240" y="186" fill="#0f2942" fontSize="9.5" fontWeight="bold" textAnchor="middle">
+                  <text x="240" y="186" fill="#0f2942" fontSize="14" fontWeight="bold" textAnchor="middle">
                     {role === 'student' ? 'Estudiante' : 'Docente'}
                   </text>
                 </svg>
 
-                <div className="absolute top-4 right-4 sm:top-8 sm:right-6 bg-white/95 backdrop-blur-sm border border-slate-200/90 rounded-xl p-2.5 sm:p-3 shadow-lg max-w-[170px] sm:max-w-[210px] space-y-1">
-                  <div className="font-bold text-xs text-slate-900">Aprender cerca de ti</div>
-                  <p className="text-[10px] sm:text-[11px] text-slate-500">
+
+              </div>
+
+                <div className="mt-3 rounded-xl bg-slate-50 p-3 space-y-1">
+                  <div className="font-bold text-sm text-slate-900">Aprender cerca de ti</div>
+                  <p className="text-sm text-slate-600">
                     Materias, modalidades y preferencias para orientar tu búsqueda.
                   </p>
-                  <div className="flex items-center gap-1 text-[10px] text-slate-600 pt-0.5">
+                  <div className="flex items-center gap-1 text-sm text-slate-600 pt-0.5">
                     <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
                     <span>Ilustración del área de cobertura</span>
                   </div>
                 </div>
-              </div>
 
               {/* Bottom 3 Benefit Columns */}
               <div className="grid grid-cols-1 xs:grid-cols-3 gap-2.5 sm:gap-3 mt-4 pt-4 border-t border-slate-100">
                 <div className="space-y-0.5 sm:space-y-1">
-                  <span className="text-xs font-bold text-slate-900 block flex items-center gap-1">
-                    💻 Modalidad
+                  <span className="text-sm font-bold text-slate-900 block flex items-center gap-1">
+                    <Laptop aria-hidden="true" size={16} /> Modalidad
                   </span>
-                  <p className="text-[11px] text-slate-500 leading-tight">
+                  <p className="text-sm text-slate-600 leading-tight">
                     Presencial o virtual según tu ritmo.
                   </p>
                 </div>
 
                 <div className="space-y-0.5 sm:space-y-1">
-                  <span className="text-xs font-bold text-slate-900 block flex items-center gap-1">
-                    📋 Transparencia
+                  <span className="text-sm font-bold text-slate-900 block flex items-center gap-1">
+                    <ClipboardList aria-hidden="true" size={16} /> Transparencia
                   </span>
-                  <p className="text-[11px] text-slate-500 leading-tight">
+                  <p className="text-sm text-slate-600 leading-tight">
                     Tarifas claras por hora acordadas.
                   </p>
                 </div>
 
                 <div className="space-y-0.5 sm:space-y-1">
-                  <span className="text-xs font-bold text-slate-900 block flex items-center gap-1">
-                    🤝 Perfiles
+                  <span className="text-sm font-bold text-slate-900 block flex items-center gap-1">
+                    <Users aria-hidden="true" size={16} /> Perfiles
                   </span>
-                  <p className="text-[11px] text-slate-500 leading-tight">
+                  <p className="text-sm text-slate-600 leading-tight">
                     Revisa la información de cada tutor.
                   </p>
                 </div>
@@ -232,7 +231,7 @@ export const LandingLoginView: React.FC<LandingLoginViewProps> = ({
       </main>
 
       {/* Footer bar */}
-      <footer className="w-full bg-white border-t border-slate-200/80 py-3.5 px-4 sm:px-12 text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <footer className="w-full bg-white border-t border-slate-200/80 py-3.5 px-4 sm:px-12 text-sm text-slate-600 flex flex-col sm:flex-row items-center justify-between gap-2">
         <div className="text-center sm:text-left">
           <strong>Cobertura:</strong> Área Metropolitana de Cúcuta (San José de Cúcuta, Villa del Rosario, Los Patios, El Zulia)
         </div>

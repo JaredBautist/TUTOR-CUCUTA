@@ -60,7 +60,7 @@ try {
     const clicked = await until(() => evaluate(`(() => { const button = [...document.querySelectorAll('button')].find(b => b.getBoundingClientRect().width && b.innerText.trim() === ${JSON.stringify(label)}); if (!button || button.disabled) return false; button.focus(); button.click(); return true; })()`), `Visible button missing: ${label}`);
     assert.ok(clicked, `Visible button missing: ${label}`);
     await pause(120);
-    await until(async () => !(await body()).includes('Cargando vista…'), 'Screen module did not load');
+    await until(async () => { const text=await body(); return Boolean(text.trim()) && !text.includes('Cargando vista…'); }, 'Screen module did not load');
   };
   const screenshot = async (path) => {
     const { data } = await cdp('Page.captureScreenshot', { format: 'png' });
@@ -187,6 +187,7 @@ try {
   assert.ok(Math.abs(await evaluate('window.scrollY')-listScroll)<5,`Results scroll was not restored: before ${listScroll}, after ${await evaluate('window.scrollY')}`);
   await screenshot('/tmp/tutorcucuta-mobile-results-after.png');
   await click('Solicitar tutoría');
+  await until(()=>evaluate('Boolean(document.querySelector("dialog[open]"))'),'Booking dialog did not open');
   assert.ok(await evaluate('document.querySelector("dialog[open]").contains(document.activeElement)'), 'Dialog focus missing');
   assert.equal(await evaluate('document.querySelector("#request-note").value'),'Tema: Límites\n\nPreparar bimestral.');
   await cdp('Input.dispatchKeyEvent',{type:'keyDown',key:'Tab',code:'Tab',windowsVirtualKeyCode:9,modifiers:1});
