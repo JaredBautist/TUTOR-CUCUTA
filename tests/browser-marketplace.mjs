@@ -223,7 +223,8 @@ try {
   assert.equal(await evaluate('window.__marketplaceFixture.requestInputs.length'),1,'Changed payload reused an uncertain id');
   await fill('#request-note','Repasar límites para la bimestral.');
   await evaluate('window.__marketplaceFixture.failRequest=false;document.querySelector("[role=dialog] form").requestSubmit()');
-  await until(async()=>(await body()).includes('Solicitud guardada en Supabase'),'Request not acknowledged');
+  await until(()=>evaluate('!document.querySelector("#request-tutor-title")'),'Booking dialog did not close after successful submission');
+  assert.doesNotMatch(await body(),/Solicitud guardada en Supabase/);
   assert.ok(await evaluate('window.__marketplaceFixture.requestInputs[0].id===window.__marketplaceFixture.requestInputs[1].id'),'Retry changed id');
   await cdp('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
   await click('Mis Solicitudes');await until(async()=>(await body()).includes('Tutor conectado'),'Student request missing');

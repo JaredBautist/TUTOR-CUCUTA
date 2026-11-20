@@ -144,7 +144,7 @@ function AuthenticatedApp({ account, controller, onLogout }: { account: OwnAccou
       subject:input.subject || '',modality:input.modality==='virtual'?'virtual':'presencial',
       startsAt:input.startsAt!,durationHours:input.durationHours || 1,note:input.studentNote || ''}));
     setBookingTutorId(undefined);
-    setActionMessage('Solicitud guardada en Supabase y disponible para el tutor.');
+    setActionMessage('');
   };
   const transitionRequest = async (id:string,status:'accepted'|'rejected'|'cancelled') => {
     setActionMessage('');

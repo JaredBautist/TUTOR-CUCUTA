@@ -535,3 +535,10 @@ measurements320/390/768/1440 and200% text. TypeScript/build passed. Taste lint0f
 Six final screenshots/contact sheets visually inspected; evidence versioned.
 No hosted authentication/account mutations or deployment. Physical keyboards and
 full assistive-technology acceptance remain pending. Existing unrelated work kept.
+
+## Booking confirmation banner
+
+Removed the page-level database confirmation banner after a successful booking
+submission at the user's request. The dialog still closes after the acknowledged
+write and the request appears in the student list and tutor inbox. The browser
+regression checks the closed dialog, absence of the banner and both views.

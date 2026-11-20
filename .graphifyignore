@@ -7,6 +7,7 @@
 *.pfx
 *.keystore
 *credentials*
+credenciales.html
 *secret*
 node_modules/
 dist/
