@@ -542,3 +542,15 @@ Removed the page-level database confirmation banner after a successful booking
 submission at the user's request. The dialog still closes after the acknowledged
 write and the request appears in the student list and tutor inbox. The browser
 regression checks the closed dialog, absence of the banner and both views.
+
+## Client rehearsal reset
+
+Camilo and Santiago's hosted demo profiles were enriched, both photos verified
+and Camilo's offer republished with five weekly windows. Two active requests
+between them were cancelled. In two isolated Chromium sessions on the published
+site, Santiago submitted a new Saturday request, Camilo received and accepted
+it, Santiago saw the confirmation and contact, and then cancelled it. Both
+portals reflected the cancellation. The pair is ready for a fresh request.
+The ignored credential HTML includes the updated schedule. See
+`specs/search-compatibility/demo-rehearsal.md` and
+`scripts/refresh-presentation-pair.ts` for the bounded rehearsal procedure.
